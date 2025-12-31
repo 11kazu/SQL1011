@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: sw.c
 ******************************************************************************/
 #include "iodefine.h"
@@ -8,93 +8,93 @@
 #include "parameter.h"
 
 //************************************************************/
-//				�����֐��v���g�^�C�v�錾					
+//				内部関数プロトタイプ宣言					
 //************************************************************/
-void sw_input(void);						// ��������
-void led_peakhold_set(void);				// LED �߰�ΰ��޾��
-void led_measure_set(void);					// LED ����E�ݒ辯�
+void sw_input(void);						// ｽｲｯﾁ入力
+void led_peakhold_set(void);				// LED ﾋﾟｰｸﾎｰﾙﾄﾞｾｯﾄ
+void led_measure_set(void);					// LED 測定・設定ｾｯﾄ
 
-void disp_spindle_speed(void);				// ��]���\��
-void disp_flutes(void);						// �n���\��
-void disp_stay_delay_time(void);			// �v���J�n�x�����ԕ\��
+void disp_spindle_speed(void);				// 回転数表示
+void disp_flutes(void);						// 刃数表示
+void disp_stay_delay_time(void);			// 計測開始遅延時間表示
 
 //************************************************************/
-//				��������
-//				 S1�F�d������			POWER_SW_IN
-//				 S2�F���Ľ���			START_SW_IN
-//				 S3�F�ر����			CLEAR_SW_IN
-//				 S4�F�ڸĽ���			SELECT_SW_IN
-//				 S5�F�߰�ΰ��޽���		PEAKHOLD_SW_IN
-//				 S6�FӰ�޽���			MODE_SW_IN
-//				 S7�F�㽲��				UP_SW_IN
-//				 S8�F������				DOWN_SW_IN
-//				 S9�FECO����			ECO_SW_IN
-//				   �F��ް�����J			COVER_OPEN_IN
-//				   �F��ް������			COVER_CLOSE_IN
+//				ｽｲｯﾁ入力
+//				 S1：電源ｽｲｯﾁ			POWER_SW_IN
+//				 S2：ｽﾀｰﾄｽｲｯﾁ			START_SW_IN
+//				 S3：ｸﾘｱｽｲｯﾁ			CLEAR_SW_IN
+//				 S4：ｾﾚｸﾄｽｲｯﾁ			SELECT_SW_IN
+//				 S5：ﾋﾟｰｸﾎｰﾙﾄﾞｽｲｯﾁ		PEAKHOLD_SW_IN
+//				 S6：ﾓｰﾄﾞｽｲｯﾁ			MODE_SW_IN
+//				 S7：上ｽｲｯﾁ				UP_SW_IN
+//				 S8：下ｽｲｯﾁ				DOWN_SW_IN
+//				 S9：ECOｽｲｯﾁ			ECO_SW_IN
+//				   ：ｶﾊﾞｰｽｲｯﾁ開			COVER_OPEN_IN
+//				   ：ｶﾊﾞｰｽｲｯﾁ閉			COVER_CLOSE_IN
 //************************************************************/
-// 100ms�ȏ�A���Ž����������Ă���Ƃ��A�܂��͗����Ă���Ƃ��ɁA
-// �����̏�Ԃ��m��(����ݸޖh�~�΍�)
+// 100ms以上連続でｽｲｯﾁを押しているとき、または離しているときに、
+// ｽｲｯﾁの状態を確定(ﾁｬﾀﾘﾝｸﾞ防止対策)
 void sw_input(void)
 {
 	//_UBYTE i;
 	
-	// �������� //
-	// �d������(S1)		////////////////////////////////////////////////////////////
+	// ｽｲｯﾁ入力 //
+	// 電源ｽｲｯﾁ(S1)		////////////////////////////////////////////////////////////
 	if(POWER_SW_IN){
 		IN.POWER_SW.BIT.OFF = 0;
-		if(IN.POWER_SW.BIT.ON < 100){						// 1s�A��
+		if(IN.POWER_SW.BIT.ON < 100){						// 1s連続
 			IN.POWER_SW.BIT.ON++;
-			if(IN.POWER_SW.BIT.ON == 100){					// 1s�A��
-				IN.FLAG.BIT.POWER_SW = 1;					// ���͂���
-				SEQ.FLAG.BIT.POWER = !SEQ.FLAG.BIT.POWER;	// �d��(��Ԕ��])
+			if(IN.POWER_SW.BIT.ON == 100){					// 1s連続
+				IN.FLAG.BIT.POWER_SW = 1;					// 入力あり
+				SEQ.FLAG.BIT.POWER = !SEQ.FLAG.BIT.POWER;	// 電源(状態反転)
 				
 				if(SEQ.FLAG.BIT.POWER){
 					if(SEQ.FLAG5.BIT.VOLTAGE_ERROR == 0){
-						SEQ.FLAG.BIT.POWER_ON = 1;			// �d��ON�׸ނ��
+						SEQ.FLAG.BIT.POWER_ON = 1;			// 電源ONﾌﾗｸﾞをｾｯﾄ
 					}
 				}else{
-					OUT.MASTER_STATUS = IDLE_MODE;			// �ҋ@Ӱ��
-					SEQ.FLAG.BIT.POWER_OFF = 1;				// �d��OFF�׸ނ��
+					OUT.MASTER_STATUS = IDLE_MODE;			// 待機ﾓｰﾄﾞ
+					SEQ.FLAG.BIT.POWER_OFF = 1;				// 電源OFFﾌﾗｸﾞをｾｯﾄ
 					SEQ.FLAG.BIT.MEASUREMENT = 0;
-					SEQ.FLAG.BIT.PORTABLE = 0;				// �߰���ّ����׸�
-					SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;		// �߰�ΰ��ޗL���׸�
+					SEQ.FLAG.BIT.PORTABLE = 0;				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
+					SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;		// ﾋﾟｰｸﾎｰﾙﾄﾞ有効ﾌﾗｸﾞ
 					//SEQ.FLAG.BIT.ECO = 0;
 				}
 			}
 		}
 	}else{
 		IN.POWER_SW.BIT.ON = 0;
-		if(IN.POWER_SW.BIT.OFF < 100){						// 1s�A��
+		if(IN.POWER_SW.BIT.OFF < 100){						// 1s連続
 			IN.POWER_SW.BIT.OFF++;
-			if(IN.POWER_SW.BIT.OFF == 100){					// 1s�A��
-				IN.FLAG.BIT.POWER_SW = 0;					// ���͂Ȃ�
+			if(IN.POWER_SW.BIT.OFF == 100){					// 1s連続
+				IN.FLAG.BIT.POWER_SW = 0;					// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// ���Ľ���(S2)		////////////////////////////////////////////////////////////
+	// ｽﾀｰﾄｽｲｯﾁ(S2)		////////////////////////////////////////////////////////////
 	if(START_SW_IN){
 		IN.START_SW.BIT.OFF = 0;
-		if(IN.START_SW.BIT.ON < 10){											// 100ms�A��
+		if(IN.START_SW.BIT.ON < 10){											// 100ms連続
 			IN.START_SW.BIT.ON++;
-			if(IN.START_SW.BIT.ON == 10){										// 100ms�A��
-				IN.FLAG.BIT.START_SW = 1;										// ���͂���
+			if(IN.START_SW.BIT.ON == 10){										// 100ms連続
+				IN.FLAG.BIT.START_SW = 1;										// 入力あり
 				if(SEQ.FLAG.BIT.POWER){
 					if(SEQ.FLAG.BIT.MEASUREMENT == 0){
 						SEQ.FLAG.BIT.MEASUREMENT = 1;
 						
 						SEQ.CBUS_NUMBER = 394;
-						SEQ.CHANGE_FPGA = 2;									// ����
+						SEQ.CHANGE_FPGA = 2;									// 測定
 						SEQ.FPGA_SEND_STATUS = 1;
-						SEQ.FLAG.BIT.PORTABLE = 1;								// �߰���ّ����׸�
+						SEQ.FLAG.BIT.PORTABLE = 1;								// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 
-						if((SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW) || 			// 1:d��4
-						   (SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT)){			// 2:�U��
+						if((SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW) || 			// 1:d≦4
+						   (SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT)){			// 2:振れ
 
-							if(SEQ.FLUTES != PARAM_FLUTES){						// �ꎞ�ް��l�����Ұ��l���قȂ�Ƃ�
-								PARAM_FLUTES = SEQ.FLUTES;						// �n��(���Ұ��ɏ�������)
-								// ��؂ɏ�������
+							if(SEQ.FLUTES != PARAM_FLUTES){						// 一時ﾃﾞｰﾀ値とﾊﾟﾗﾒｰﾀ値が異なるとき
+								PARAM_FLUTES = SEQ.FLUTES;						// 刃数(ﾊﾟﾗﾒｰﾀに書き込み)
+								// ﾒﾓﾘに書き込み
 								I2C.WR_CONT = 815;
 								I2C.WR_BUF[I2C.WR_CONT]		= PARAM_FLUTES >> 8;
 								I2C.WR_BUF[I2C.WR_CONT + 1]	= PARAM_FLUTES;
@@ -102,15 +102,15 @@ void sw_input(void)
 								I2C.RE_BUF[I2C.WR_CONT]		= I2C.WR_BUF[I2C.WR_CONT];
 								I2C.RE_BUF[I2C.WR_CONT + 1]	= I2C.WR_BUF[I2C.WR_CONT + 1];
 								
-								I2C.SUB_STATUS = 48;							// 1�ް�����������
+								I2C.SUB_STATUS = 48;							// 1ﾃﾞｰﾀ分書き込み
 								//
 							}
 							
-							// �U�ꑪ��̂Ƃ�
-							if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){			// 2:�U��̂Ƃ�
-								if(SEQ.SPINDLE_SPEED != PARAM_SPINDLE_SPEED){	// �ꎞ�ް��l�����Ұ��l���قȂ�Ƃ�
-									PARAM_SPINDLE_SPEED = SEQ.SPINDLE_SPEED;	// ��]��(���Ұ��ɏ�������)
-									// ��؂ɏ�������
+							// 振れ測定のとき
+							if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){			// 2:振れのとき
+								if(SEQ.SPINDLE_SPEED != PARAM_SPINDLE_SPEED){	// 一時ﾃﾞｰﾀ値とﾊﾟﾗﾒｰﾀ値が異なるとき
+									PARAM_SPINDLE_SPEED = SEQ.SPINDLE_SPEED;	// 回転数(ﾊﾟﾗﾒｰﾀに書き込み)
+									// ﾒﾓﾘに書き込み
 									I2C.WR_CONT = 811;
 									I2C.WR_BUF[I2C.WR_CONT]		= PARAM_SPINDLE_SPEED >> 8;
 									I2C.WR_BUF[I2C.WR_CONT + 1]	= PARAM_SPINDLE_SPEED;
@@ -118,24 +118,24 @@ void sw_input(void)
 									I2C.RE_BUF[I2C.WR_CONT]		= I2C.WR_BUF[I2C.WR_CONT];
 									I2C.RE_BUF[I2C.WR_CONT + 1]	= I2C.WR_BUF[I2C.WR_CONT + 1];
 									
-									I2C.SUB_STATUS = 48;						// 1�ް�����������
+									I2C.SUB_STATUS = 48;						// 1ﾃﾞｰﾀ分書き込み
 									//
 								}
 
-								// �����ضގ���[ms] = 60[s] / ��]��[rpm] / �n�� * 1000
+								// 周期ﾄﾘｶﾞ時間[ms] = 60[s] / 回転数[rpm] / 刃数 * 1000
 								SEQ.TRIGGER_TIME_PERIOD = 60000 / SEQ.SPINDLE_SPEED / SEQ.FLUTES;
 							}
 						}
 					}else{
 						SEQ.FLAG.BIT.MEASUREMENT = 0;
-						SEQ.FLAG.BIT.PORTABLE = 0;								// �߰���ّ����׸�
-						SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;						// �߰�ΰ��ޗL���׸�
+						SEQ.FLAG.BIT.PORTABLE = 0;								// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
+						SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;						// ﾋﾟｰｸﾎｰﾙﾄﾞ有効ﾌﾗｸﾞ
 						switch(SEQ.CHANGE_FPGA){
 							case 2:
 							case 4:
 							case 5:
-								set_7seg_upper_no_data();						// 7��ޕ\��(-----)(��i)
-								set_7seg_lower_no_data();						// 7��ޕ\��(-----)(���i)
+								set_7seg_upper_no_data();						// 7ｾｸﾞ表示(-----)(上段)
+								set_7seg_lower_no_data();						// 7ｾｸﾞ表示(-----)(下段)
 								OUT.SUB_STATUS = 5;
 								break;
 						}
@@ -145,47 +145,47 @@ void sw_input(void)
 		}
 	}else{
 		IN.START_SW.BIT.ON = 0;
-		if(IN.START_SW.BIT.OFF < 10){											// 100ms�A��
+		if(IN.START_SW.BIT.OFF < 10){											// 100ms連続
 			IN.START_SW.BIT.OFF++;
-			if(IN.START_SW.BIT.OFF == 10){										// 100ms�A��
-				IN.FLAG.BIT.START_SW = 0;										// ���͂Ȃ�
+			if(IN.START_SW.BIT.OFF == 10){										// 100ms連続
+				IN.FLAG.BIT.START_SW = 0;										// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// �ر����(S3)		////////////////////////////////////////////////////////////
+	// ｸﾘｱｽｲｯﾁ(S3)		////////////////////////////////////////////////////////////
 	if(CLEAR_SW_IN){
 		IN.CLEAR_SW.BIT.OFF = 0;
-		if(IN.CLEAR_SW.BIT.ON < 10){										// 100ms�A��
+		if(IN.CLEAR_SW.BIT.ON < 10){										// 100ms連続
 			IN.CLEAR_SW.BIT.ON++;
-			if(IN.CLEAR_SW.BIT.ON == 10){									// 100ms�A��
-				IN.FLAG.BIT.CLEAR_SW = 1;									// ���͂���
-				if(SEQ.FLAG.BIT.POWER){										// �d���������Ă���Ƃ�
-					if(SEQ.FLAG.BIT.MEASUREMENT == 0){						// ���肵�Ă��Ȃ��Ƃ�
-						// �ݒ�l��ر
-						if(SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW){			// 0:d��4�̂Ƃ�
-							SEQ.FLUTES			 = INIT_FLUTES;				// �n��
-						}else if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){	// 2:�U��̂Ƃ�
-							SEQ.SPINDLE_SPEED	 = INIT_SPINDLE_SPEED;		// ��]��
-							SEQ.FLUTES			 = INIT_FLUTES;				// �n��
-						}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){		// 3:�œ_�̂Ƃ�
-							SEQ.START_DELAY_TIME = INIT_START_DELAY_TIME;	// �v���J�n�x������
+			if(IN.CLEAR_SW.BIT.ON == 10){									// 100ms連続
+				IN.FLAG.BIT.CLEAR_SW = 1;									// 入力あり
+				if(SEQ.FLAG.BIT.POWER){										// 電源が入っているとき
+					if(SEQ.FLAG.BIT.MEASUREMENT == 0){						// 測定していないとき
+						// 設定値をｸﾘｱ
+						if(SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW){			// 0:d≦4のとき
+							SEQ.FLUTES			 = INIT_FLUTES;				// 刃数
+						}else if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){	// 2:振れのとき
+							SEQ.SPINDLE_SPEED	 = INIT_SPINDLE_SPEED;		// 回転数
+							SEQ.FLUTES			 = INIT_FLUTES;				// 刃数
+						}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){		// 3:焦点のとき
+							SEQ.START_DELAY_TIME = INIT_START_DELAY_TIME;	// 計測開始遅延時間
 						}
-						led_measure_set();									// LED ����E�ݒ辯�
+						led_measure_set();									// LED 測定・設定ｾｯﾄ
 						
-						// �\��������
-						LED.FOCUSING = 0x0000;								// FOCUS�S����
+						// 表示を消去
+						LED.FOCUSING = 0x0000;								// FOCUS全消灯
 						LED.FOCUS.BIT.L = 0;
 						LED.FOCUS.BIT.R = 0;
-						LED.FOCUS.BIT.Z = 0;								// �œ_Z
-						set_7seg_upper_no_data();							// 7��ޕ\��(-----)(��i)
-						set_7seg_lower_no_data();							// 7��ޕ\��(-----)(���i)
+						LED.FOCUS.BIT.Z = 0;								// 焦点Z
+						set_7seg_upper_no_data();							// 7ｾｸﾞ表示(-----)(上段)
+						set_7seg_lower_no_data();							// 7ｾｸﾞ表示(-----)(下段)
 						
-					}else{													// ���肵�Ă���Ƃ�
-						// �v�����ʂ�ر
-						if(SEQ.FLAG.BIT.PORTABLE == 1){						// �߰���ّ����׸�
-							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 1;				// �߰�ΰ���ؾ���׸�
+					}else{													// 測定しているとき
+						// 計測結果をｸﾘｱ
+						if(SEQ.FLAG.BIT.PORTABLE == 1){						// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
+							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 1;				// ﾋﾟｰｸﾎｰﾙﾄﾞﾘｾｯﾄﾌﾗｸﾞ
 							SEQ.PEAKHOLD_COUNT = 0;
 						}
 					}
@@ -194,38 +194,38 @@ void sw_input(void)
 		}
 	}else{
 		IN.CLEAR_SW.BIT.ON = 0;
-		if(IN.CLEAR_SW.BIT.OFF < 10){										// 100ms�A��
+		if(IN.CLEAR_SW.BIT.OFF < 10){										// 100ms連続
 			IN.CLEAR_SW.BIT.OFF++;
-			if(IN.CLEAR_SW.BIT.OFF == 10){									// 100ms�A��
-				IN.FLAG.BIT.CLEAR_SW = 0;									// ���͂Ȃ�
+			if(IN.CLEAR_SW.BIT.OFF == 10){									// 100ms連続
+				IN.FLAG.BIT.CLEAR_SW = 0;									// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// �ڸĽ���(S4)		////////////////////////////////////////////////////////////
+	// ｾﾚｸﾄｽｲｯﾁ(S4)		////////////////////////////////////////////////////////////
 	if(SELECT_SW_IN){
 		IN.SELECT_SW.BIT.OFF = 0;
 		IN.SELECT_SW.BIT.ON++;
-		if(IN.SELECT_SW.BIT.ON == 10){					// 100ms�A��
-			IN.FLAG.BIT.SELECT_SW = 1;					// ���͂���
-		}else if(IN.SELECT_SW.BIT.ON == 50){			// 500ms�A��
-			IN.FLAG.BIT.SELECT_SW = 1;					// ���͂���
+		if(IN.SELECT_SW.BIT.ON == 10){					// 100ms連続
+			IN.FLAG.BIT.SELECT_SW = 1;					// 入力あり
+		}else if(IN.SELECT_SW.BIT.ON == 50){			// 500ms連続
+			IN.FLAG.BIT.SELECT_SW = 1;					// 入力あり
 		}else if(IN.SELECT_SW.BIT.ON >= 51){
 			IN.SELECT_SW.BIT.ON = 11;
 		}
 		
-		if(IN.FLAG.BIT.SELECT_SW == 1){					// ���͂���
+		if(IN.FLAG.BIT.SELECT_SW == 1){					// 入力あり
 			IN.FLAG.BIT.SELECT_SW = 0;
 			if(SEQ.FLAG.BIT.POWER){
 				if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-					// 0:d��4�܂���2:�U��
+					// 0:d≦4または2:振れ
 					if((SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW)||(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT)){
 						SEQ.FLUTES++;
 						if(SEQ.FLUTES > 9){
 							SEQ.FLUTES = 0;
 						}
-						led_measure_set();				// LED ����E�ݒ辯�
+						led_measure_set();				// LED 測定・設定ｾｯﾄ
 					}
 				}
 			}
@@ -233,46 +233,46 @@ void sw_input(void)
 			
 	}else{
 		IN.SELECT_SW.BIT.ON = 0;
-		if(IN.SELECT_SW.BIT.OFF < 10){					// 100ms�A��
+		if(IN.SELECT_SW.BIT.OFF < 10){					// 100ms連続
 			IN.SELECT_SW.BIT.OFF++;
-			if(IN.SELECT_SW.BIT.OFF == 10){				// 100ms�A��
-				IN.FLAG.BIT.SELECT_SW = 0;				// ���͂Ȃ�
+			if(IN.SELECT_SW.BIT.OFF == 10){				// 100ms連続
+				IN.FLAG.BIT.SELECT_SW = 0;				// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// �߰�ΰ��޽���(S5)	////////////////////////////////////////////////////////
+	// ﾋﾟｰｸﾎｰﾙﾄﾞｽｲｯﾁ(S5)	////////////////////////////////////////////////////////
 	if(PEAKHOLD_SW_IN){
 		IN.PEAKHOLD_SW.BIT.OFF = 0;
-		if(IN.PEAKHOLD_SW.BIT.ON < 10){										// 100ms�A��
+		if(IN.PEAKHOLD_SW.BIT.ON < 10){										// 100ms連続
 			IN.PEAKHOLD_SW.BIT.ON++;
-			if(IN.PEAKHOLD_SW.BIT.ON == 10){								// 100ms�A��
-				IN.FLAG.BIT.PEAKHOLD_SW = 1;								// ���͂���
+			if(IN.PEAKHOLD_SW.BIT.ON == 10){								// 100ms連続
+				IN.FLAG.BIT.PEAKHOLD_SW = 1;								// 入力あり
 				if(SEQ.FLAG.BIT.POWER){
 //					if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-						// 0:d��4�E10:d��4�E2:�U��̂Ƃ�
+						// 0:d≦4・10:d＞4・2:振れのとき
 						if((SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW)||(SEQ.SELECT.BIT.MEASURE == MODE_D4_AUTO)||(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT)){
 							if(SEQ.SELECT.BIT.PEAKHOLD < PEAK_HOLD_10S){
 								SEQ.SELECT.BIT.PEAKHOLD++;
 							}else{
 								SEQ.SELECT.BIT.PEAKHOLD = PEAK_HOLD_OFF;	
 							}
-							led_peakhold_set();								// LED �߰�ΰ��޾��
+							led_peakhold_set();								// LED ﾋﾟｰｸﾎｰﾙﾄﾞｾｯﾄ
 							max_min_reset();
-							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 1;				// �߰�ΰ���ؾ���׸�
+							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 1;				// ﾋﾟｰｸﾎｰﾙﾄﾞﾘｾｯﾄﾌﾗｸﾞ
 							SEQ.PEAKHOLD_COUNT = 0;
 							
-							if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){		// 2:�U��
-// add 2015.03.17 K.Uemura start	F31601	�v����~���ɍČv�������Ȃ�
+							if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){		// 2:振れ
+// add 2015.03.17 K.Uemura start	F31601	計測停止時に再計測させない
 								if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_RUNNING){
 // add 2015.03.17 K.Uemura end
-									// �Čv��(fpga_idle����ăX�^�[�g)
+									// 再計測(fpga_idleから再スタート)
 									SEQ.CHANGE_FPGA = 2;					// FPGA idle
 									SEQ.FPGA_SEND_STATUS = 103;
 									OUT.SUB_STATUS = 11;
 									SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;
-									SEQ.FLAG3.BIT.PEAKHOLD_RESET = 0;		// �߰�ΰ���ؾ���׸�
+									SEQ.FLAG3.BIT.PEAKHOLD_RESET = 0;		// ﾋﾟｰｸﾎｰﾙﾄﾞﾘｾｯﾄﾌﾗｸﾞ
 								}
 							}
 						}
@@ -282,60 +282,60 @@ void sw_input(void)
 		}
 	}else{
 		IN.PEAKHOLD_SW.BIT.ON = 0;
-		if(IN.PEAKHOLD_SW.BIT.OFF < 10){									// 100ms�A��
+		if(IN.PEAKHOLD_SW.BIT.OFF < 10){									// 100ms連続
 			IN.PEAKHOLD_SW.BIT.OFF++;
-			if(IN.PEAKHOLD_SW.BIT.OFF == 10){								// 100ms�A��
-				IN.FLAG.BIT.PEAKHOLD_SW = 0;								// ���͂Ȃ�
+			if(IN.PEAKHOLD_SW.BIT.OFF == 10){								// 100ms連続
+				IN.FLAG.BIT.PEAKHOLD_SW = 0;								// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// Ӱ�޽���(S6)		////////////////////////////////////////////////////////////
+	// ﾓｰﾄﾞｽｲｯﾁ(S6)		////////////////////////////////////////////////////////////
 	if(MODE_SW_IN){
 		IN.MODE_SW.BIT.OFF = 0;
-		if(IN.MODE_SW.BIT.ON < 10){												// 100ms�A��
+		if(IN.MODE_SW.BIT.ON < 10){												// 100ms連続
 			IN.MODE_SW.BIT.ON++;
-			if(IN.MODE_SW.BIT.ON == 10){										// 100ms�A��
-				IN.FLAG.BIT.MODE_SW = 1;										// ���͂���
+			if(IN.MODE_SW.BIT.ON == 10){										// 100ms連続
+				IN.FLAG.BIT.MODE_SW = 1;										// 入力あり
 				if(SEQ.FLAG.BIT.POWER){
-					// �v������Ӱ�ނ�ύX�\
+					// 計測中もﾓｰﾄﾞを変更可能
 					//if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-						// �v�����̂Ƃ���U�v�����~����
-						if(SEQ.FLAG6.BIT.START_DELAY_TIME == 0){				// �v���J�n�x�������׸ނ��u0�v�̂Ƃ�
+						// 計測中のとき一旦計測を停止する
+						if(SEQ.FLAG6.BIT.START_DELAY_TIME == 0){				// 計測開始遅延時間ﾌﾗｸﾞが「0」のとき
 							if(SEQ.FLAG.BIT.MEASUREMENT == 1){
-								SEQ.FLAG.BIT.MEASUREMENT = 0;					// �v�����~����
-								SEQ.FLAG.BIT.CHANGE_MODE = 1;					// �v��Ӱ�ސ؂�ւ��׸�
+								SEQ.FLAG.BIT.MEASUREMENT = 0;					// 計測を停止する
+								SEQ.FLAG.BIT.CHANGE_MODE = 1;					// 計測ﾓｰﾄﾞ切り替えﾌﾗｸﾞ
 							}
 						}
 						
-						if(SEQ.SELECT.BIT.MEASURE == MODE_CENTER){				// �H��a(4�ȉ�)
+						if(SEQ.SELECT.BIT.MEASURE == MODE_CENTER){				// 工具径(4以下)
 							COM0.NO311 = 10;
 							SEQ.SELECT.BIT.MEASURE = MODE_D4_LOW;
 							
-						}else if(SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW){		// �H��a(����)
+						}else if(SEQ.SELECT.BIT.MEASURE == MODE_D4_LOW){		// 工具径(自動)
 							COM0.NO311 = 20;
 							SEQ.SELECT.BIT.MEASURE = MODE_D4_AUTO;
 							
-						}else if(SEQ.SELECT.BIT.MEASURE == MODE_D4_AUTO){		// �U�ꑪ��
+						}else if(SEQ.SELECT.BIT.MEASURE == MODE_D4_AUTO){		// 振れ測定
 							COM0.NO311 = 50;
 							SEQ.SELECT.BIT.MEASURE = MODE_RUNOUT;
-							SEQ.SPINDLE_SPEED	= PARAM_SPINDLE_SPEED;			// ��]��
-//							SEQ.FLUTES = PARAM_FLUTES;							// �n��
+							SEQ.SPINDLE_SPEED	= PARAM_SPINDLE_SPEED;			// 回転数
+//							SEQ.FLUTES = PARAM_FLUTES;							// 刃数
 							
-						}else if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){		// �œ_���킹
+						}else if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){		// 焦点合わせ
 							COM0.NO311 = 100;
 							SEQ.SELECT.BIT.MEASURE = MODE_FOCUS;
-							SEQ.START_DELAY_TIME	= PARAM_START_DELAY_TIME;	// �v���J�n�x������
+							SEQ.START_DELAY_TIME	= PARAM_START_DELAY_TIME;	// 計測開始遅延時間
 							
-						}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){			// ���S�ʒu�ݒ�
+						}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){			// 中心位置設定
 							COM0.NO311 = 110;
 							SEQ.SELECT.BIT.MEASURE = MODE_CENTER;
 							
-							// �œ_���킹����ɂČv���J�n�x�����Ԃ��ύX����Ă���Ƃ����Ұ��ɏ�������
-							if(SEQ.START_DELAY_TIME != PARAM_START_DELAY_TIME){	// �ꎞ�ް��l�����Ұ��l���قȂ�Ƃ�
-								PARAM_START_DELAY_TIME = SEQ.START_DELAY_TIME;	// ��]��(���Ұ��ɏ�������)
-								// ��؂ɏ�������
+							// 焦点合わせ測定にて計測開始遅延時間が変更されているときﾊﾟﾗﾒｰﾀに書き込む
+							if(SEQ.START_DELAY_TIME != PARAM_START_DELAY_TIME){	// 一時ﾃﾞｰﾀ値とﾊﾟﾗﾒｰﾀ値が異なるとき
+								PARAM_START_DELAY_TIME = SEQ.START_DELAY_TIME;	// 回転数(ﾊﾟﾗﾒｰﾀに書き込み)
+								// ﾒﾓﾘに書き込み
 								I2C.WR_CONT = 3799;
 								I2C.WR_BUF[I2C.WR_CONT]		= PARAM_START_DELAY_TIME >> 8;
 								I2C.WR_BUF[I2C.WR_CONT + 1]	= PARAM_START_DELAY_TIME;
@@ -343,86 +343,86 @@ void sw_input(void)
 								I2C.RE_BUF[I2C.WR_CONT]		= I2C.WR_BUF[I2C.WR_CONT];
 								I2C.RE_BUF[I2C.WR_CONT + 1]	= I2C.WR_BUF[I2C.WR_CONT + 1];
 								
-								I2C.SUB_STATUS = 48;							// 1�ް�����������
+								I2C.SUB_STATUS = 48;							// 1ﾃﾞｰﾀ分書き込み
 								//
 							}
 							
-						}else{													// ��L�ȊO�͏œ_���킹
+						}else{													// 上記以外は焦点合わせ
 							COM0.NO311 = 100;
 							SEQ.SELECT.BIT.MEASURE = MODE_FOCUS;
-							SEQ.START_DELAY_TIME	= PARAM_START_DELAY_TIME;	// �v���J�n�x������
+							SEQ.START_DELAY_TIME	= PARAM_START_DELAY_TIME;	// 計測開始遅延時間
 						}
 						
-						SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;						// �߰�ΰ��ޗL���׸�
+						SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 0;						// ﾋﾟｰｸﾎｰﾙﾄﾞ有効ﾌﾗｸﾞ
 						SEQ.SELECT.BIT.PEAKHOLD = PEAK_HOLD_5S;
-						LED.FOCUSING = 0x0000;									// FOCUS�S����
+						LED.FOCUSING = 0x0000;									// FOCUS全消灯
 						LED.FOCUS.BIT.L = 0;
 						LED.FOCUS.BIT.R = 0;
-						LED.FOCUS.BIT.Z = 0;									// �œ_Z
+						LED.FOCUS.BIT.Z = 0;									// 焦点Z
 						OUT.SUB_STATUS = 5;
-						set_7seg_upper_no_data();								// 7��ޕ\��(-----)(��i)
-						set_7seg_lower_no_data();								// 7��ޕ\��(-----)(���i)
-						led_measure_set();										// LED ����E�ݒ辯�
-						led_peakhold_set();										// LED �߰�ΰ��޾��
+						set_7seg_upper_no_data();								// 7ｾｸﾞ表示(-----)(上段)
+						set_7seg_lower_no_data();								// 7ｾｸﾞ表示(-----)(下段)
+						led_measure_set();										// LED 測定・設定ｾｯﾄ
+						led_peakhold_set();										// LED ﾋﾟｰｸﾎｰﾙﾄﾞｾｯﾄ
 					//}
 				}
 			}
 		}
 	}else{
 		IN.MODE_SW.BIT.ON = 0;
-		if(IN.MODE_SW.BIT.OFF < 10){											// 100ms�A��
+		if(IN.MODE_SW.BIT.OFF < 10){											// 100ms連続
 			IN.MODE_SW.BIT.OFF++;
-			if(IN.MODE_SW.BIT.OFF == 10){										// 100ms�A��
-				IN.FLAG.BIT.MODE_SW = 0;										// ���͂Ȃ�
+			if(IN.MODE_SW.BIT.OFF == 10){										// 100ms連続
+				IN.FLAG.BIT.MODE_SW = 0;										// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// �㽲��		////////////////////////////////////////////////////////////////
+	// 上ｽｲｯﾁ		////////////////////////////////////////////////////////////////
 	if(UP_SW_IN){
 		IN.UP_SW.BIT.OFF = 0;
 		IN.UP_SW.BIT.ON++;
 		
 		if(SEQ.FLAG.BIT.POWER){
-			if(IN.UP_SW.BIT.ON >= 500){					// 5000ms�A��
+			if(IN.UP_SW.BIT.ON >= 500){					// 5000ms連続
 				IN.UP_SW.BIT.ON = 500;		
-				IN.FLAG.BIT.UP_SW = 1;					// ���͂���
-			}else if(IN.UP_SW.BIT.ON >= 400){			// 4000ms�A��
-				if(IN.UP_SW.BIT.ON % 5 == 0){			// �u5�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.UP_SW = 1;				// ���͂���
+				IN.FLAG.BIT.UP_SW = 1;					// 入力あり
+			}else if(IN.UP_SW.BIT.ON >= 400){			// 4000ms連続
+				if(IN.UP_SW.BIT.ON % 5 == 0){			// 「5」で割った余りが「0」のとき
+					IN.FLAG.BIT.UP_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.UP_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.UP_SW = 0;				// 入力なし
 				}
-			}else if(IN.UP_SW.BIT.ON >= 300){			// 3000ms�A��
-				if(IN.UP_SW.BIT.ON % 10 == 0){			// �u10�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.UP_SW = 1;				// ���͂���
+			}else if(IN.UP_SW.BIT.ON >= 300){			// 3000ms連続
+				if(IN.UP_SW.BIT.ON % 10 == 0){			// 「10」で割った余りが「0」のとき
+					IN.FLAG.BIT.UP_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.UP_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.UP_SW = 0;				// 入力なし
 				}
-			}else if(IN.UP_SW.BIT.ON >= 200){			// 2000ms�A��
-				if(IN.UP_SW.BIT.ON % 20 == 0){			// �u20�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.UP_SW = 1;				// ���͂���
+			}else if(IN.UP_SW.BIT.ON >= 200){			// 2000ms連続
+				if(IN.UP_SW.BIT.ON % 20 == 0){			// 「20」で割った余りが「0」のとき
+					IN.FLAG.BIT.UP_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.UP_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.UP_SW = 0;				// 入力なし
 				}
-			}else if(IN.UP_SW.BIT.ON >= 100){			// 1000ms�A��
-				if(IN.UP_SW.BIT.ON % 50 == 0){			// �u50�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.UP_SW = 1;				// ���͂���
+			}else if(IN.UP_SW.BIT.ON >= 100){			// 1000ms連続
+				if(IN.UP_SW.BIT.ON % 50 == 0){			// 「50」で割った余りが「0」のとき
+					IN.FLAG.BIT.UP_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.UP_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.UP_SW = 0;				// 入力なし
 				}
-			}else if(IN.UP_SW.BIT.ON == 50){			// 500ms�A��
-				IN.FLAG.BIT.UP_SW = 1;					// ���͂���
-			}else if(IN.UP_SW.BIT.ON == 10){			// 100ms�A��
-				IN.FLAG.BIT.UP_SW = 1;					// ���͂���
+			}else if(IN.UP_SW.BIT.ON == 50){			// 500ms連続
+				IN.FLAG.BIT.UP_SW = 1;					// 入力あり
+			}else if(IN.UP_SW.BIT.ON == 10){			// 100ms連続
+				IN.FLAG.BIT.UP_SW = 1;					// 入力あり
 			}else{
-				IN.FLAG.BIT.UP_SW = 0;					// ���͂Ȃ�
+				IN.FLAG.BIT.UP_SW = 0;					// 入力なし
 			}
 			
-			if(IN.FLAG.BIT.UP_SW == 1){									// ���͂���̂Ƃ�
+			if(IN.FLAG.BIT.UP_SW == 1){									// 入力ありのとき
 				if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-					if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){			// 2:�U��̂Ƃ�
+					if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){			// 2:振れのとき
 						if(SEQ.FLUTES != 0){
 							SEQ.SPINDLE_SPEED++;
 							if(SEQ.SPINDLE_SPEED > SPINDLE_SPEED_MAX){
@@ -430,72 +430,72 @@ void sw_input(void)
 							}
 						}
 						
-					}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){		// 3:�œ_�̂Ƃ�
+					}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){		// 3:焦点のとき
 						SEQ.START_DELAY_TIME++;
 						if(SEQ.START_DELAY_TIME > 999){
 							SEQ.START_DELAY_TIME = 0;
 						}
 					}
-					led_measure_set();									// LED ����E�ݒ辯�
+					led_measure_set();									// LED 測定・設定ｾｯﾄ
 				}
-				IN.FLAG.BIT.UP_SW = 0;									// ���͂Ȃ�
+				IN.FLAG.BIT.UP_SW = 0;									// 入力なし
 			}
 		}
 	}else{
 		IN.UP_SW.BIT.ON = 0;
-		if(IN.UP_SW.BIT.OFF < 10){										// 100ms�A��
+		if(IN.UP_SW.BIT.OFF < 10){										// 100ms連続
 			IN.UP_SW.BIT.OFF++;
-			if(IN.UP_SW.BIT.OFF == 10){									// 100ms�A��
-				IN.FLAG.BIT.UP_SW = 0;									// ���͂Ȃ�
+			if(IN.UP_SW.BIT.OFF == 10){									// 100ms連続
+				IN.FLAG.BIT.UP_SW = 0;									// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// ������		////////////////////////////////////////////////////////////////
+	// 下ｽｲｯﾁ		////////////////////////////////////////////////////////////////
 	if(DOWN_SW_IN){
 		IN.DOWN_SW.BIT.OFF = 0;
 		IN.DOWN_SW.BIT.ON++;
 		
 		if(SEQ.FLAG.BIT.POWER){
-			if(IN.DOWN_SW.BIT.ON >= 500){					// 5000ms�A��
+			if(IN.DOWN_SW.BIT.ON >= 500){					// 5000ms連続
 				IN.DOWN_SW.BIT.ON = 500;		
-				IN.FLAG.BIT.DOWN_SW = 1;					// ���͂���
-			}else if(IN.DOWN_SW.BIT.ON >= 400){				// 4000ms�A��
-				if(IN.DOWN_SW.BIT.ON % 5 == 0){				// �u5�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.DOWN_SW = 1;				// ���͂���
+				IN.FLAG.BIT.DOWN_SW = 1;					// 入力あり
+			}else if(IN.DOWN_SW.BIT.ON >= 400){				// 4000ms連続
+				if(IN.DOWN_SW.BIT.ON % 5 == 0){				// 「5」で割った余りが「0」のとき
+					IN.FLAG.BIT.DOWN_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.DOWN_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.DOWN_SW = 0;				// 入力なし
 				}
-			}else if(IN.DOWN_SW.BIT.ON >= 300){				// 3000ms�A��
-				if(IN.DOWN_SW.BIT.ON % 10 == 0){			// �u10�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.DOWN_SW = 1;				// ���͂���
+			}else if(IN.DOWN_SW.BIT.ON >= 300){				// 3000ms連続
+				if(IN.DOWN_SW.BIT.ON % 10 == 0){			// 「10」で割った余りが「0」のとき
+					IN.FLAG.BIT.DOWN_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.DOWN_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.DOWN_SW = 0;				// 入力なし
 				}
-			}else if(IN.DOWN_SW.BIT.ON >= 200){				// 2000ms�A��
-				if(IN.DOWN_SW.BIT.ON % 20 == 0){			// �u20�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.DOWN_SW = 1;				// ���͂���
+			}else if(IN.DOWN_SW.BIT.ON >= 200){				// 2000ms連続
+				if(IN.DOWN_SW.BIT.ON % 20 == 0){			// 「20」で割った余りが「0」のとき
+					IN.FLAG.BIT.DOWN_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.DOWN_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.DOWN_SW = 0;				// 入力なし
 				}
-			}else if(IN.DOWN_SW.BIT.ON >= 100){				// 1000ms�A��
-				if(IN.DOWN_SW.BIT.ON % 50 == 0){			// �u50�v�Ŋ������]�肪�u0�v�̂Ƃ�
-					IN.FLAG.BIT.DOWN_SW = 1;				// ���͂���
+			}else if(IN.DOWN_SW.BIT.ON >= 100){				// 1000ms連続
+				if(IN.DOWN_SW.BIT.ON % 50 == 0){			// 「50」で割った余りが「0」のとき
+					IN.FLAG.BIT.DOWN_SW = 1;				// 入力あり
 				}else{
-					IN.FLAG.BIT.DOWN_SW = 0;				// ���͂Ȃ�
+					IN.FLAG.BIT.DOWN_SW = 0;				// 入力なし
 				}
-			}else if(IN.DOWN_SW.BIT.ON == 50){				// 500ms�A��
-				IN.FLAG.BIT.DOWN_SW = 1;					// ���͂���
-			}else if(IN.DOWN_SW.BIT.ON == 10){				// 100ms�A��
-				IN.FLAG.BIT.DOWN_SW = 1;					// ���͂���
+			}else if(IN.DOWN_SW.BIT.ON == 50){				// 500ms連続
+				IN.FLAG.BIT.DOWN_SW = 1;					// 入力あり
+			}else if(IN.DOWN_SW.BIT.ON == 10){				// 100ms連続
+				IN.FLAG.BIT.DOWN_SW = 1;					// 入力あり
 			}else{
-				IN.FLAG.BIT.DOWN_SW = 0;					// ���͂Ȃ�
+				IN.FLAG.BIT.DOWN_SW = 0;					// 入力なし
 			}
 			
-			if(IN.FLAG.BIT.DOWN_SW == 1){								// ���͂���̂Ƃ�
+			if(IN.FLAG.BIT.DOWN_SW == 1){								// 入力ありのとき
 				if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-					if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){			// 2:�U��̂Ƃ�
+					if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){			// 2:振れのとき
 						if(SEQ.FLUTES != 0){
 							if(SEQ.SPINDLE_SPEED > SPINDLE_SPEED_MIN){
 								SEQ.SPINDLE_SPEED--;
@@ -504,42 +504,42 @@ void sw_input(void)
 							}
 						}
 						
-					}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){		// 3:�œ_�̂Ƃ�
+					}else if(SEQ.SELECT.BIT.MEASURE == MODE_FOCUS){		// 3:焦点のとき
 						if(SEQ.START_DELAY_TIME > 0){
 							SEQ.START_DELAY_TIME--;
 						}else{
 							SEQ.START_DELAY_TIME = 999;
 						}
 					}
-					led_measure_set();									// LED ����E�ݒ辯�
+					led_measure_set();									// LED 測定・設定ｾｯﾄ
 				}
-				IN.FLAG.BIT.DOWN_SW = 0;								// ���͂Ȃ�
+				IN.FLAG.BIT.DOWN_SW = 0;								// 入力なし
 			}
 		}
 	}else{
 		IN.DOWN_SW.BIT.ON = 0;
-		if(IN.DOWN_SW.BIT.OFF < 10){									// 100ms�A��
+		if(IN.DOWN_SW.BIT.OFF < 10){									// 100ms連続
 			IN.DOWN_SW.BIT.OFF++;
-			if(IN.DOWN_SW.BIT.OFF == 10){								// 100ms�A��
-				IN.FLAG.BIT.DOWN_SW = 0;								// ���͂Ȃ�
+			if(IN.DOWN_SW.BIT.OFF == 10){								// 100ms連続
+				IN.FLAG.BIT.DOWN_SW = 0;								// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// ECO����(S9)		////////////////////////////////////////////////////////////
+	// ECOｽｲｯﾁ(S9)		////////////////////////////////////////////////////////////
 	if(ECO_SW_IN){
 		IN.ECO_SW.BIT.OFF = 0;
 		if(SEQ.POWER_STATUS == 1){
-			if(IN.ECO_SW.BIT.ON < 100){								// 1s�A��
+			if(IN.ECO_SW.BIT.ON < 100){								// 1s連続
 				IN.ECO_SW.BIT.ON++;
-				if(IN.ECO_SW.BIT.ON == 100){						// 1s�A��
-					IN.FLAG.BIT.ECO_SW = 1;							// ���͂���
+				if(IN.ECO_SW.BIT.ON == 100){						// 1s連続
+					IN.FLAG.BIT.ECO_SW = 1;							// 入力あり
 					if(SEQ.FLAG.BIT.POWER){
 						if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-							SEQ.FLAG.BIT.ECO = !SEQ.FLAG.BIT.ECO;	// ECO(��Ԕ��])
+							SEQ.FLAG.BIT.ECO = !SEQ.FLAG.BIT.ECO;	// ECO(状態反転)
 							LED.MSP.BIT.ECO = SEQ.FLAG.BIT.ECO;
-							SEQ.FLAG.BIT.POWER_ON = 1;				// �d��ON�׸ނ��
+							SEQ.FLAG.BIT.POWER_ON = 1;				// 電源ONﾌﾗｸﾞをｾｯﾄ
 						}
 					}
 				}
@@ -547,23 +547,23 @@ void sw_input(void)
 		}
 	}else{
 		IN.ECO_SW.BIT.ON = 0;
-		if(IN.ECO_SW.BIT.OFF < 100){								// 1s�A��
+		if(IN.ECO_SW.BIT.OFF < 100){								// 1s連続
 			IN.ECO_SW.BIT.OFF++;
-			if(IN.ECO_SW.BIT.OFF == 100){							// 1s�A��
-				IN.FLAG.BIT.ECO_SW = 0;								// ���͂Ȃ�
+			if(IN.ECO_SW.BIT.OFF == 100){							// 1s連続
+				IN.FLAG.BIT.ECO_SW = 0;								// 入力なし
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// ��ް�����J		////////////////////////////////////////////////////////////
+	// ｶﾊﾞｰｽｲｯﾁ開		////////////////////////////////////////////////////////////
 	if(!(COVER_OPEN_IN)){
 		IN.COVER_OPEN.BIT.OFF = 0;
-		if(IN.COVER_OPEN.BIT.ON < 10){					// 100ms�A��
+		if(IN.COVER_OPEN.BIT.ON < 10){					// 100ms連続
 			IN.COVER_OPEN.BIT.ON++;
-			if(IN.COVER_OPEN.BIT.ON == 10){				// 100ms�A��
-				IN.FLAG.BIT.COVER_OPEN = 1;				// ���͂���
-				COM0.NO310.BIT.CSO = 1;					// �ߐھݻ1(��ްOPEN)
+			if(IN.COVER_OPEN.BIT.ON == 10){				// 100ms連続
+				IN.FLAG.BIT.COVER_OPEN = 1;				// 入力あり
+				COM0.NO310.BIT.CSO = 1;					// 近接ｾﾝｻ1(ｶﾊﾞｰOPEN)
 // add 2016.07.26 K.Uemura start	G72601
 				SEQ.MSEC_BUFFER[0][3] = SEQ.MSEC_COUNTER;
 // add 2016.07.26 K.Uemura end
@@ -571,24 +571,24 @@ void sw_input(void)
 		}
 	}else{
 		IN.COVER_OPEN.BIT.ON = 0;
-		if(IN.COVER_OPEN.BIT.OFF < 10){					// 100ms�A��
+		if(IN.COVER_OPEN.BIT.OFF < 10){					// 100ms連続
 			IN.COVER_OPEN.BIT.OFF++;
-			if(IN.COVER_OPEN.BIT.OFF == 10){			// 100ms�A��
-				IN.FLAG.BIT.COVER_OPEN = 0;				// ���͂Ȃ�
-				COM0.NO310.BIT.CSO = 0;					// �ߐھݻ1(��ްOPEN)
+			if(IN.COVER_OPEN.BIT.OFF == 10){			// 100ms連続
+				IN.FLAG.BIT.COVER_OPEN = 0;				// 入力なし
+				COM0.NO310.BIT.CSO = 0;					// 近接ｾﾝｻ1(ｶﾊﾞｰOPEN)
 			}
 		}
 	}
 	////////////////////////////////////////////////////////////////////////////////
 	
-	// ��ް������		////////////////////////////////////////////////////////////
+	// ｶﾊﾞｰｽｲｯﾁ閉		////////////////////////////////////////////////////////////
 	if(!(COVER_CLOSE_IN)){
 		IN.COVER_CLOSE.BIT.OFF = 0;
-		if(IN.COVER_CLOSE.BIT.ON < 10){					// 100ms�A��
+		if(IN.COVER_CLOSE.BIT.ON < 10){					// 100ms連続
 			IN.COVER_CLOSE.BIT.ON++;
-			if(IN.COVER_CLOSE.BIT.ON == 10){			// 100ms�A��
-				IN.FLAG.BIT.COVER_CLOSE = 1;			// ���͂���
-				COM0.NO310.BIT.CSC = 1;					// �ߐھݻ2(��ްCLOSE)
+			if(IN.COVER_CLOSE.BIT.ON == 10){			// 100ms連続
+				IN.FLAG.BIT.COVER_CLOSE = 1;			// 入力あり
+				COM0.NO310.BIT.CSC = 1;					// 近接ｾﾝｻ2(ｶﾊﾞｰCLOSE)
 //// add 2016.07.26 K.Uemura start	G72601
 //				SEQ.MSEC_BUFFER[0][3] = SEQ.MSEC_COUNTER;
 //// add 2016.07.26 K.Uemura end
@@ -596,11 +596,11 @@ void sw_input(void)
 		}
 	}else{
 		IN.COVER_CLOSE.BIT.ON = 0;
-		if(IN.COVER_CLOSE.BIT.OFF < 10){				// 100ms�A��
+		if(IN.COVER_CLOSE.BIT.OFF < 10){				// 100ms連続
 			IN.COVER_CLOSE.BIT.OFF++;
-			if(IN.COVER_CLOSE.BIT.OFF == 10){			// 100ms�A��
-				IN.FLAG.BIT.COVER_CLOSE = 0;			// ���͂Ȃ�
-				COM0.NO310.BIT.CSC = 0;					// �ߐھݻ2(��ްCLOSE)
+			if(IN.COVER_CLOSE.BIT.OFF == 10){			// 100ms連続
+				IN.FLAG.BIT.COVER_CLOSE = 0;			// 入力なし
+				COM0.NO310.BIT.CSC = 0;					// 近接ｾﾝｻ2(ｶﾊﾞｰCLOSE)
 			}
 		}
 	}
@@ -608,7 +608,7 @@ void sw_input(void)
 }
 
 //************************************************************/
-//				LED �߰�ΰ��޾��
+//				LED ﾋﾟｰｸﾎｰﾙﾄﾞｾｯﾄ
 //************************************************************/
 void led_peakhold_set(void)
 {
@@ -628,11 +628,11 @@ void led_peakhold_set(void)
 }
 
 //************************************************************/
-//				LED ����E�ݒ辯�
+//				LED 測定・設定ｾｯﾄ
 //************************************************************/
 void led_measure_set(void)
 {
-	// �߰���ٔłɌ�����s
+	// ﾎﾟｰﾀﾌﾞﾙ版に限り実行
 	if(IN.FLAG.BIT.HARDWARE_TYPE != PORTABLE_EDITION){
 		return;
 	}
@@ -649,36 +649,36 @@ void led_measure_set(void)
 	LED.SEG_BUF[14]	= ' ';
 	
 	switch(SEQ.SELECT.BIT.MEASURE){
-		case MODE_D4_LOW:						// d��4
+		case MODE_D4_LOW:						// d≦4
 			LED.MSP.BIT.LESS = 1;
-			// ���Ұ��l���ꎞ�ް��ɺ�߰����
-			disp_flutes();						// �n���\��
+			// ﾊﾟﾗﾒｰﾀ値を一時ﾃﾞｰﾀにｺﾋﾟｰする
+			disp_flutes();						// 刃数表示
 			break;
 			
-		case MODE_D4_AUTO:						// d��4 ����
+		case MODE_D4_AUTO:						// d＞4 自動
 			LED.MSP.BIT.GREATER = 1;
 			break;
 			
-		case MODE_RUNOUT:						// �U��
+		case MODE_RUNOUT:						// 振れ
 			LED.MSP.BIT.RUN_OUT = 1;
-			// ���Ұ��l���ꎞ�ް��ɺ�߰����
-			disp_flutes();						// �n���\��
+			// ﾊﾟﾗﾒｰﾀ値を一時ﾃﾞｰﾀにｺﾋﾟｰする
+			disp_flutes();						// 刃数表示
 
 			if(SEQ.FLUTES == 0){
 				LED.SEG_BUF[11]	= '-';
 				LED.SEG_BUF[12]	= '-';
 				LED.SEG_BUF[13]	= '-';
 			}else{
-				disp_spindle_speed();			// ��]���\��
+				disp_spindle_speed();			// 回転数表示
 			}
 			break;
 			
-		case MODE_FOCUS:						// �œ_���킹
+		case MODE_FOCUS:						// 焦点合わせ
 			LED.MSP.BIT.FOCUS = 1;
-			disp_stay_delay_time();				// �v���J�n�x�����ԕ\��
+			disp_stay_delay_time();				// 計測開始遅延時間表示
 			break;
 			
-		case MODE_CENTER:						// ���S�ʒu�ݒ�
+		case MODE_CENTER:						// 中心位置設定
 			LED.MSP.BIT.CENTER = 1;
 			break;
 			
@@ -686,7 +686,7 @@ void led_measure_set(void)
 }
 
 //************************************************************/
-//				��]���\��
+//				回転数表示
 //************************************************************/
 void disp_spindle_speed(void)
 {
@@ -696,7 +696,7 @@ void disp_spindle_speed(void)
 }
 
 //************************************************************/
-//				�n���\��
+//				刃数表示
 //************************************************************/
 void disp_flutes(void)
 {
@@ -704,11 +704,11 @@ void disp_flutes(void)
 }
 
 //************************************************************/
-//				�v���J�n�x�����ԕ\��
+//				計測開始遅延時間表示
 //************************************************************/
 void disp_stay_delay_time(void)
 {
-	// �v�����Ă��Ȃ��Ƃ��̂ݕ\������
+	// 計測していないときのみ表示する
 	if(SEQ.FLAG.BIT.MEASUREMENT == 0){
 		LED.SEG_BUF[11]	= (((SEQ.START_DELAY_TIME / 100) % 10) + 0x30);
 		LED.SEG_BUF[12]	= (((SEQ.START_DELAY_TIME / 10) % 10) + 0x30);

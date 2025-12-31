@@ -1,4 +1,4 @@
-/******************************************************************************
+ï»¿/******************************************************************************
 * File Name	: fpga_hdi_check.c
 ******************************************************************************/
 #include <machine.h>
@@ -11,97 +11,97 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void send_to_fpga_hdi_check(void);				// FPGA‚Ö‚ÌÃÞ°À‘—MŠÖ”(HDIo—ÍŒŸ¸)
+void send_to_fpga_hdi_check(void);				// FPGAã¸ã®ï¾ƒï¾žï½°ï¾€é€ä¿¡é–¢æ•°(HDIå‡ºåŠ›æ¤œæŸ»)
 
 //************************************************************/
-//				FPGA‚Ö‚ÌÃÞ°À‘—MŠÖ”(‹ó‰ñ‚µ)
-//	1 ¨ EEE ¨ 8 ¨ ³íI—¹[ 9]send_to_fpga_measure_stop()
-//	                    11 ¨ 14 ¨ 15 ¨ 16 ¨ 11
-//	                                            21 ¨ 11
+//				FPGAã¸ã®ï¾ƒï¾žï½°ï¾€é€ä¿¡é–¢æ•°(ç©ºå›žã—)
+//	1 â†’ ãƒ»ãƒ»ãƒ» â†’ 8 â†’ æ­£å¸¸çµ‚äº†[ 9]send_to_fpga_measure_stop()
+//	                    11 â†’ 14 â†’ 15 â†’ 16 â†’ 11
+//	                                            21 â†’ 11
 //	                                                  2
-//	                          31 ¨ EEE ¨ 39 ¨ 1
+//	                          31 â†’ ãƒ»ãƒ»ãƒ» â†’ 39 â†’ 1
 //	
 //************************************************************/
-// HDIo—ÍŒŸ¸
-// LEDÁ“”ó‘Ô‚ÅŒv‘ª‚ðs‚¢AHDIo—Í‚ðŠm”F‚·‚é
+// HDIå‡ºåŠ›æ¤œæŸ»
+// LEDæ¶ˆç¯çŠ¶æ…‹ã§è¨ˆæ¸¬ã‚’è¡Œã„ã€HDIå‡ºåŠ›ã‚’ç¢ºèªã™ã‚‹
 void send_to_fpga_hdi_check(void)
 {
 	_UDWORD hdi;
 	
 	switch(SEQ.FPGA_SEND_STATUS){
-		// RX ¨ FPGA‚ÉÃÞ°À‘—M
-		// C_PRIO‚ðuHv‚É‚·‚é
+		// RX â†’ FPGAã«ï¾ƒï¾žï½°ï¾€é€ä¿¡
+		// C_PRIOã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 1:
-			//if(F_PRIO_IN == 0){							// F_PRIO_IN‚ªuLv‚Ì‚Æ‚«
-				SEQ.HDI_CHECK_COUNT = 0;					// HDIÁª¯¸¶³ÝÄ‚ðØ¾¯Ä
-				SEQ.FLAG6.BIT.HDI_CHECK_OK = 0;				// HDIÁª¯¸OKÌ×¸Þ
-				SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 0;		// HDIÁª¯¸Š®—¹Ì×¸Þ
+			//if(F_PRIO_IN == 0){							// F_PRIO_INãŒã€ŒLã€ã®ã¨ã
+				SEQ.HDI_CHECK_COUNT = 0;					// HDIï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾„ã‚’ï¾˜ï½¾ï½¯ï¾„
+				SEQ.FLAG6.BIT.HDI_CHECK_OK = 0;				// HDIï¾ï½ªï½¯ï½¸OKï¾Œï¾—ï½¸ï¾ž
+				SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 0;		// HDIï¾ï½ªï½¯ï½¸å®Œäº†ï¾Œï¾—ï½¸ï¾ž
 				
 				C_PRIO_OUT	= 1;							// C_PRIO
-				SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+				SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			//}
 			break;
 			
-		// Îß°Ä‚ðo—Í‚ÉÝ’è‚·‚é
+		// ï¾Žï¾Ÿï½°ï¾„ã‚’å‡ºåŠ›ã«è¨­å®šã™ã‚‹
 		case 2:
-			bus_to_out();							// ÊÞ½‚ðo—Í‚ÉÝ’è
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			bus_to_out();							// ï¾Šï¾žï½½ã‚’å‡ºåŠ›ã«è¨­å®š
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// ºÏÝÄÞÊÞ½EÃÞ°ÀÊÞ½‚ðÝ’è‚·‚é
+		// ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½ãƒ»ï¾ƒï¾žï½°ï¾€ï¾Šï¾žï½½ã‚’è¨­å®šã™ã‚‹
 		case 3:
-			send_to_cbus(SEQ.CBUS_NUMBER);			// ºÏÝÄÞÅÝÊÞ°o—Í
-			send_to_dbus_zero();					// ÃÞ°Ào—ÍŠÖ”0
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			send_to_cbus(SEQ.CBUS_NUMBER);			// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›
+			send_to_dbus_zero();					// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_ACK‚ðuHv‚É‚·‚é
+		// C_ACKã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 4:
 			C_ACK_OUT	= 1;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_ACK‚ðuLv‚É‚·‚é
+		// C_ACKã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 5:
 			C_ACK_OUT	= 0;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_PRIOEºÏÝÄÞÊÞ½EÃÞ°ÀÊÞ½‚ðuLv‚É‚·‚é
+		// C_PRIOãƒ»ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½ãƒ»ï¾ƒï¾žï½°ï¾€ï¾Šï¾žï½½ã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 6:
-			send_to_cbus_zero();					// ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”0
-			send_to_dbus_zero();					// ÃÞ°Ào—ÍŠÖ”0
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			send_to_cbus_zero();					// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°0
+			send_to_dbus_zero();					// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// Îß°Ä‚ð“ü—Í‚ÉÝ’è‚·‚é
+		// ï¾Žï¾Ÿï½°ï¾„ã‚’å…¥åŠ›ã«è¨­å®šã™ã‚‹
 		case 7:
-			bus_to_in();							// ÊÞ½‚ð“ü—Í‚ÉÝ’è
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			bus_to_in();							// ï¾Šï¾žï½½ã‚’å…¥åŠ›ã«è¨­å®š
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_PRIO‚ðuLv‚É‚·‚é
+		// C_PRIOã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 8:
 			C_PRIO_OUT	= 0;						// C_PRIO
-			if(SEQ.CBUS_NUMBER == 390){				// Žw—ßºÏÝÄÞ‚ª‘Ò‹@‚Ì‚Æ‚«
-				SEQ.FLAG.BIT.AFTER_STOPPING = 1;	// Œv‘ª’âŽ~Œã1»²¸ÙŽæ“¾Ì×¸Þ
-				SEQ.CHANGE_FPGA = 9;		// Œv‘ª’âŽ~
+			if(SEQ.CBUS_NUMBER == 390){				// æŒ‡ä»¤ï½ºï¾ï¾ï¾„ï¾žãŒå¾…æ©Ÿã®ã¨ã
+				SEQ.FLAG.BIT.AFTER_STOPPING = 1;	// è¨ˆæ¸¬åœæ­¢å¾Œ1ï½»ï½²ï½¸ï¾™å–å¾—ï¾Œï¾—ï½¸ï¾ž
+				SEQ.CHANGE_FPGA = 9;		// è¨ˆæ¸¬åœæ­¢
 			}
 			SEQ.FPGA_SEND_STATUS = 11;
 			break;
 	
-		// FPGA ¨ RX‚ÉÃÞ°À‘—M
-		// F_PRIO_IN‚ªuHv‚É‚È‚Á‚½‚çC_ACK‚ðuHv‚É‚·‚é
+		// FPGA â†’ RXã«ï¾ƒï¾žï½°ï¾€é€ä¿¡
+		// F_PRIO_INãŒã€ŒHã€ã«ãªã£ãŸã‚‰C_ACKã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 11:
 			if(C_PRIO_OUT == 1){
 				C_PRIO_OUT = 0;
 			}else if(F_PRIO_IN == 1){
-				SEQ.FPGA_RESTART_COUNT = 0;				// FPGAÄ½À°Ä¶³ÝÄ
+				SEQ.FPGA_RESTART_COUNT = 0;				// FPGAå†ï½½ï¾€ï½°ï¾„ï½¶ï½³ï¾ï¾„
 				SEQ.FPGA_SEND_STATUS = 14;
 				C_ACK_OUT	= 1;					// C_ACK
 				C_ACK_OUT	= 0;					// C_ACK
-			}else{	// 1msŠÔF_PRIO_IN‚ªu1v‚É‚È‚ç‚È‚¢‚Æ‚«ˆê’U’âŽ~‚·‚é
-				SEQ.FPGA_RESTART_COUNT++;				// FPGAÄ½À°Ä¶³ÝÄ
+			}else{	// 1msé–“F_PRIO_INãŒã€Œ1ã€ã«ãªã‚‰ãªã„ã¨ãä¸€æ—¦åœæ­¢ã™ã‚‹
+				SEQ.FPGA_RESTART_COUNT++;				// FPGAå†ï½½ï¾€ï½°ï¾„ï½¶ï½³ï¾ï¾„
 				if(SEQ.FPGA_RESTART_COUNT >= 1000){
 					SEQ.FPGA_SEND_STATUS = 31;
 				}
@@ -109,22 +109,22 @@ void send_to_fpga_hdi_check(void)
 			}
 			break;
 			
-		case 14:	// Š„‚èž‚ÝŒã
+		case 14:	// å‰²ã‚Šè¾¼ã¿å¾Œ
 			switch(SEQ.CBUS_NUMBER){
-				case 223:		// ½·¯Ìßo—Í
-					SEQ.FOCUSING_HDI = SEQ.INPUT_DBUS_LONG;			// Å“_‡‚í‚¹
-					hdi = (SEQ.FOCUSING_HDI >> 11) & 0x0000003F;	// 6ËÞ¯Ä•ª‚ÌÏ½¸
+				case 223:		// ï½½ï½·ï½¯ï¾Œï¾Ÿå‡ºåŠ›
+					SEQ.FOCUSING_HDI = SEQ.INPUT_DBUS_LONG;			// ç„¦ç‚¹åˆã‚ã›
+					hdi = (SEQ.FOCUSING_HDI >> 11) & 0x0000003F;	// 6ï¾‹ï¾žï½¯ï¾„åˆ†ã®ï¾ï½½ï½¸
 					
-					// HDIo—Í‚ÌŠm”F
-					if(hdi == 0x3F){								// HDIo—Í‚ª‘S‚ÄON‚Ì‚Æ‚«
-						SEQ.FLAG6.BIT.HDI_CHECK_OK = 1;				// HDIÁª¯¸OKÌ×¸Þ
-						SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 1;		// HDIÁª¯¸Š®—¹Ì×¸Þ
+					// HDIå‡ºåŠ›ã®ç¢ºèª
+					if(hdi == 0x3F){								// HDIå‡ºåŠ›ãŒå…¨ã¦ONã®ã¨ã
+						SEQ.FLAG6.BIT.HDI_CHECK_OK = 1;				// HDIï¾ï½ªï½¯ï½¸OKï¾Œï¾—ï½¸ï¾ž
+						SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 1;		// HDIï¾ï½ªï½¯ï½¸å®Œäº†ï¾Œï¾—ï½¸ï¾ž
 						SEQ.FLAG.BIT.MEASUREMENT = 0;
 					}else{
-						SEQ.HDI_CHECK_COUNT++;						// HDIÁª¯¸¶³ÝÄ
-						if(SEQ.HDI_CHECK_COUNT >= 1000){			// HDIÁª¯¸¶³ÝÄ‚ªu1000vˆÈã‚É‚È‚Á‚½‚ç
-							SEQ.HDI_CHECK_COUNT = 0;				// HDIÁª¯¸¶³ÝÄ‚ðØ¾¯Ä
-							SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 1;	// HDIÁª¯¸Š®—¹Ì×¸Þ
+						SEQ.HDI_CHECK_COUNT++;						// HDIï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾„
+						if(SEQ.HDI_CHECK_COUNT >= 1000){			// HDIï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾„ãŒã€Œ1000ã€ä»¥ä¸Šã«ãªã£ãŸã‚‰
+							SEQ.HDI_CHECK_COUNT = 0;				// HDIï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾„ã‚’ï¾˜ï½¾ï½¯ï¾„
+							SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 1;	// HDIï¾ï½ªï½¯ï½¸å®Œäº†ï¾Œï¾—ï½¸ï¾ž
 							SEQ.FLAG.BIT.MEASUREMENT = 0;
 						}
 					}
@@ -133,29 +133,29 @@ void send_to_fpga_hdi_check(void)
 			SEQ.FPGA_SEND_STATUS++;
 			break;
 			
-		// C_ACK‚ðuHv‚É‚·‚é
+		// C_ACKã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 15:
 			SEQ.FPGA_SEND_STATUS++;
 			C_ACK_OUT	= 1;							// C_ACK
 			break;
 			
-		// C_ACK‚ðuLv‚É‚·‚é
+		// C_ACKã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 16:
 			C_ACK_OUT	= 0;							// C_ACK
 			SEQ.FPGA_SEND_STATUS = 11;
 			
-			if(SEQ.CBUS_NUMBER == SEQ.LAST_CBUS_NUMBER){	// CBUSÅÝÊÞ°(1»²¸ÙÅI)‚Ì‚Æ‚«
+			if(SEQ.CBUS_NUMBER == SEQ.LAST_CBUS_NUMBER){	// CBUSï¾…ï¾ï¾Šï¾žï½°(1ï½»ï½²ï½¸ï¾™æœ€çµ‚)ã®ã¨ã
 				SEQ.FPGA_SEND_STATUS = 21;
 			}
 			break;
 			
-		// F_PRIO_IN‚ªuLv‚É‚È‚Á‚Ä‚¢‚é‚±‚Æ‚ðŠm”F‚·‚é
+		// F_PRIO_INãŒã€ŒLã€ã«ãªã£ã¦ã„ã‚‹ã“ã¨ã‚’ç¢ºèªã™ã‚‹
 		case 21:
 			SEQ.FPGA_SEND_STATUS = 11;
 			
-			if(F_PRIO_IN == 0){											// F_PRIO_IN‚ªuLv‚Ì‚Æ‚«
+			if(F_PRIO_IN == 0){											// F_PRIO_INãŒã€ŒLã€ã®ã¨ã
 				if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-					// ‘Ò‹@‚ð‘—M(390)
+					// å¾…æ©Ÿã‚’é€ä¿¡(390)
 					C_PRIO_OUT	= 1;									// C_PRIO
 					SEQ.CBUS_NUMBER = 390;
 					SEQ.FPGA_SEND_STATUS = 2;
@@ -164,64 +164,64 @@ void send_to_fpga_hdi_check(void)
 			break;
 			
 			//
-		// C_PRIO‚ðuHv‚É‚·‚é
+		// C_PRIOã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 31:
-			//if(F_PRIO_IN == 0){					// F_PRIO_IN‚ªuLv‚Ì‚Æ‚«
+			//if(F_PRIO_IN == 0){					// F_PRIO_INãŒã€ŒLã€ã®ã¨ã
 				C_PRIO_OUT	= 1;					// C_PRIO
-				SEQ.FPGA_SEND_STATUS++;				// ŽŸ‚Ö
+				SEQ.FPGA_SEND_STATUS++;				// æ¬¡ã¸
 			//}
 			break;
 			
-		// Îß°Ä‚ðo—Í‚ÉÝ’è‚·‚é
+		// ï¾Žï¾Ÿï½°ï¾„ã‚’å‡ºåŠ›ã«è¨­å®šã™ã‚‹
 		case 32:
-			bus_to_out();							// ÊÞ½‚ðo—Í‚ÉÝ’è
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			bus_to_out();							// ï¾Šï¾žï½½ã‚’å‡ºåŠ›ã«è¨­å®š
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// ºÏÝÄÞÊÞ½EÃÞ°ÀÊÞ½‚ðÝ’è‚·‚é
+		// ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½ãƒ»ï¾ƒï¾žï½°ï¾€ï¾Šï¾žï½½ã‚’è¨­å®šã™ã‚‹
 		case 33:
-			send_to_cbus(SEQ.CBUS_NUMBER);			// ºÏÝÄÞÅÝÊÞ°o—Í
-			send_to_dbus_zero();					// ÃÞ°Ào—ÍŠÖ”0
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			send_to_cbus(SEQ.CBUS_NUMBER);			// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›
+			send_to_dbus_zero();					// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_ACK‚ðuHv‚É‚·‚é
+		// C_ACKã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 34:
 			C_ACK_OUT	= 1;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_ACK‚ðuLv‚É‚·‚é
+		// C_ACKã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 35:
 			C_ACK_OUT	= 0;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_PRIOEºÏÝÄÞÊÞ½EÃÞ°ÀÊÞ½‚ðuLv‚É‚·‚é
+		// C_PRIOãƒ»ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½ãƒ»ï¾ƒï¾žï½°ï¾€ï¾Šï¾žï½½ã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 36:
-			send_to_cbus_zero();					// ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”0
-			send_to_dbus_zero();					// ÃÞ°Ào—ÍŠÖ”0
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			send_to_cbus_zero();					// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°0
+			send_to_dbus_zero();					// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// Îß°Ä‚ð“ü—Í‚ÉÝ’è‚·‚é
+		// ï¾Žï¾Ÿï½°ï¾„ã‚’å…¥åŠ›ã«è¨­å®šã™ã‚‹
 		case 37:
-			bus_to_in();							// ÊÞ½‚ð“ü—Í‚ÉÝ’è
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+			bus_to_in();							// ï¾Šï¾žï½½ã‚’å…¥åŠ›ã«è¨­å®š
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			break;
 			
-		// C_PRIO‚ðuLv‚É‚·‚é
+		// C_PRIOã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 38:
 			C_PRIO_OUT	= 0;						// C_PRIO
 			SEQ.CBUS_NUMBER = 394;
-			SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
-			SEQ.FPGA_RESTART_COUNT = 0;				// FPGAÄ½À°Ä¶³ÝÄ
+			SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
+			SEQ.FPGA_RESTART_COUNT = 0;				// FPGAå†ï½½ï¾€ï½°ï¾„ï½¶ï½³ï¾ï¾„
 			break;
 			//
 			
-		// 1ms‘Ò‹@
+		// 1mså¾…æ©Ÿ
 		case 39:
-			SEQ.FPGA_RESTART_COUNT++;				// FPGAÄ½À°Ä¶³ÝÄ
+			SEQ.FPGA_RESTART_COUNT++;				// FPGAå†ï½½ï¾€ï½°ï¾„ï½¶ï½³ï¾ï¾„
 			if(SEQ.FPGA_RESTART_COUNT >= 1000){
 				SEQ.FPGA_SEND_STATUS = 1;
 			}

@@ -1,4 +1,4 @@
-/******************************************************************************
+ï»¿/******************************************************************************
 * File Name	: fpga.c
 ******************************************************************************/
 #include <machine.h>
@@ -11,80 +11,80 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void send_to_fpga3(void);				// ÌÞ×¯¸Áª¯¸EÎÜ²ÄÁª¯¸E×²Ý¾Ý»Áª¯¸E’²Œõ
-void bus_to_in(void);					// ÊÞ½“ü—Í•ÏXŠÖ”
-void bus_to_out(void);					// ÊÞ½o—Í•ÏXŠÖ”
-_UWORD from_cbus(void);					// ºÏÝÄÞÅÝÊÞ°“ü—ÍŠÖ”
-_UDWORD from_dbus(void);				// ÃÞ°À“ü—ÍŠÖ”
-void send_to_cbus_zero(void);			// ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”0
-void send_to_dbus_zero(void);			// ÃÞ°Ào—ÍŠÖ”0
-void send_to_cbus(_UWORD w_data);		// ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”
-void send_to_dbus(_UDWORD w_data);		// ÃÞ°Ào—ÍŠÖ”
+void send_to_fpga3(void);				// ï¾Œï¾žï¾—ï½¯ï½¸ï¾ï½ªï½¯ï½¸ãƒ»ï¾Žï¾œï½²ï¾„ï¾ï½ªï½¯ï½¸ãƒ»ï¾—ï½²ï¾ï½¾ï¾ï½»ï¾ï½ªï½¯ï½¸ãƒ»èª¿å…‰
+void bus_to_in(void);					// ï¾Šï¾žï½½å…¥åŠ›å¤‰æ›´é–¢æ•°
+void bus_to_out(void);					// ï¾Šï¾žï½½å‡ºåŠ›å¤‰æ›´é–¢æ•°
+_UWORD from_cbus(void);					// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å…¥åŠ›é–¢æ•°
+_UDWORD from_dbus(void);				// ï¾ƒï¾žï½°ï¾€å…¥åŠ›é–¢æ•°
+void send_to_cbus_zero(void);			// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°0
+void send_to_dbus_zero(void);			// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
+void send_to_cbus(_UWORD w_data);		// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°
+void send_to_dbus(_UDWORD w_data);		// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°
 
 //************************************************************/
-//				FPGA‚Ö‚ÌÃÞ°À‘—MŠÖ”(ÌÞ×¯¸EÎÜ²Ä)
+//				FPGAã¸ã®ï¾ƒï¾žï½°ï¾€é€ä¿¡é–¢æ•°(ï¾Œï¾žï¾—ï½¯ï½¸ãƒ»ï¾Žï¾œï½²ï¾„)
 //************************************************************/
-// ÌÞ×¯¸Áª¯¸EÎÜ²ÄÁª¯¸E×²Ý¾Ý»Áª¯¸E’²Œõ
+// ï¾Œï¾žï¾—ï½¯ï½¸ï¾ï½ªï½¯ï½¸ãƒ»ï¾Žï¾œï½²ï¾„ï¾ï½ªï½¯ï½¸ãƒ»ï¾—ï½²ï¾ï½¾ï¾ï½»ï¾ï½ªï½¯ï½¸ãƒ»èª¿å…‰
 void send_to_fpga3(void)
 {
 	switch(SEQ.FPGA_SEND_STATUS){
-		// RX ¨ FPGA‚ÉÃÞ°À‘—M
-		// C_PRIO‚ðuHv‚É‚·‚é
+		// RX â†’ FPGAã«ï¾ƒï¾žï½°ï¾€é€ä¿¡
+		// C_PRIOã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 1:
-			//if(F_PRIO_IN == 0){						// F_PRIO_IN‚ªuLv‚Ì‚Æ‚«
+			//if(F_PRIO_IN == 0){						// F_PRIO_INãŒã€ŒLã€ã®ã¨ã
 				C_PRIO_OUT	= 1;						// C_PRIO
-				SEQ.FPGA_SEND_STATUS++;					// ŽŸ‚Ö
+				SEQ.FPGA_SEND_STATUS++;					// æ¬¡ã¸
 			//}
 			break;
 			
-		// Îß°Ä‚ðo—Í‚ÉÝ’è‚·‚é
+		// ï¾Žï¾Ÿï½°ï¾„ã‚’å‡ºåŠ›ã«è¨­å®šã™ã‚‹
 		case 2:
-			bus_to_out();								// ÊÞ½‚ðo—Í‚ÉÝ’è
-			send_to_cbus_zero();						// ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”0
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			bus_to_out();								// ï¾Šï¾žï½½ã‚’å‡ºåŠ›ã«è¨­å®š
+			send_to_cbus_zero();						// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°0
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
-		// ºÏÝÄÞÊÞ½EÃÞ°ÀÊÞ½‚ðÝ’è‚·‚é
+		// ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½ãƒ»ï¾ƒï¾žï½°ï¾€ï¾Šï¾žï½½ã‚’è¨­å®šã™ã‚‹
 		case 3:
-			send_to_cbus(SEQ.CBUS_NUMBER);				// ºÏÝÄÞÅÝÊÞ°o—Í
-			send_to_dbus_zero();						// ÃÞ°Ào—ÍŠÖ”0
+			send_to_cbus(SEQ.CBUS_NUMBER);				// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›
+			send_to_dbus_zero();						// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
 			
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
-		// C_ACK‚ðuHv‚É‚·‚é
+		// C_ACKã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 4:
 			C_ACK_OUT	= 1;							// C_ACK
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
-		// C_ACK‚ðuLv‚É‚·‚é
+		// C_ACKã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 5:
 			C_ACK_OUT	= 0;							// C_ACK
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
-		// ºÏÝÄÞÊÞ½EÃÞ°ÀÊÞ½‚ðuLv‚É‚·‚é
+		// ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½ãƒ»ï¾ƒï¾žï½°ï¾€ï¾Šï¾žï½½ã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 6:
-			send_to_cbus_zero();						// ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”0
-			send_to_dbus_zero();						// ÃÞ°Ào—ÍŠÖ”0
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			send_to_cbus_zero();						// ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°0
+			send_to_dbus_zero();						// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
-		// Îß°Ä‚ð“ü—Í‚ÉÝ’è‚·‚é
+		// ï¾Žï¾Ÿï½°ï¾„ã‚’å…¥åŠ›ã«è¨­å®šã™ã‚‹
 		case 7:
-			bus_to_in();								// ÊÞ½‚ð“ü—Í‚ÉÝ’è
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			bus_to_in();								// ï¾Šï¾žï½½ã‚’å…¥åŠ›ã«è¨­å®š
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
-		// C_PRIO‚ðuLv‚É‚·‚é
+		// C_PRIOã‚’ã€ŒLã€ã«ã™ã‚‹
 		case 8:
 			C_PRIO_OUT	= 0;							// C_PRIO
 			SEQ.FPGA_SEND_STATUS = 11;
 			break;
 			
-		// FPGA ¨ RX‚ÉÃÞ°À‘—M
-		// F_PRIO_IN‚ªuHv‚É‚È‚Á‚½‚çC_ACK‚ðuHv‚É‚·‚é
+		// FPGA â†’ RXã«ï¾ƒï¾žï½°ï¾€é€ä¿¡
+		// F_PRIO_INãŒã€ŒHã€ã«ãªã£ãŸã‚‰C_ACKã‚’ã€ŒHã€ã«ã™ã‚‹
 		case 11:
 			if(F_PRIO_IN == 1){
 				SEQ.FPGA_SEND_STATUS++;
@@ -93,27 +93,27 @@ void send_to_fpga3(void)
 			break;
 			
 		case 12:
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			C_ACK_OUT	= 0;							// C_ACK
 			break;
 			
-		case 13:	// Š„‚èž‚Ý
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö
+		case 13:	// å‰²ã‚Šè¾¼ã¿
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸
 			break;
 			
 			
-		// C_INT_IN‚ªuHv‚É‚È‚Á‚½‚çALED‹P“xM†•ÔM‚Ì‚Æ‚«’l‚Ì”»’è‚ðs‚¤
+		// C_INT_INãŒã€ŒHã€ã«ãªã£ãŸã‚‰ã€LEDè¼åº¦ä¿¡å·è¿”ä¿¡ã®ã¨ãå€¤ã®åˆ¤å®šã‚’è¡Œã†
 		case 14:
-			if(C_INT_IN == 0){							// C_INT_IN‚ªuLv‚Ì‚Æ‚«
+			if(C_INT_IN == 0){							// C_INT_INãŒã€ŒLã€ã®ã¨ã
 				SEQ.FPGA_SEND_STATUS = 14;
 				
-			}else{										// C_INT_IN‚ªuHv‚Ì‚Æ‚«
-				if(SEQ.CBUS_NUMBER == 201){				// ÌÞ×¯¸ŒÅ’è’lÝ’èŠ®—¹‚Ì‚Æ‚«
-					SEQ.WHITE_CHECK_COUNT = 0;			// WHITEÁª¯¸¶³ÝÀ
-					SEQ.BLACK_WHITE_CHECK[SEQ.WHITE_CHECK_COUNT] = (SEQ.INPUT_DBUS_LONG & 0xFF);	// BLACKÁª¯¸EWHITEÁª¯¸‚ÌÃÞ°À(‰ºˆÊ8ËÞ¯Ä)
+			}else{										// C_INT_INãŒã€ŒHã€ã®ã¨ã
+				if(SEQ.CBUS_NUMBER == 201){				// ï¾Œï¾žï¾—ï½¯ï½¸å›ºå®šå€¤è¨­å®šå®Œäº†ã®ã¨ã
+					SEQ.WHITE_CHECK_COUNT = 0;			// WHITEï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾€
+					SEQ.BLACK_WHITE_CHECK[SEQ.WHITE_CHECK_COUNT] = (SEQ.INPUT_DBUS_LONG & 0xFF);	// BLACKï¾ï½ªï½¯ï½¸ãƒ»WHITEï¾ï½ªï½¯ï½¸ã®ï¾ƒï¾žï½°ï¾€(ä¸‹ä½8ï¾‹ï¾žï½¯ï¾„)
 					
-				}else if((SEQ.CBUS_NUMBER >= 204)&&(SEQ.CBUS_NUMBER <= 206)){						// ÎÜ²ÄŒÅ’è’lÝ’èŠ®—¹‚Ì‚Æ‚«
-					SEQ.BLACK_WHITE_CHECK[SEQ.WHITE_CHECK_COUNT] = (SEQ.INPUT_DBUS_LONG & 0xFF);	// BLACKÁª¯¸EWHITEÁª¯¸‚ÌÃÞ°À(‰ºˆÊ8ËÞ¯Ä)
+				}else if((SEQ.CBUS_NUMBER >= 204)&&(SEQ.CBUS_NUMBER <= 206)){						// ï¾Žï¾œï½²ï¾„å›ºå®šå€¤è¨­å®šå®Œäº†ã®ã¨ã
+					SEQ.BLACK_WHITE_CHECK[SEQ.WHITE_CHECK_COUNT] = (SEQ.INPUT_DBUS_LONG & 0xFF);	// BLACKï¾ï½ªï½¯ï½¸ãƒ»WHITEï¾ï½ªï½¯ï½¸ã®ï¾ƒï¾žï½°ï¾€(ä¸‹ä½8ï¾‹ï¾žï½¯ï¾„)
 				}
 				SEQ.FPGA_SEND_STATUS = 16;
 			}
@@ -123,26 +123,26 @@ void send_to_fpga3(void)
 			
 			/*
 		case 15:
-			SEQ.FPGA_SEND_STATUS++;						// ŽŸ‚Ö(Š„‚èž‚Ý‚ª‚·‚®‚É“ü‚é‰Â”\«‚ª‚ ‚é‚½‚ßA‚ ‚ç‚©‚¶‚ß½Ã°À½‚ði‚ß‚Ä‚¨‚­)
+			SEQ.FPGA_SEND_STATUS++;						// æ¬¡ã¸(å‰²ã‚Šè¾¼ã¿ãŒã™ãã«å…¥ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ãŸã‚ã€ã‚ã‚‰ã‹ã˜ã‚ï½½ï¾ƒï½°ï¾€ï½½ã‚’é€²ã‚ã¦ãŠã)
 			//C_ACK_OUT	= 1;							// C_ACK
 			break;
 			*/
 			
 		case 16:
 			//C_ACK_OUT	= 0;							// C_ACK
-			if(SEQ.CBUS_NUMBER == 201){					// ÌÞ×¯¸ŒÅ’è’lÝ’èŠ®—¹‚Ì‚Æ‚«
+			if(SEQ.CBUS_NUMBER == 201){					// ï¾Œï¾žï¾—ï½¯ï½¸å›ºå®šå€¤è¨­å®šå®Œäº†ã®ã¨ã
 				SEQ.FPGA_SEND_STATUS++;
 				SEQ.CHANGE_FPGA = 0;
-				SEQ.WHITE_CHECK_COUNT = 1;				// WHITEÁª¯¸¶³ÝÀ
+				SEQ.WHITE_CHECK_COUNT = 1;				// WHITEï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾€
 				SEQ.POWER_STATUS++;
 			}else if(SEQ.CBUS_NUMBER == 203){			// 
 				SEQ.FPGA_SEND_STATUS++;
 				SEQ.CHANGE_FPGA = 0;
 				SEQ.POWER_STATUS++;
-			}else if((SEQ.CBUS_NUMBER == 204)||(SEQ.CBUS_NUMBER == 205)){		// ÎÜ²Ä•½‹Ï’lEÎÜ²ÄÁª¯¸Å‘å’l
+			}else if((SEQ.CBUS_NUMBER == 204)||(SEQ.CBUS_NUMBER == 205)){		// ï¾Žï¾œï½²ï¾„å¹³å‡å€¤ãƒ»ï¾Žï¾œï½²ï¾„ï¾ï½ªï½¯ï½¸æœ€å¤§å€¤
 				SEQ.FPGA_SEND_STATUS = 11;
-				SEQ.WHITE_CHECK_COUNT++;				// WHITEÁª¯¸¶³ÝÀ
-			}else if(SEQ.CBUS_NUMBER == 206){			// ÎÜ²ÄÅ¬’l
+				SEQ.WHITE_CHECK_COUNT++;				// WHITEï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾€
+			}else if(SEQ.CBUS_NUMBER == 206){			// ï¾Žï¾œï½²ï¾„æœ€å°å€¤
 				SEQ.FPGA_SEND_STATUS++;
 				SEQ.CHANGE_FPGA = 0;
 				SEQ.POWER_STATUS++;
@@ -152,16 +152,16 @@ void send_to_fpga3(void)
 }
 
 //************************************************************/
-//				ÊÞ½“ü—Í•ÏXŠÖ”
+//				ï¾Šï¾žï½½å…¥åŠ›å¤‰æ›´é–¢æ•°
 //************************************************************/
 void bus_to_in(void)
 {
-	PORT9.DDR.BIT.B3	= 0;			// P93“ü—Í
-	PORTA.DDR.BYTE		= 0x00;			// PA0-A7“ü—Í
-	PORTB.DDR.BYTE		= 0x00;			// PB0-B7“ü—Í
-	PORTC.DDR.BYTE		= 0x00;			// PC0-C7“ü—Í
-	PORTD.DDR.BYTE		= 0x00;			// PD0-D7“ü—Í
-	PORTE.DDR.BYTE		= 0x00;			// PE0-E7“ü—Í
+	PORT9.DDR.BIT.B3	= 0;			// P93å…¥åŠ›
+	PORTA.DDR.BYTE		= 0x00;			// PA0-A7å…¥åŠ›
+	PORTB.DDR.BYTE		= 0x00;			// PB0-B7å…¥åŠ›
+	PORTC.DDR.BYTE		= 0x00;			// PC0-C7å…¥åŠ›
+	PORTD.DDR.BYTE		= 0x00;			// PD0-D7å…¥åŠ›
+	PORTE.DDR.BYTE		= 0x00;			// PE0-E7å…¥åŠ›
 	
 	PORT9.ICR.BIT.B3	= 1;		// 00001001
 	PORTA.ICR.BYTE		= 0xFF;		// 11111111
@@ -172,7 +172,7 @@ void bus_to_in(void)
 }
 
 //************************************************************/
-//				ÊÞ½o—Í•ÏXŠÖ”
+//				ï¾Šï¾žï½½å‡ºåŠ›å¤‰æ›´é–¢æ•°
 //************************************************************/
 void bus_to_out(void)
 {
@@ -183,16 +183,16 @@ void bus_to_out(void)
 	PORTD.ICR.BYTE		= 0x00;		// 11111111
 	PORTE.ICR.BYTE		= 0x00;		// 11111111
 	
-	PORT9.DDR.BIT.B3	= 1;			// P93o—Í
-	PORTA.DDR.BYTE		= 0xFF;			// PA0-A7o—Í
-	PORTB.DDR.BYTE		= 0xFF;			// PB0-B7o—Í
-	PORTC.DDR.BYTE		= 0xFF;			// PC0-C7o—Í
-	PORTD.DDR.BYTE		= 0xFF;			// PD0-D7o—Í
-	PORTE.DDR.BYTE		= 0xFF;			// PE0-E7o—Í
+	PORT9.DDR.BIT.B3	= 1;			// P93å‡ºåŠ›
+	PORTA.DDR.BYTE		= 0xFF;			// PA0-A7å‡ºåŠ›
+	PORTB.DDR.BYTE		= 0xFF;			// PB0-B7å‡ºåŠ›
+	PORTC.DDR.BYTE		= 0xFF;			// PC0-C7å‡ºåŠ›
+	PORTD.DDR.BYTE		= 0xFF;			// PD0-D7å‡ºåŠ›
+	PORTE.DDR.BYTE		= 0xFF;			// PE0-E7å‡ºåŠ›
 }
 
 //************************************************************/
-//				ºÏÝÄÞÅÝÊÞ°“ü—ÍŠÖ”
+//				ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å…¥åŠ›é–¢æ•°
 //************************************************************/
 _UWORD from_cbus(void)
 {
@@ -208,7 +208,7 @@ _UWORD from_cbus(void)
 }
 
 //************************************************************/
-//				ÃÞ°À“ü—ÍŠÖ”
+//				ï¾ƒï¾žï½°ï¾€å…¥åŠ›é–¢æ•°
 //************************************************************/
 _UDWORD from_dbus(void)
 {
@@ -231,12 +231,12 @@ _UDWORD from_dbus(void)
 }
 
 //************************************************************/
-//				ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”0
+//				ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°0
 //************************************************************/
 void send_to_cbus_zero(void)
 {
 	/*
-	// ºÏÝÄÞÊÞ½o—Í
+	// ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½å‡ºåŠ›
 	CBUS0_OUT = 0;
 	CBUS1_OUT = 0;
 	CBUS2_OUT = 0;
@@ -248,17 +248,17 @@ void send_to_cbus_zero(void)
 	CBUS8_OUT = 0;
 	*/
 	
-	PORTE.DR.BYTE = 0x00;			// CBUS0o—Í
+	PORTE.DR.BYTE = 0x00;			// CBUS0å‡ºåŠ›
 	CBUS8_OUT = 0;
 }
 
 //************************************************************/
-//				ÃÞ°Ào—ÍŠÖ”0
+//				ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°0
 //************************************************************/
 void send_to_dbus_zero(void)
 {
 	/*
-	// ÃÞ°Ào—Í
+	// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›
 	DBUS00_OUT = 0;
 	DBUS01_OUT = 0;
 	DBUS02_OUT = 0;
@@ -303,12 +303,12 @@ void send_to_dbus_zero(void)
 }
 
 //************************************************************/
-//				ºÏÝÄÞÅÝÊÞ°o—ÍŠÖ”
+//				ï½ºï¾ï¾ï¾„ï¾žï¾…ï¾ï¾Šï¾žï½°å‡ºåŠ›é–¢æ•°
 //************************************************************/
 void send_to_cbus(_UWORD w_data)
 {
 	/*
-	// ºÏÝÄÞÊÞ½o—Í
+	// ï½ºï¾ï¾ï¾„ï¾žï¾Šï¾žï½½å‡ºåŠ›
 	CBUS0_OUT = w_data & 0x01;
 	CBUS1_OUT = (w_data >> 1) & 0x01;
 	CBUS2_OUT = (w_data >> 2) & 0x01;
@@ -320,17 +320,17 @@ void send_to_cbus(_UWORD w_data)
 	CBUS8_OUT = (w_data >> 8) & 0x01;
 	*/
 	
-	PORTE.DR.BYTE = w_data & 0xFF;			// CBUS0o—Í
+	PORTE.DR.BYTE = w_data & 0xFF;			// CBUS0å‡ºåŠ›
 	CBUS8_OUT = (w_data >> 8) & 0x01;
 }
 
 //************************************************************/
-//				ÃÞ°Ào—ÍŠÖ”
+//				ï¾ƒï¾žï½°ï¾€å‡ºåŠ›é–¢æ•°
 //************************************************************/
 void send_to_dbus(_UDWORD w_data)
 {
 	/*
-	// ÃÞ°Ào—Í
+	// ï¾ƒï¾žï½°ï¾€å‡ºåŠ›
 	DBUS00_OUT = w_data & 0x01;
 	DBUS01_OUT = (w_data >> 1) & 0x01;
 	DBUS02_OUT = (w_data >> 2) & 0x01;

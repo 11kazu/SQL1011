@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: rs232_sci2.c
 ******************************************************************************/
 #include <stdint.h>
@@ -12,34 +12,34 @@
 #include <stdio.h>
 #include "lut.h"
 
-void sci2_init(void);						// RS232C�����ݒ�
+void sci2_init(void);						// RS232C初期設定
 
-void rs232c_master(void);					// Ҳݼ��ݽ�֐�
+void rs232c_master(void);					// ﾒｲﾝｼｰｹﾝｽ関数
 
-void rs232c_rxi(void);						// RS232C(SCI2)RXI(��M�ް��ي��荞��)
-void rs232c_txi(void);						// RS232C(SCI2)TXI(���M�ް�����è���荞��)
-void rs232c_tei(void);						// RS232C(SCI2)TEI(���M�I�����荞��)
+void rs232c_rxi(void);						// RS232C(SCI2)RXI(受信ﾃﾞｰﾀﾌﾙ割り込み)
+void rs232c_txi(void);						// RS232C(SCI2)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
+void rs232c_tei(void);						// RS232C(SCI2)TEI(送信終了割り込み)
 
-void rs232c_drive(void);					// RS232C����֐�
-void rs232c_drive_debug(void);				// RS232C����֐�(�f�o�b�O�o��)
+void rs232c_drive(void);					// RS232C制御関数
+void rs232c_drive_debug(void);				// RS232C制御関数(デバッグ出力)
 unsigned char get_number(unsigned long, unsigned char);
 void sci_puts(char);
 unsigned short get_voltage(unsigned short);
 
 //************************************************************/
-//				RS232C�����ݒ�(SCI2)
+//				RS232C初期設定(SCI2)
 //************************************************************/
 void sci2_init(void)
 {
-	MSTP(SCI2) = 0;			// RIIC0Ӽޭ�ٽį�߉���
+	MSTP(SCI2) = 0;			// RIIC0ﾓｼﾞｭｰﾙｽﾄｯﾌﾟ解除
 	
-	// ���荞�ݗv���֎~
+	// 割り込み要求禁止
 	IEN(SCI2, TEI2) = 0;
 	IEN(SCI2, ERI2) = 0;
 	IEN(SCI2, TXI2) = 0;
 	IEN(SCI2, RXI2) = 0;
 
-	IOPORT.PFFSCI.BIT.SCI2S = 1;		// P50-52��رْ[�q�Ƃ��Đݒ�
+	IOPORT.PFFSCI.BIT.SCI2S = 1;		// P50-52をｼﾘｱﾙ端子として設定
 	
 	SCI2.SCR.BYTE = 0x00;
 
@@ -60,25 +60,25 @@ void sci2_init(void)
 	
 	// BRR - Bit Rate Register
 	// 115200bps
-	//Bit Rate: (48MHz/(64*2^(-1)*115200bps))-1 = 12.0208 �� 12
+	//Bit Rate: (48MHz/(64*2^(-1)*115200bps))-1 = 12.0208 ≒ 12
 	SCI2.BRR = 12;			// 115200bps
 	//SCI2.BRR = 38;			// 38400bps
 	
-	delay_ms(1);			// 1�ޯĊ��ԑҋ@
+	delay_ms(1);			// 1ﾋﾞｯﾄ期間待機
 	
-	// ���荞�ݗD�����ِݒ�
+	// 割り込み優先ﾚﾍﾞﾙ設定
 	IPR(SCI2, TXI2) = 1;
 	IPR(SCI2, RXI2) = 1;
 	IPR(SCI2, TEI2) = 1;
 	IPR(SCI2, ERI2) = 1;
 	
-	// ���荞�ݗv���ر
+	// 割り込み要求ｸﾘｱ
 	IR(SCI2, TXI2) = 0;
 	IR(SCI2, RXI2) = 0;
 	IR(SCI2, TEI2) = 0;
 	IR(SCI2, ERI2) = 0;
 	
-	// ���荞�ݗv������
+	// 割り込み要求許可
 	IEN(SCI2, TXI2) = 1;
 	IEN(SCI2, RXI2) = 1;
 	IEN(SCI2, ERI2) = 1;
@@ -86,7 +86,7 @@ void sci2_init(void)
 }
 
 //************************************************************/
-//				Ҳݼ��ݽ�֐�					
+//				ﾒｲﾝｼｰｹﾝｽ関数					
 //************************************************************/
 void rs232c_master(void)
 {
@@ -113,29 +113,29 @@ void rs232c_master(void)
 }
 
 //************************************************************/
-//				RS232C(SCI2)RXI(��M�ް��ي��荞��)
+//				RS232C(SCI2)RXI(受信ﾃﾞｰﾀﾌﾙ割り込み)
 //************************************************************/
 void rs232c_rxi(void)
 {
 	_UBYTE temp;
 	
 	temp = SCI2.RDR;
-	// �uSTX�v����M�����綳�����u0�v�ɂ���
+	// 「STX」を受信したらｶｳﾝﾀを「0」にする
 	if(temp == STX)		COM2.RE_CONT = 0;
 	
 	COM2.RE_BUF[COM2.RE_CONT] = temp;
 	
-	if(temp != ETX){				// �uETX�v�ȊO����M�����綳����+1����
+	if(temp != ETX){				// 「ETX」以外を受信したらｶｳﾝﾀを+1する
 		COM2.RE_CONT++;
-	}else{							// �uETX�v����M�������M������~����
-		SCI2.SCR.BIT.RIE = 0;		// RXI�����ERI���荞�ݗv�����֎~
-		SCI2.SCR.BIT.RE = 0;		// �رَ�M������֎~
-		COM2.SUB_STATUS++;			// ����
+	}else{							// 「ETX」を受信したら受信動作を停止する
+		SCI2.SCR.BIT.RIE = 0;		// RXIおよびERI割り込み要求を禁止
+		SCI2.SCR.BIT.RE = 0;		// ｼﾘｱﾙ受信動作を禁止
+		COM2.SUB_STATUS++;			// 次へ
 	}
 }
 
 //************************************************************/
-//				RS232C(SCI2)TXI(���M�ް�����è���荞��)
+//				RS232C(SCI2)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
 //************************************************************/
 void rs232c_txi(void)
 {
@@ -146,41 +146,41 @@ void rs232c_txi(void)
 	temp = DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT];
 	
 	switch(DEBUG_STR.DEBUG_OUTPUT){
-		case 0:			// �޼��ْl�E��ׯ��l		// 0 ����3��
-			switch(COM2.WR_CONT){							// �������ݶ���(����)
-				case 1:		// �S�̈�
+		case 0:			// ﾃﾞｼﾞﾀﾙ値・ﾌﾞﾗｯｸ値		// 0 整数3桁
+			switch(COM2.WR_CONT){							// 書き込みｶｳﾝﾀ(内部)
+				case 1:		// 百の位
 					SCI2.TDR = ((DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] / 100) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 2:		// �\�̈�
+				case 2:		// 十の位
 					SCI2.TDR = ((DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] / 10) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 3:		// ��̈�
+				case 3:		// 一の位
 					SCI2.TDR = ((DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT]) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 4:		// ��ς܂���CR
-					if(DEBUG_STR.DEBUG_COUNT < 4095){		// 4095�����̂Ƃ�
+				case 4:		// ｶﾝﾏまたはCR
+					if(DEBUG_STR.DEBUG_COUNT < 4095){		// 4095未満のとき
 						SCI2.TDR = ',';
 						DEBUG_STR.DEBUG_COUNT++;
 					}else{
 						SCI2.TDR = CR;
-						SCI2.SCR.BIT.TIE = 0;				// TXI���荞�ݗv�����֎~
-						SCI2.SCR.BIT.TEIE = 1;				// TEI���荞�ݗv��������
+						SCI2.SCR.BIT.TIE = 0;				// TXI割り込み要求を禁止
+						SCI2.SCR.BIT.TEIE = 1;				// TEI割り込み要求を許可
 					}
-					COM2.WR_CONT = 1;						// �������ݶ���
+					COM2.WR_CONT = 1;						// 書き込みｶｳﾝﾀ
 					break;
 			}
 			break;
 
-		case 1:			// �����ς��ް�				// 1 �����E����1���E�����_3��
-			if(temp < 0)	temp *= -1;						// �l��ϲŽ�̂Ƃ��ꎞ�ް��𔽓]����
-			switch(COM2.WR_CONT){							// �������ݶ���(����)
-				case 1:		// ����
+		case 1:			// 処理済みﾃﾞｰﾀ				// 1 符号・整数1桁・小数点3桁
+			if(temp < 0)	temp *= -1;						// 値がﾏｲﾅｽのとき一時ﾃﾞｰﾀを反転する
+			switch(COM2.WR_CONT){							// 書き込みｶｳﾝﾀ(内部)
+				case 1:		// 符号
 					if(DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] < 0){
 						SCI2.TDR = '-';
 					}else{
@@ -191,122 +191,122 @@ void rs232c_txi(void)
 					COM2.WR_CONT++;
 					break;
 					
-				case 2:		// ��̈�
+				case 2:		// 一の位
 					SCI2.TDR = ((temp / 1000) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 3:		// �����_
+				case 3:		// 小数点
 					SCI2.TDR = '.';
 					COM2.WR_CONT++;
 					break;
 					
-				case 4:		// ��������
+				case 4:		// 小数第一位
 					SCI2.TDR = ((temp / 100) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 5:		// ��������
+				case 5:		// 小数第二位
 					SCI2.TDR = ((temp / 10) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 6:		// ������O��
+				case 6:		// 小数第三位
 					SCI2.TDR = ((temp) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 7:		// ��ς܂���CR
-					if(DEBUG_STR.DEBUG_COUNT < 4095){		// 4095�����̂Ƃ�
+				case 7:		// ｶﾝﾏまたはCR
+					if(DEBUG_STR.DEBUG_COUNT < 4095){		// 4095未満のとき
 						SCI2.TDR = ',';
 						DEBUG_STR.DEBUG_COUNT++;
 					}else{
 						SCI2.TDR = CR;
-						SCI2.SCR.BIT.TIE = 0;				// TXI���荞�ݗv�����֎~
-						SCI2.SCR.BIT.TEIE = 1;				// TEI���荞�ݗv��������
+						SCI2.SCR.BIT.TIE = 0;				// TXI割り込み要求を禁止
+						SCI2.SCR.BIT.TEIE = 1;				// TEI割り込み要求を許可
 					}
-					COM2.WR_CONT = 1;						// �������ݶ���
+					COM2.WR_CONT = 1;						// 書き込みｶｳﾝﾀ
 					break;
 			}
 			break;
 
-		case 2:			// �ܲĒl					// 2 ����3���E�����_3��
-			switch(COM2.WR_CONT){							// �������ݶ���(����)
-				case 1:		// �S�̈�
+		case 2:			// ﾎﾜｲﾄ値					// 2 整数3桁・小数点3桁
+			switch(COM2.WR_CONT){							// 書き込みｶｳﾝﾀ(内部)
+				case 1:		// 百の位
 					SCI2.TDR = ((temp / 100000) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 2:		// �\�̈�
+				case 2:		// 十の位
 					SCI2.TDR = ((temp / 10000) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 3:		// ��̈�
+				case 3:		// 一の位
 					SCI2.TDR = ((temp / 1000) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 4:		// �����_
+				case 4:		// 小数点
 					SCI2.TDR = '.';
 					COM2.WR_CONT++;
 					break;
 					
-				case 5:		// ��������
+				case 5:		// 小数第一位
 					SCI2.TDR = ((temp / 100) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 6:		// ��������
+				case 6:		// 小数第二位
 					SCI2.TDR = ((temp / 10) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 7:		// ������O��
+				case 7:		// 小数第三位
 					SCI2.TDR = ((temp) % 10 + 0x30);
 					COM2.WR_CONT++;
 					break;
 					
-				case 8:		// ��ς܂���CR
-					if(DEBUG_STR.DEBUG_COUNT < 4095){		// 4095�����̂Ƃ�
+				case 8:		// ｶﾝﾏまたはCR
+					if(DEBUG_STR.DEBUG_COUNT < 4095){		// 4095未満のとき
 						SCI2.TDR = ',';
 						DEBUG_STR.DEBUG_COUNT++;
 					}else{
 						SCI2.TDR = CR;
-						SCI2.SCR.BIT.TIE = 0;				// TXI���荞�ݗv�����֎~
-						SCI2.SCR.BIT.TEIE = 1;				// TEI���荞�ݗv��������
+						SCI2.SCR.BIT.TIE = 0;				// TXI割り込み要求を禁止
+						SCI2.SCR.BIT.TEIE = 1;				// TEI割り込み要求を許可
 					}
-					COM2.WR_CONT = 1;						// �������ݶ���
+					COM2.WR_CONT = 1;						// 書き込みｶｳﾝﾀ
 					break;
 			}
 			break;
 
 		case 10:
-			// �f�o�b�O�f�[�^�o��
-			switch(COM2.WR_CONT){							// �������ݶ���(����)
-				// �d��
+			// デバッグデータ出力
+			switch(COM2.WR_CONT){							// 書き込みｶｳﾝﾀ(内部)
+				// 電圧
 				case 1:
-					// �o�͕�����̐���
+					// 出力文字列の生成
 					memset(&SEQ.SIO_BUF[0],0,sizeof(SEQ.SIO_BUF));
 
-					// �d��
+					// 電圧
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%03d,",ADCOV.V_BATT);
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",get_voltage(ADCOV.V_BATT));
 
-					// �P�x
+					// 輝度
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DA.DADR0);
 
 #ifdef	___LOGGING_VOLTAGE_RESULT
-					// �H��a
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[10]);	// �H��a
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[23]);	// �G�b�W(��)�ŏ�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[21]);	// �G�b�W(��)�ő�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[24]);	// �G�b�W(�E)�ŏ�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[22]);	// �G�b�W(�E)�ő�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[33]);	// �X��(��)�ŏ�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[31]);	// �X��(��)�ő�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[34]);	// �X��(�E)�ŏ�
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[32]);	// �X��(�E)�ő�
+					// 工具径
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[10]);	// 工具径
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[23]);	// エッジ(左)最小
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[21]);	// エッジ(左)最大
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[24]);	// エッジ(右)最小
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05d,",DEBUG_STR.DEBUG[22]);	// エッジ(右)最大
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[33]);	// 傾き(左)最小
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[31]);	// 傾き(左)最大
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[34]);	// 傾き(右)最小
+					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DEBUG_STR.DEBUG[32]);	// 傾き(右)最大
 //					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%06.1f,",DEBUG_STR.DEBUG[10]);
 //					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05.2f,",DEBUG_STR.DEBUG[31]);
 //					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%05.2f,",DEBUG_STR.DEBUG[32]);
@@ -317,7 +317,7 @@ void rs232c_txi(void)
 #endif
 
 #ifdef	___LOGGING_INTERVAL_RESET
-					// �����p�����[�^
+					// 初期パラメータ
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%03d,",COM0.NO295);
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%03d,",COM0.NO296);
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%03d,",COM0.NO298);
@@ -336,7 +336,7 @@ void rs232c_txi(void)
 #ifdef	__INITIAL_SEQUENCE
 					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"\n");
 
-					// �����p�����[�^(�J��Ԃ�)
+					// 初期パラメータ(繰り返し)
 					/*
 					if(SEQ.FLAG.BIT.ECO == 0){
 						sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"NORMAL %3d / %2d:(%3d - %3d)\n",STD_LDV_TARGET, STD_LDV_RANGE, STD_LDV_TARGET-STD_LDV_RANGE, STD_LDV_TARGET+STD_LDV_RANGE);
@@ -382,10 +382,10 @@ void rs232c_txi(void)
 				// CR
 				case 10:
 					SCI2.TDR = CR;
-					SCI2.SCR.BIT.TIE = 0;				// TXI���荞�ݗv�����֎~
-					SCI2.SCR.BIT.TEIE = 1;				// TEI���荞�ݗv��������
-					COM2.WR_CONT = 1;					// �������ݶ���
-					COM2.SUB_STATUS++;					// ����
+					SCI2.SCR.BIT.TIE = 0;				// TXI割り込み要求を禁止
+					SCI2.SCR.BIT.TEIE = 1;				// TEI割り込み要求を許可
+					COM2.WR_CONT = 1;					// 書き込みｶｳﾝﾀ
+					COM2.SUB_STATUS++;					// 次へ
 					DEBUG_STR.DEBUG[10] = DEBUG_STR.DEBUG[21] = DEBUG_STR.DEBUG[22] = DEBUG_STR.DEBUG[31] = DEBUG_STR.DEBUG[32] = INITIAL_MIN;
 					DEBUG_STR.DEBUG[23] = DEBUG_STR.DEBUG[24] = DEBUG_STR.DEBUG[33] = DEBUG_STR.DEBUG[34] = INITIAL_MAX;
 					SEQ.FLAG5.BIT.DEB_SIOOUT_FLAG = 0;
@@ -407,18 +407,18 @@ void sci_puts(char str)
 }
 
 //************************************************************/
-//				RS232C(SCI2)TEI(���M�I�����荞��)
+//				RS232C(SCI2)TEI(送信終了割り込み)
 //************************************************************/
 void rs232c_tei(void)
 {
-	while(SCI2.SSR.BIT.TEND != 1){}				// TEND�׸ނ��u1�v�ɂȂ�܂őҋ@
+	while(SCI2.SSR.BIT.TEND != 1){}				// TENDﾌﾗｸﾞが「1」になるまで待機
 	
-	SCI2.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-	SCI2.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-	SCI2.SCR.BIT.TE = 0;						// �رّ��M������֎~
+	SCI2.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+	SCI2.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+	SCI2.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 	
-	SCI2.SCR.BIT.RIE = 1;						// RXI�����ERI���荞�ݗv��������
-	SCI2.SCR.BIT.RE = 1;						// �رَ�M���������
+	SCI2.SCR.BIT.RIE = 1;						// RXIおよびERI割り込み要求を許可
+	SCI2.SCR.BIT.RE = 1;						// ｼﾘｱﾙ受信動作を許可
 	
 #ifdef	OUTPUT232C
 	COM2.SUB_STATUS = 1;
@@ -428,65 +428,65 @@ void rs232c_tei(void)
 }
 
 //************************************************************/
-//				RS232C����֐�
+//				RS232C制御関数
 //************************************************************/
 void rs232c_drive(void)
 {
 	_UWORD i;
-	_UBYTE array[8] = {STX, 'M', 'O', 'D', 'E', '0', 0, ETX};	// ��M�ް��m�F�p�z��
+	_UBYTE array[8] = {STX, 'M', 'O', 'D', 'E', '0', 0, ETX};	// 受信ﾃﾞｰﾀ確認用配列
 	
 	switch(COM2.SUB_STATUS){
-		// ��M����̊J�n
+		// 受信動作の開始
 		case 1:
-			SCI2.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-			SCI2.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-			SCI2.SCR.BIT.TE = 0;						// �رّ��M������֎~
+			SCI2.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+			SCI2.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+			SCI2.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 			
-			SCI2.SCR.BIT.RIE = 1;						// RXI�����ERI���荞�ݗv��������
-			SCI2.SCR.BIT.RE = 1;						// �رَ�M���������
+			SCI2.SCR.BIT.RIE = 1;						// RXIおよびERI割り込み要求を許可
+			SCI2.SCR.BIT.RE = 1;						// ｼﾘｱﾙ受信動作を許可
 			
-			COM2.SUB_STATUS++;							// ����
+			COM2.SUB_STATUS++;							// 次へ
 			break;
 			
-		// ��M����̊��荞��
+		// 受信動作の割り込み
 		case 2:
 			break;
 			
-		// ��M����ނɉ�����FPGA�ɑ΂��ް����M�v�����s��
+		// 受信ｺﾏﾝﾄﾞに応じてFPGAに対しﾃﾞｰﾀ送信要求を行う
 		case 3:
-			// ��M����ނ̊m�F
+			// 受信ｺﾏﾝﾄﾞの確認
 			for(i = 0; i<=7; i++){
-				if(i != 6){								// i���u6�v�ȊO�̂Ƃ�
-					if(COM2.RE_BUF[i] == array[i]){		// ��M���e���������Ƃ�
-						if(i == 7){						// ��M����ނ��S�Đ������Ƃ�
-							COM2.SUB_STATUS++;			// ����
+				if(i != 6){								// iが「6」以外のとき
+					if(COM2.RE_BUF[i] == array[i]){		// 受信内容が正しいとき
+						if(i == 7){						// 受信ｺﾏﾝﾄﾞが全て正しいとき
+							COM2.SUB_STATUS++;			// 次へ
 							if(SEQ.CHANGE_FPGA == 0){
 // add 2016.10.20 K.Uemura start	GA2002
 								SEQ.BUFFER_NO_OLD = SEQ.BUFFER_NO_NEW = 0;
 // add 2016.10.20 K.Uemura end
 								SEQ.CHANGE_FPGA = 10;
 								SEQ.FPGA_SEND_STATUS = 1;
-								DEBUG_STR.DEBUG_COUNT = 0;	// ���ޯ�ޏo�͗p����
+								DEBUG_STR.DEBUG_COUNT = 0;	// ﾃﾞﾊﾞｯｸﾞ出力用ｶｳﾝﾀ
 							}
 						}
-					}else{								// ��M���e���قȂ�Ƃ��m�F���I������
+					}else{								// 受信内容が異なるとき確認を終了する
 						COM2.SUB_STATUS = 1;
 						break;
 					}
-				}else{									// i���u6�v�̂Ƃ�
-					if(COM2.RE_BUF[i] == '1'){			// �޼��ْl
-						SEQ.CBUS_NUMBER = 405;			// ���Z�O�ް��ǂݏo��
-						DEBUG_STR.DEBUG_OUTPUT = 0;			// ���ޯ�ޏo�͗p�o��̫�ϯ�		// 0 ����3��
-					}else if(COM2.RE_BUF[i] == '2'){	// �����ς��ް�
-						SEQ.CBUS_NUMBER = 406;			// ���Z���ް��ǂݏo��
-						DEBUG_STR.DEBUG_OUTPUT = 1;			// ���ޯ�ޏo�͗p�o��̫�ϯ�		// 1 �����E����1���E�����_3��
-					}else if(COM2.RE_BUF[i] == '4'){	// ��ׯ��l
-						SEQ.CBUS_NUMBER = 403;			// ��ׯ��ް��ǂݏo��
-						DEBUG_STR.DEBUG_OUTPUT = 0;			// ���ޯ�ޏo�͗p�o��̫�ϯ�		// 0 ����3��
-					}else if(COM2.RE_BUF[i] == '8'){	// �ܲĒl
-						SEQ.CBUS_NUMBER = 404;			// �ܲ��ް��ǂݏo��
-						DEBUG_STR.DEBUG_OUTPUT = 2;			// ���ޯ�ޏo�͗p�o��̫�ϯ�		// 2 ����3���E�����_3��
-					}else{								// ���̑�
+				}else{									// iが「6」のとき
+					if(COM2.RE_BUF[i] == '1'){			// ﾃﾞｼﾞﾀﾙ値
+						SEQ.CBUS_NUMBER = 405;			// 演算前ﾃﾞｰﾀ読み出し
+						DEBUG_STR.DEBUG_OUTPUT = 0;			// ﾃﾞﾊﾞｯｸﾞ出力用出力ﾌｫｰﾏｯﾄ		// 0 整数3桁
+					}else if(COM2.RE_BUF[i] == '2'){	// 処理済みﾃﾞｰﾀ
+						SEQ.CBUS_NUMBER = 406;			// 演算後ﾃﾞｰﾀ読み出し
+						DEBUG_STR.DEBUG_OUTPUT = 1;			// ﾃﾞﾊﾞｯｸﾞ出力用出力ﾌｫｰﾏｯﾄ		// 1 符号・整数1桁・小数点3桁
+					}else if(COM2.RE_BUF[i] == '4'){	// ﾌﾞﾗｯｸ値
+						SEQ.CBUS_NUMBER = 403;			// ﾌﾞﾗｯｸﾃﾞｰﾀ読み出し
+						DEBUG_STR.DEBUG_OUTPUT = 0;			// ﾃﾞﾊﾞｯｸﾞ出力用出力ﾌｫｰﾏｯﾄ		// 0 整数3桁
+					}else if(COM2.RE_BUF[i] == '8'){	// ﾎﾜｲﾄ値
+						SEQ.CBUS_NUMBER = 404;			// ﾎﾜｲﾄﾃﾞｰﾀ読み出し
+						DEBUG_STR.DEBUG_OUTPUT = 2;			// ﾃﾞﾊﾞｯｸﾞ出力用出力ﾌｫｰﾏｯﾄ		// 2 整数3桁・小数点3桁
+					}else{								// その他
 						COM2.SUB_STATUS = 1;
 						break;
 					}
@@ -494,81 +494,81 @@ void rs232c_drive(void)
 			}
 			break;
 			
-		// FPGA�����ް���M��
+		// FPGAからﾃﾞｰﾀ受信中
 		case 4:
 			break;
 			
 		case 5:
 			DEBUG_STR.DEBUG_COUNT = 0;
-			COM2.WR_CONT = 1;							// �������ݶ���
+			COM2.WR_CONT = 1;							// 書き込みｶｳﾝﾀ
 			
-			COM2.SUB_STATUS++;							// ����
+			COM2.SUB_STATUS++;							// 次へ
 			
-			SCI2.SCR.BIT.TIE = 1;						// TIE���u1�v
-			SCI2.SCR.BIT.TE = 1;						// TE���u1�v
+			SCI2.SCR.BIT.TIE = 1;						// TIEを「1」
+			SCI2.SCR.BIT.TE = 1;						// TEを「1」
 			break;
 			
-		// �ް����M��
+		// ﾃﾞｰﾀ送信中
 		case 6:
 			break;
 	}
 }
 
 //************************************************************/
-//				RS232C����֐�
+//				RS232C制御関数
 //************************************************************/
 void rs232c_drive_debug(void)
 {
 	if(SEQ.FLAG5.BIT.DEB_SIOOUT_FLAG){
 		switch(COM2.SUB_STATUS){
-			// ��M����̊J�n
+			// 受信動作の開始
 			case 1:
-				SCI2.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-				SCI2.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-				SCI2.SCR.BIT.TE = 0;						// �رّ��M������֎~
+				SCI2.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+				SCI2.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+				SCI2.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 				
-				SCI2.SCR.BIT.RIE = 1;						// RXI�����ERI���荞�ݗv��������
-				SCI2.SCR.BIT.RE = 1;						// �رَ�M���������
+				SCI2.SCR.BIT.RIE = 1;						// RXIおよびERI割り込み要求を許可
+				SCI2.SCR.BIT.RE = 1;						// ｼﾘｱﾙ受信動作を許可
 				
-				COM2.SUB_STATUS++;							// ����
+				COM2.SUB_STATUS++;							// 次へ
 				break;
 				
-			// ��M����̊��荞��
+			// 受信動作の割り込み
 			case 2:
 				COM2.RE_CONT = 0;
 				COM2.RE_BUF[COM2.RE_CONT] = 123;
 
-				SCI2.SCR.BIT.RIE = 0;		// RXI�����ERI���荞�ݗv�����֎~
-				SCI2.SCR.BIT.RE = 0;		// �رَ�M������֎~
+				SCI2.SCR.BIT.RIE = 0;		// RXIおよびERI割り込み要求を禁止
+				SCI2.SCR.BIT.RE = 0;		// ｼﾘｱﾙ受信動作を禁止
 
-				COM2.SUB_STATUS++;			// ����
+				COM2.SUB_STATUS++;			// 次へ
 				break;
 				
-			// ��M����ނɉ�����FPGA�ɑ΂��ް����M�v�����s��
+			// 受信ｺﾏﾝﾄﾞに応じてFPGAに対しﾃﾞｰﾀ送信要求を行う
 			case 3:
 				DEBUG_STR.DEBUG_OUTPUT = 10;
 
 				DEBUG_STR.DEBUG_COUNT = 0;
 				DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = ADCOV.V_BATT;
-				COM2.SUB_STATUS++;							// ����
+				COM2.SUB_STATUS++;							// 次へ
 				break;
 				
 			case 4:
-				COM2.SUB_STATUS++;							// ����
+				COM2.SUB_STATUS++;							// 次へ
 				break;
 				
-			// ���M�f�[�^�����҂��irs232c_txi�֐��@DEBUG_STR.DEBUG_OUTPUT = 10�j
+			// 送信データ生成待ち（rs232c_txi関数　DEBUG_STR.DEBUG_OUTPUT = 10）
 			case 5:
 				DEBUG_STR.DEBUG_COUNT = 0;
-				COM2.WR_CONT = 1;							// �������ݶ���
+				COM2.WR_CONT = 1;							// 書き込みｶｳﾝﾀ
 				
-				COM2.SUB_STATUS++;							// ����
+				COM2.SUB_STATUS++;							// 次へ
 				
-				SCI2.SCR.BIT.TIE = 1;						// TIE���u1�v
-				SCI2.SCR.BIT.TE = 1;						// TE���u1�v
+				SCI2.SCR.BIT.TIE = 1;						// TIEを「1」
+				SCI2.SCR.BIT.TE = 1;						// TEを「1」
 				break;
 				
-			// �ް����M��
+			// ﾃﾞｰﾀ送信中
 			case 6:
 				break;
 		}
@@ -576,12 +576,12 @@ void rs232c_drive_debug(void)
 }
 
 //************************************************************/
-//				RS232C����֐�
+//				RS232C制御関数
 //************************************************************/
 unsigned char get_number(unsigned long number, unsigned char digit)
 {
 	unsigned char number_digit;
-	unsigned long multiplier;			// �搔
+	unsigned long multiplier;			// 乗数
 	unsigned char i;
 
 
@@ -604,7 +604,7 @@ unsigned char get_number(unsigned long number, unsigned char digit)
 }
 
 //************************************************************/
-//				�d���擾�iadcov �� voltage�j
+//				電圧取得（adcov → voltage）
 //************************************************************/
 unsigned short get_voltage(unsigned short adcov)
 {

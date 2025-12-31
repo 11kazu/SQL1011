@@ -1,4 +1,4 @@
-/******************************************************************************
+О╩©/******************************************************************************
 * File Name	: fpga_revision.c
 ******************************************************************************/
 #include <machine.h>
@@ -11,72 +11,72 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void send_to_fpga_revision(void);		// FPGA┌ж┌лцч╟ю▒≈░M┼ж░■(йч╟╪ч╝щ▌Ф⌠╬)
+void send_to_fpga_revision(void);		// FPGAЦ│╦Ц│╝О╬┐О╬·О╫╟О╬─И─│Д©║И√╒Ф∙╟(О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈)
 
 //************************************************************/
-//				FPGA┌ж┌лцч╟ю▒≈░M┼ж░■(йч╟╪ч╝щ▌Ф⌠╬)
+//				FPGAЦ│╦Ц│╝О╬┐О╬·О╫╟О╬─И─│Д©║И√╒Ф∙╟(О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈)
 //************************************************************/
-// йч╟╪ч╝щ▌Ф⌠╬
+// О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈
 void send_to_fpga_revision(void)
 {
 	switch(SEQ.FPGA_SEND_STATUS){
-		// RX │╗ FPGA┌ицч╟ю▒≈░M
-		// C_PRIO┌П│uH│v┌и┌╥┌И
+		// RX Б├▓ FPGAЦ│╚О╬┐О╬·О╫╟О╬─И─│Д©║
+		// C_PRIOЦ┌▓Ц─▄HЦ─█Ц│╚Ц│≥Ц┌▀
 		case 1:
-			//if(F_PRIO_IN == 0){						// F_PRIO_IN┌╙│uL│v┌л┌ф┌╚
+			//if(F_PRIO_IN == 0){						// F_PRIO_INЦ│▄Ц─▄LЦ─█Ц│╝Ц│╗Ц│█
 				C_PRIO_OUT	= 1;						// C_PRIO
-				SEQ.FPGA_SEND_STATUS++;					// ▌÷┌ж
+				SEQ.FPGA_SEND_STATUS++;					// Ф╛║Ц│╦
 			//}
 			break;
 			
-		// нъ╟д┌П▐o≈м┌и░щ▓Х┌╥┌И
+		// О╬▌О╬÷О╫╟О╬└Ц┌▓Е┤╨Е┼⌡Ц│╚Х╗╜Е╝ Ц│≥Ц┌▀
 		case 2:
-			bus_to_out();								// йч╫┌П▐o≈м┌и░щ▓Х
-			send_to_cbus_zero();						// ╨ощдчещйч╟▐o≈м┼ж░■0
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж
+			bus_to_out();								// О╬┼О╬·О╫╫Ц┌▓Е┤╨Е┼⌡Ц│╚Х╗╜Е╝ 
+			send_to_cbus_zero();						// О╫╨О╬▐О╬²О╬└О╬·О╬┘О╬²О╬┼О╬·О╫╟Е┤╨Е┼⌡И√╒Ф∙╟0
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦
 			break;
 			
-		// ╨ощдчйч╫│Eцч╟юйч╫┌П░щ▓Х┌╥┌И
+		// О╫╨О╬▐О╬²О╬└О╬·О╬┼О╬·О╫╫Ц┐╩О╬┐О╬·О╫╟О╬─О╬┼О╬·О╫╫Ц┌▓Х╗╜Е╝ Ц│≥Ц┌▀
 		case 3:
-			SEQ.CBUS_NUMBER = 386;						// йч╟╪ч╝щ▌Ф⌠╬
-			send_to_cbus(SEQ.CBUS_NUMBER);				// ╨ощдчещйч╟▐o≈м
-			send_to_dbus_zero();						// цч╟ю▐o≈м┼ж░■0
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж
+			SEQ.CBUS_NUMBER = 386;						// О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈
+			send_to_cbus(SEQ.CBUS_NUMBER);				// О╫╨О╬▐О╬²О╬└О╬·О╬┘О╬²О╬┼О╬·О╫╟Е┤╨Е┼⌡
+			send_to_dbus_zero();						// О╬┐О╬·О╫╟О╬─Е┤╨Е┼⌡И√╒Ф∙╟0
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦
 			break;
 			
-		// C_ACK┌П│uH│v┌и┌╥┌И
+		// C_ACKЦ┌▓Ц─▄HЦ─█Ц│╚Ц│≥Ц┌▀
 		case 4:
 			C_ACK_OUT	= 1;							// C_ACK
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦
 			break;
 			
-		// C_ACK┌П│uL│v┌и┌╥┌И
+		// C_ACKЦ┌▓Ц─▄LЦ─█Ц│╚Ц│≥Ц┌▀
 		case 5:
 			C_ACK_OUT	= 0;							// C_ACK
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦
 			break;
 			
-		// ╨ощдчйч╫│Eцч╟юйч╫┌П│uL│v┌и┌╥┌И
+		// О╫╨О╬▐О╬²О╬└О╬·О╬┼О╬·О╫╫Ц┐╩О╬┐О╬·О╫╟О╬─О╬┼О╬·О╫╫Ц┌▓Ц─▄LЦ─█Ц│╚Ц│≥Ц┌▀
 		case 6:
-			send_to_cbus_zero();						// ╨ощдчещйч╟▐o≈м┼ж░■0
-			send_to_dbus_zero();						// цч╟ю▐o≈м┼ж░■0
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж
+			send_to_cbus_zero();						// О╫╨О╬▐О╬²О╬└О╬·О╬┘О╬²О╬┼О╬·О╫╟Е┤╨Е┼⌡И√╒Ф∙╟0
+			send_to_dbus_zero();						// О╬┐О╬·О╫╟О╬─Е┤╨Е┼⌡И√╒Ф∙╟0
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦
 			break;
 			
-		// нъ╟д┌П⌠Э≈м┌и░щ▓Х┌╥┌И
+		// О╬▌О╬÷О╫╟О╬└Ц┌▓Е┘╔Е┼⌡Ц│╚Х╗╜Е╝ Ц│≥Ц┌▀
 		case 7:
-			bus_to_in();								// йч╫┌П⌠Э≈м┌и░щ▓Х
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж
+			bus_to_in();								// О╬┼О╬·О╫╫Ц┌▓Е┘╔Е┼⌡Ц│╚Х╗╜Е╝ 
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦
 			break;
 			
-		// C_PRIO┌П│uL│v┌и┌╥┌И
+		// C_PRIOЦ┌▓Ц─▄LЦ─█Ц│╚Ц│≥Ц┌▀
 		case 8:
 			C_PRIO_OUT	= 0;							// C_PRIO
 			SEQ.FPGA_SEND_STATUS = 11;
 			break;
 			
-		// FPGA │╗ RX┌ицч╟ю▒≈░M
-		// F_PRIO_IN┌╙│uH│v┌и┌х┌а┌╫┌ГC_ACK┌П│uH│v┌и┌╥┌И
+		// FPGA Б├▓ RXЦ│╚О╬┐О╬·О╫╟О╬─И─│Д©║
+		// F_PRIO_INЦ│▄Ц─▄HЦ─█Ц│╚Ц│╙Ц│ёЦ│÷Ц┌┴C_ACKЦ┌▓Ц─▄HЦ─█Ц│╚Ц│≥Ц┌▀
 		case 11:
 			if(C_PRIO_OUT == 1){
 				C_PRIO_OUT = 0;
@@ -87,28 +87,28 @@ void send_to_fpga_revision(void)
 			}
 			break;
 			
-		// F_PRIO_IN┌╙│uL│v┌и┌х┌а┌╫┌Г│ALED▀P⌠x░M█├∙т░M┌л┌ф┌╚▓l┌л■╩▓Х┌П█s┌╓
+		// F_PRIO_INЦ│▄Ц─▄LЦ─█Ц│╚Ц│╙Ц│ёЦ│÷Ц┌┴Ц─│LEDХ╪²Е╨╕Д©║Е▐╥Х©■Д©║Ц│╝Ц│╗Ц│█Е─╓Ц│╝Е┬╓Е╝ Ц┌▓Х║▄Ц│├
 		case 14:
-			if(SEQ.CBUS_NUMBER == 386){						// йч╟╪ч╝щ▌Ф⌠╬
-				SEQ.FPGA_RIVISION = SEQ.INPUT_DBUS_LONG;	// йч╟╪ч╝щ▌Ф⌠╬
+			if(SEQ.CBUS_NUMBER == 386){						// О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈
+				SEQ.FPGA_RIVISION = SEQ.INPUT_DBUS_LONG;	// О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈
 				
 				// ADD 150728
-				COM0.NO138 = SEQ.FPGA_RIVISION;				// FPGAйч╟╪ч╝щ
-				COM0.NO139 = RX_RIVISION;					// RXйч╟╪ч╝щ
+				COM0.NO138 = SEQ.FPGA_RIVISION;				// FPGAО╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²
+				COM0.NO139 = RX_RIVISION;					// RXО╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²
 			}
 			
 			SEQ.FPGA_SEND_STATUS++;
 			break;
 			
 		case 15:
-			SEQ.FPGA_SEND_STATUS++;						// ▌÷┌ж(┼└┌Х█·┌щ┌╙┌╥┌╝┌и⌠Э┌И┴б■\░╚┌╙┌═┌И┌╫┌ъ│A┌═┌Г┌╘┌╤┌ъ╫ц╟ю╫┌П░i┌ъ┌д┌╗┌╜)
+			SEQ.FPGA_SEND_STATUS++;						// Ф╛║Ц│╦(Е┴╡Ц┌┼Х╬╪Ц│©Ц│▄Ц│≥Ц│░Ц│╚Е┘╔Ц┌▀Е▐╞Х┐╫Ф─╖Ц│▄Ц│┌Ц┌▀Ц│÷Ц┌│Ц─│Ц│┌Ц┌┴Ц│▀Ц│≤Ц┌│О╫╫О╬┐О╫╟О╬─О╫╫Ц┌▓И─╡Ц┌│Ц│╕Ц│┼Ц│▐)
 			C_ACK_OUT	= 1;							// C_ACK
 			break;
 			
 		case 16:
 			C_ACK_OUT	= 0;							// C_ACK
 			
-			if(SEQ.CBUS_NUMBER == 386){					// йч╟╪ч╝щ▌Ф⌠╬
+			if(SEQ.CBUS_NUMBER == 386){					// О╬┼О╬·О╫╟О╫╪О╬·О╫╝О╬²Е▐√Е╬≈
 				SEQ.FPGA_SEND_STATUS++;
 				SEQ.CHANGE_FPGA = 0;
 			}

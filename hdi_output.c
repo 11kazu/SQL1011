@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: hdi_output.c
 ******************************************************************************/
 #include <machine.h>
@@ -8,13 +8,13 @@
 #include "usercopy.h"
 
 //************************************************************/
-//				�����֐��v���g�^�C�v�錾					
+//				内部関数プロトタイプ宣言					
 //************************************************************/
-void clk5_pulse(void);						// CLK5��ٽ
-void hdi_output(void);						// HDI�o��
+void clk5_pulse(void);						// CLK5ﾊﾟﾙｽ
+void hdi_output(void);						// HDI出力
 
 //************************************************************/
-//				CLK5��ٽ
+//				CLK5ﾊﾟﾙｽ
 //************************************************************/
 void clk5_pulse(void)
 {
@@ -23,7 +23,7 @@ void clk5_pulse(void)
 }
 
 //************************************************************/
-//				HDI�o��
+//				HDI出力
 //************************************************************/
 void hdi_output(void)
 {
@@ -45,41 +45,41 @@ void hdi_output(void)
 		hdi = 0;
 	}else{
 
-		//hdi = SEQ.FOCUSING_HDI >> 11;		// 11�ޯĉE�ɼ��
-		//hdi = (SEQ.FOCUSING_HDI >> 11) & 0x0000003F;		// 6�ޯĕ���Ͻ�
-		hdi = (SEQ.FOCUSING_HDI >> 11) & 0x00000007;		// 3�ޯĕ���Ͻ�
+		//hdi = SEQ.FOCUSING_HDI >> 11;		// 11ﾋﾞｯﾄ右にｼﾌﾄ
+		//hdi = (SEQ.FOCUSING_HDI >> 11) & 0x0000003F;		// 6ﾋﾞｯﾄ分のﾏｽｸ
+		hdi = (SEQ.FOCUSING_HDI >> 11) & 0x00000007;		// 3ﾋﾞｯﾄ分のﾏｽｸ
 		
 		if(OUT.SUB_STATUS <= 3)		hdi = 0;
 		
-		// 7:ORIGIN�E8:ORIGIN(���ލl��)�̏ꍇ�ȊO�͏o�͕s��
-		// �v�����Ă��Ȃ��Ƃ�
+		// 7:ORIGIN・8:ORIGIN(ｴｯｼﾞ考慮)の場合以外は出力不可
+		// 計測していないとき
 		if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-			SEQ.FLAG3.BIT.HDI_OUTPUT = 0;			// HDI�o���׸�
+			SEQ.FLAG3.BIT.HDI_OUTPUT = 0;			// HDI出力ﾌﾗｸﾞ
 
-			// HDI�o�͊m�F�̏ꍇ�́A�v�����Ă��Ȃ����ł��o�͉�
+			// HDI出力確認の場合は、計測していない時でも出力可
 			if((COM0.NO301 < 250)&&(263 < COM0.NO301)){
-				SEQ.FLAG3.BIT.HDI_OUTPUT = 1;			// HDI�o���׸�
+				SEQ.FLAG3.BIT.HDI_OUTPUT = 1;			// HDI出力ﾌﾗｸﾞ
 			}
 		}
 		
-		// �v�����Ă���Ƃ��ŁA����HDI�o���׸ނ��u1�v�̂Ƃ�
+		// 計測しているときで、かつHDI出力ﾌﾗｸﾞが「1」のとき
 		if((SEQ.FLAG.BIT.MEASUREMENT == 1)&&(SEQ.FLAG3.BIT.HDI_OUTPUT == 1)){
-			skip_flag = 0;		// ����ߏo���׸�
+			skip_flag = 0;		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ
 			
-			// �u7:ORIGIN�v�u8:ORIGIN(���ލl��)�v�̂Ƃ�
+			// 「7:ORIGIN」「8:ORIGIN(ｴｯｼﾞ考慮)」のとき
 			switch(SEQ.SELECT.BIT.MEASURE){
 				case MODE_ORIGIN:
 				case MODE_ORIGIN_EDGE:
-					skip_flag = 1;		// ����ߏo���׸�
+					skip_flag = 1;		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ
 					
-					// 8:ORIGIN(���ލl��)�̂Ƃ����E�̴��ނ����ꂩ���蓮�X�Ή�f�̐ݒ�l�ȉ��̂Ƃ��ɏo�͂���
-					// ��L�ȊO�͏o�͂��Ȃ�
-					if(SEQ.SELECT.BIT.MEASURE == MODE_ORIGIN_EDGE){		// 8:ORIGIN(���ލl��)�̂Ƃ�
+					// 8:ORIGIN(ｴｯｼﾞ考慮)のとき左右のｴｯｼﾞいずれかが手動傾斜画素の設定値以下のときに出力する
+					// 上記以外は出力しない
+					if(SEQ.SELECT.BIT.MEASURE == MODE_ORIGIN_EDGE){		// 8:ORIGIN(ｴｯｼﾞ考慮)のとき
 						if((SEQ.FLAG4.BIT.EDGE_R == 0) && (SEQ.FLAG4.BIT.EDGE_L == 0)){
 							hdi = 0;
 						}
 						
-						// �S�Ռ����A�S�o��ON
+						// 全遮光時、全出力ON
 						if(IN.FLAG.BIT.HARDWARE_TYPE == CNC_EDITION){
 							if(SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION){
 								//if(LED.Z_FOCUSING == 0x000F)	hdi = 0x003F;
@@ -95,52 +95,52 @@ void hdi_output(void)
 					}
 					break;
 
-				case MODE_D4_AUTO:	// �u10:�H��a(����)�v
-				case MODE_D4_LOW:	// �u0:�H��a(d��4)�v
-				case MODE_D4_LEFT:	// �u1:�H��a(d��4 ����)�v
-				case MODE_D4_RIGHT:	// �u11:�H��a(d��4 �E��)�v
-				case MODE_RUNOUT:	// �u2:�U��v
-				case MODE_PROFILE:	// �u5:���̧�فv
-				case MODE_CENTER:	// �u4:���S�ʒu�ݒ�v
-				case MODE_GROWTH:	// �u6:�L�ё���v
-					// ����߂��u1�v�̂Ƃ�
-					if(SKIP_ENABLE == 1)	skip_flag = 1;		// ����ߏo���׸�
+				case MODE_D4_AUTO:	// 「10:工具径(自動)」
+				case MODE_D4_LOW:	// 「0:工具径(d≦4)」
+				case MODE_D4_LEFT:	// 「1:工具径(d＞4 左側)」
+				case MODE_D4_RIGHT:	// 「11:工具径(d＞4 右側)」
+				case MODE_RUNOUT:	// 「2:振れ」
+				case MODE_PROFILE:	// 「5:ﾌﾟﾛﾌｧｲﾙ」
+				case MODE_CENTER:	// 「4:中心位置設定」
+				case MODE_GROWTH:	// 「6:伸び測定」
+					// ｽｷｯﾌﾟが「1」のとき
+					if(SKIP_ENABLE == 1)	skip_flag = 1;		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ
 					break;
 
 				case MODE_FOCUS:
-					skip_flag = 2;		// ����ߏo���׸�
+					skip_flag = 2;		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ
 					break;
 			}
 			
-			// ���Zð��َ����ݒ�̂Ƃ�����ߏo�͂��Ȃ�
+			// 換算ﾃｰﾌﾞﾙ自動設定のときｽｷｯﾌﾟ出力しない
 			if((COM0.NO300.BIT.EXE)&&(COM0.NO301 == 600)){
-				skip_flag = 0;		// ����ߏo���׸�
+				skip_flag = 0;		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ
 			}
 			
-			if(skip_flag == 1){		// ����ߏo���׸�
+			if(skip_flag == 1){		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ
 				if(hdi & 0x01 == 0x01){
 					SEQ.HDI.BIT.B0 = 1;
-					SEQ.HDI0_HOLD_COUNT = 0;									// HDI0����ߕێ����Ă�ؾ��
+					SEQ.HDI0_HOLD_COUNT = 0;									// HDI0ｽｷｯﾌﾟ保持ｶｳﾝﾄをﾘｾｯﾄ
 				}else{
-					if(SEQ.HDI0_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI0����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI0_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI0ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B0 = 0;
 					}
 				}
 				
 				if((hdi >> 1) & 0x01 == 0x01){
 					SEQ.HDI.BIT.B1 = 1;
-					SEQ.HDI1_HOLD_COUNT = 0;									// HDI1����ߕێ����Ă�ؾ��
+					SEQ.HDI1_HOLD_COUNT = 0;									// HDI1ｽｷｯﾌﾟ保持ｶｳﾝﾄをﾘｾｯﾄ
 				}else{
-					if(SEQ.HDI1_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI1����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI1_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI1ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B1 = 0;
 					}
 				}
 					
 				if((hdi >> 2) & 0x01 == 0x01){
 					SEQ.HDI.BIT.B2 = 1;
-					SEQ.HDI2_HOLD_COUNT = 0;									// HDI2����ߕێ����Ă�ؾ��
+					SEQ.HDI2_HOLD_COUNT = 0;									// HDI2ｽｷｯﾌﾟ保持ｶｳﾝﾄをﾘｾｯﾄ
 				}else{
-					if(SEQ.HDI2_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI2����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI2_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI2ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B2 = 0;
 					}
 				}
@@ -148,27 +148,27 @@ void hdi_output(void)
 				/*
 				if((hdi >> 3) & 0x01 == 0x01){
 					SEQ.HDI.BIT.B3 = 1;
-					SEQ.HDI3_HOLD_COUNT = 0;									// HDI3����ߕێ����Ă�ؾ��
+					SEQ.HDI3_HOLD_COUNT = 0;									// HDI3ｽｷｯﾌﾟ保持ｶｳﾝﾄをﾘｾｯﾄ
 				}else{
-					if(SEQ.HDI3_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI3����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI3_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI3ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B3 = 0;
 					}
 				}
 				
 				if((hdi >> 4) & 0x01 == 0x01){
 					SEQ.HDI.BIT.B4 = 1;
-					SEQ.HDI4_HOLD_COUNT = 0;									// HDI4����ߕێ����Ă�ؾ��
+					SEQ.HDI4_HOLD_COUNT = 0;									// HDI4ｽｷｯﾌﾟ保持ｶｳﾝﾄをﾘｾｯﾄ
 				}else{
-					if(SEQ.HDI4_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI4����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI4_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI4ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B4 = 0;
 					}
 				}
 				
 				if((hdi >> 5) & 0x01 == 0x01){
 					SEQ.HDI.BIT.B5 = 1;
-					SEQ.HDI5_HOLD_COUNT = 0;									// HDI5����ߕێ����Ă�ؾ��
+					SEQ.HDI5_HOLD_COUNT = 0;									// HDI5ｽｷｯﾌﾟ保持ｶｳﾝﾄをﾘｾｯﾄ
 				}else{
-					if(SEQ.HDI5_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI5����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI5_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI5ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B5 = 0;
 					}
 				}
@@ -178,55 +178,55 @@ void hdi_output(void)
 					  //(SEQ.HDI.BIT.B2 << 2) | (SEQ.HDI.BIT.B1 << 1) | SEQ.HDI.BIT.B0;
 				hdi = (SEQ.HDI.BIT.B2 << 2) | (SEQ.HDI.BIT.B1 << 1) | SEQ.HDI.BIT.B0;
 					  
-				// ����ߐM�����]���u1�v�̂Ƃ��ޯĂ𔽓]����
+				// ｽｷｯﾌﾟ信号反転が「1」のときﾋﾞｯﾄを反転する
 				//if(SKIP_SIGNAL_REVERSE == 1)		hdi = ~hdi & 0x3F;
 				if(SKIP_SIGNAL_REVERSE == 1)		hdi = ~hdi & 0x07;
 				
-			}else if(skip_flag == 2){		// ����ߏo���׸ށu3:�œ_�v
+			}else if(skip_flag == 2){		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ「3:焦点」
 				hdi0_l_flag = hdi1_l_flag = hdi2_l_flag = hdi3_l_flag = hdi4_l_flag = hdi5_l_flag = 0;
 				hdi0_r_flag = hdi1_r_flag = hdi2_r_flag = hdi3_r_flag = hdi4_r_flag = hdi5_r_flag = 0;
 
 				focus_L = (long)(RESULT.FOCUS_LEFT[2] * 10);
 				focus_R = (long)(RESULT.FOCUS_RIGHT[2] * 10);
 
-				// �v��������X�����̂Ƃ�
+				// 計測方向がX方向のとき
 				if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
-					// HDI0(L)����
+					// HDI0(L)判定
 					if(HDI0_SKIP_L == 0){
 						hdi0_l_flag = 1;
 					}else{
 						if((focus_L != 0) && (focus_L <= HDI0_SKIP_L))	hdi0_l_flag = 1;
 					}
 					
-					// HDI0(R)����
+					// HDI0(R)判定
 					if(HDI0_SKIP_R == 0){
 						hdi0_r_flag = 1;
 					}else{
 						if((focus_R != 0) && (focus_R <= HDI0_SKIP_R))	hdi0_r_flag = 1;
 					}
 					
-					// HDI1(L)����
+					// HDI1(L)判定
 					if(HDI1_SKIP_L == 0){
 						hdi1_l_flag = 1;
 					}else{
 						if((focus_L != 0) && (focus_L <= HDI1_SKIP_L))	hdi1_l_flag = 1;
 					}
 					
-					// HDI1(R)����
+					// HDI1(R)判定
 					if(HDI1_SKIP_R == 0){
 						hdi1_r_flag = 1;
 					}else{
 						if((focus_R != 0) && (focus_R <= HDI1_SKIP_R))	hdi1_r_flag = 1;
 					}
 					
-					// HDI2(L)����
+					// HDI2(L)判定
 					if(HDI2_SKIP_L == 0){
 						hdi2_l_flag = 1;
 					}else{
 						if((focus_L != 0) && (focus_L <= HDI2_SKIP_L))	hdi2_l_flag = 1;
 					}
 					
-					// HDI2(R)����
+					// HDI2(R)判定
 					if(HDI2_SKIP_R == 0){
 						hdi2_r_flag = 1;
 					}else{
@@ -234,42 +234,42 @@ void hdi_output(void)
 					}
 					
 					/*
-					// HDI3(L)����
+					// HDI3(L)判定
 					if(HDI3_SKIP_L == 0){
 						hdi3_l_flag = 1;
 					}else{
 						if((focus_L != 0) && (focus_L <= HDI3_SKIP_L))	hdi3_l_flag = 1;
 					}
 					
-					// HDI3(R)����
+					// HDI3(R)判定
 					if(HDI3_SKIP_R == 0){
 						hdi3_r_flag = 1;
 					}else{
 						if((focus_R != 0) && (focus_R <= HDI3_SKIP_R))	hdi3_r_flag = 1;
 					}
 					
-					// HDI4(L)����
+					// HDI4(L)判定
 					if(HDI4_SKIP_L == 0){
 						hdi4_l_flag = 1;
 					}else{
 						if((focus_L != 0) && (focus_L <= HDI4_SKIP_L))	hdi4_l_flag = 1;
 					}
 					
-					// HDI4(R)����
+					// HDI4(R)判定
 					if(HDI4_SKIP_R == 0){
 						hdi4_r_flag = 1;
 					}else{
 						if((focus_R != 0) && (focus_R <= HDI4_SKIP_R))	hdi4_r_flag = 1;
 					}
 					
-					// HDIDELAY(L)����
+					// HDIDELAY(L)判定
 					if(HDI5_SKIP_L == 0){
 						hdi5_l_flag = 1;
 					}else{
 						if((focus_L != 0) && (focus_L <= HDI5_SKIP_L))	hdi5_l_flag = 1;
 					}
 					
-					// HDI5(R)����
+					// HDI5(R)判定
 					if(HDI5_SKIP_R == 0){
 						hdi5_r_flag = 1;
 					}else{
@@ -277,7 +277,7 @@ void hdi_output(void)
 					}
 					*/
 					
-					// L�ER�̏����𖞂������Ƃ�
+					// L・Rの条件を満たしたとき
 	// chg 2016.03.11 K.Uemura start	G31101
 					if((hdi0_l_flag == 1)&&(hdi0_r_flag == 1))		hdi0_flag = 1;
 					else											hdi0_flag = 0;
@@ -318,23 +318,23 @@ void hdi_output(void)
 //					else											SEQ.HDI.BIT.B5 = 0;
 // chg 2016.03.11 K.Uemura end
 					
-				// �v��������Z�����̂Ƃ�
+				// 計測方向がZ方向のとき
 				}else{
-					// HDI0(R)����
+					// HDI0(R)判定
 					if(Z_HDI0_SKIP_R == 0){
 						hdi0_r_flag = 1;
 					}else{
 						if(focus_R <= Z_HDI0_SKIP_R)		hdi0_r_flag = 1;
 					}
 					
-					// HDI1(R)����
+					// HDI1(R)判定
 					if(Z_HDI1_SKIP_R == 0){
 						hdi1_r_flag = 1;
 					}else{
 						if(focus_R <= Z_HDI1_SKIP_R)		hdi1_r_flag = 1;
 					}
 					
-					// HDI2(R)����
+					// HDI2(R)判定
 					if(Z_HDI2_SKIP_R == 0){
 						hdi2_r_flag = 1;
 					}else{
@@ -342,21 +342,21 @@ void hdi_output(void)
 					}
 					
 					/*
-					// HDI3(R)����
+					// HDI3(R)判定
 					if(Z_HDI3_SKIP_R == 0){
 						hdi3_r_flag = 1;
 					}else{
 						if(focus_R <= Z_HDI3_SKIP_R)		hdi3_r_flag = 1;
 					}
 					
-					// HDI4(R)����
+					// HDI4(R)判定
 					if(Z_HDI4_SKIP_R == 0){
 						hdi4_r_flag = 1;
 					}else{
 						if(focus_R <= Z_HDI4_SKIP_R)		hdi4_r_flag = 1;
 					}
 					
-					// HDI5(R)����
+					// HDI5(R)判定
 					if(Z_HDI5_SKIP_R == 0){
 						hdi5_r_flag = 1;
 					}else{
@@ -364,7 +364,7 @@ void hdi_output(void)
 					}
 					*/
 					
-					// �����𖞂������Ƃ�
+					// 条件を満たしたとき
 // chg 2016.03.11 K.Uemura start	G31101
 					if(hdi0_r_flag == 1)		hdi0_flag = 1;
 					else						hdi0_flag = 0;
@@ -408,36 +408,36 @@ void hdi_output(void)
 
 // add 2016.03.11 K.Uemura start	G31101
 				if(hdi0_flag == 0){
-					if(SEQ.HDI0_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI0����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI0_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI0ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B0 = 0;
 					}
 					SEQ.HDI0_DELAY_COUNT=0;
 				}else{
-					if(SEQ.HDI0_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI0����ߕێ����Ă�����ߒx�����Ԗ����̂Ƃ�
+					if(SEQ.HDI0_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI0ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ遅延時間未満のとき
 						SEQ.HDI.BIT.B0 = 1;
 					}
 					SEQ.HDI0_HOLD_COUNT=0;
 				}
 
 				if(hdi1_flag == 0){
-					if(SEQ.HDI1_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI1����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI1_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI1ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B1 = 0;
 					}
 					SEQ.HDI1_DELAY_COUNT=0;
 				}else{
-					if(SEQ.HDI1_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI1����ߕێ����Ă�����ߒx�����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI1_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI1ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ遅延時間以上になったとき
 						SEQ.HDI.BIT.B1 = 1;
 					}
 					SEQ.HDI1_HOLD_COUNT=0;
 				}
 
 				if(hdi2_flag == 0){
-					if(SEQ.HDI2_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI2����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI2_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI2ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B2 = 0;
 					}
 					SEQ.HDI2_DELAY_COUNT=0;
 				}else{
-					if(SEQ.HDI2_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI2����ߕێ����Ă�����ߒx�����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI2_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI2ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ遅延時間以上になったとき
 						SEQ.HDI.BIT.B2 = 1;
 					}
 					SEQ.HDI2_HOLD_COUNT=0;
@@ -445,36 +445,36 @@ void hdi_output(void)
 				
 				/*
 				if(hdi3_flag == 0){
-					if(SEQ.HDI3_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI3����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI3_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI3ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B3 = 0;
 					}
 					SEQ.HDI3_DELAY_COUNT=0;
 				}else{
-					if(SEQ.HDI3_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI3����ߕێ����Ă�����ߒx�����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI3_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI3ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ遅延時間以上になったとき
 						SEQ.HDI.BIT.B3 = 1;
 					}
 					SEQ.HDI3_HOLD_COUNT=0;
 				}
 
 				if(hdi4_flag == 0){
-					if(SEQ.HDI4_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI4����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI4_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI4ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B4 = 0;
 					}
 					SEQ.HDI4_DELAY_COUNT=0;
 				}else{
-					if(SEQ.HDI4_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI4����ߕێ����Ă�����ߒx�����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI4_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI4ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ遅延時間以上になったとき
 						SEQ.HDI.BIT.B4 = 1;
 					}
 					SEQ.HDI4_HOLD_COUNT=0;
 				}
 
 				if(hdi5_flag == 0){
-					if(SEQ.HDI5_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI5����ߕێ����Ă�����ߕێ����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI5_HOLD_COUNT >= SKIP_RETENTION_TIME){			// HDI5ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ保持時間以上になったとき
 						SEQ.HDI.BIT.B5 = 0;
 					}
 					SEQ.HDI5_DELAY_COUNT=0;
 				}else{
-					if(SEQ.HDI5_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI5����ߕێ����Ă�����ߒx�����Ԉȏ�ɂȂ����Ƃ�
+					if(SEQ.HDI5_DELAY_COUNT >= SKIP_DELAY_TIME){			// HDI5ｽｷｯﾌﾟ保持ｶｳﾝﾄがｽｷｯﾌﾟ遅延時間以上になったとき
 						SEQ.HDI.BIT.B5 = 1;
 					}
 					SEQ.HDI5_HOLD_COUNT=0;
@@ -486,7 +486,7 @@ void hdi_output(void)
 				//hdi = (SEQ.HDI.BIT.B5 << 5) | (SEQ.HDI.BIT.B4 << 4) | (SEQ.HDI.BIT.B3 << 3) | (SEQ.HDI.BIT.B2 << 2) | (SEQ.HDI.BIT.B1 << 1) | SEQ.HDI.BIT.B0;
 				hdi = (SEQ.HDI.BIT.B2 << 2) | (SEQ.HDI.BIT.B1 << 1) | SEQ.HDI.BIT.B0;
 				
-				// ����ߐM�����]���u1�v�̂Ƃ��ޯĂ𔽓]����
+				// ｽｷｯﾌﾟ信号反転が「1」のときﾋﾞｯﾄを反転する
 				//if(SKIP_SIGNAL_REVERSE == 1)		hdi = ~hdi & 0x3F;
 				if(SKIP_SIGNAL_REVERSE == 1)		hdi = ~hdi & 0x07;
 				
@@ -503,30 +503,30 @@ void hdi_output(void)
 		}
 	}
 	
-	// �װ�M���o�� ADD 161114
-	if(COM0.NO312 == 0){					// �װ�������Ƃ�
-		if(ERR_SIGNAL_REVERSE == 0){		// ����ߐM�����]���u0�v�̂Ƃ�
+	// ｴﾗｰ信号出力 ADD 161114
+	if(COM0.NO312 == 0){					// ｴﾗｰが無いとき
+		if(ERR_SIGNAL_REVERSE == 0){		// ｽｷｯﾌﾟ信号反転が「0」のとき
 			SEQ.HDI.BIT.B3 = 0;
-		}else{								// ����ߐM�����]���u1�v�̂Ƃ����]
+		}else{								// ｽｷｯﾌﾟ信号反転が「1」のとき反転
 			SEQ.HDI.BIT.B3 = 1;
 		}
-	}else{									// �װ������Ƃ�
-		if(ERR_SIGNAL_REVERSE == 0){		// ����ߐM�����]���u0�v�̂Ƃ�
+	}else{									// ｴﾗｰがあるとき
+		if(ERR_SIGNAL_REVERSE == 0){		// ｽｷｯﾌﾟ信号反転が「0」のとき
 			SEQ.HDI.BIT.B3 = 1;
-		}else{								// ����ߐM�����]���u1�v�̂Ƃ����]
+		}else{								// ｽｷｯﾌﾟ信号反転が「1」のとき反転
 			SEQ.HDI.BIT.B3 = 0;
 		}
 	}
 	
-	// HDI�o��(TPD�\��) + �װ�M���o�� ADD 161114
+	// HDI出力(TPD表示) + ｴﾗｰ信号出力 ADD 161114
 	hdi |= (SEQ.HDI.BIT.B3 << 3);
 	COM0.NO331 = hdi;
 	
-	// �d�������
+	// 電磁ﾊﾞﾙﾌﾞ
 	hdi |= (COM0.NO310.BIT.PUR << 7) | (COM0.NO310.BIT.COV << 6);
 	
 	buf = hdi;
 	drv_disp_data_out(buf);
 	
-	clk5_pulse();					// CLK5��ٽ
+	clk5_pulse();					// CLK5ﾊﾟﾙｽ
 }

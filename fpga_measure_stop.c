@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: fpga_measure_stop.c
 ******************************************************************************/
 #include <machine.h>
@@ -11,64 +11,64 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void send_to_fpga_measure_stop(void);				// FPGA�ւ��ް����M�֐�(�v����~)
+void send_to_fpga_measure_stop(void);				// FPGAへのﾃﾞｰﾀ送信関数(計測停止)
 
 
 
 //************************************************************/
-//				FPGA�ւ��ް����M�֐�(�v����~)
-//	11 �� 14 �� 15 �� 16 �� 11
-//	                     �� 30 �� 21 �� 11 �� 
-//	                                 �� 2 �� �E�E�E �� 8 �� 11 �� 
-//	                                 �� 1  [ 2]�Čv��(send_to_fpga_idle��)
-//	                                 �� 1  [ 1]�p�����[�^�]��(send_to_fpga��)
-//	                                 �� 71 [ 0]����I��
-//	                                 �� 1  [10]�f�o�b�O�o��(send_to_fpga_debug��)
+//				FPGAへのﾃﾞｰﾀ送信関数(計測停止)
+//	11 → 14 → 15 → 16 → 11
+//	                     → 30 → 21 → 11 → 
+//	                                 → 2 → ・・・ → 8 → 11 → 
+//	                                 → 1  [ 2]再計測(send_to_fpga_idleへ)
+//	                                 → 1  [ 1]パラメータ転送(send_to_fpgaへ)
+//	                                 → 71 [ 0]測定終了
+//	                                 → 1  [10]デバッグ出力(send_to_fpga_debugへ)
 //************************************************************/
-// �v����~
+// 計測停止
 void send_to_fpga_measure_stop(void)
 {
 	switch(SEQ.FPGA_SEND_STATUS){
 			
-		// �߰Ă��o�͂ɐݒ肷��
+		// ﾎﾟｰﾄを出力に設定する
 		case 2:
-			bus_to_out();							// �޽���o�͂ɐݒ�
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			bus_to_out();							// ﾊﾞｽを出力に設定
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// ������޽�E�ް��޽��ݒ肷��
+		// ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを設定する
 		case 3:
-			send_to_cbus(SEQ.CBUS_NUMBER);			// ��������ް�o��
-			send_to_dbus_zero();					// �ް��o�͊֐�0
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			send_to_cbus(SEQ.CBUS_NUMBER);			// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力
+			send_to_dbus_zero();					// ﾃﾞｰﾀ出力関数0
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 4:
 			C_ACK_OUT	= 1;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_ACK���uL�v�ɂ���
+		// C_ACKを「L」にする
 		case 5:
 			C_ACK_OUT	= 0;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_PRIO�E������޽�E�ް��޽���uL�v�ɂ���
+		// C_PRIO・ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを「L」にする
 		case 6:
-			send_to_cbus_zero();						// ��������ް�o�͊֐�0
-			send_to_dbus_zero();						// �ް��o�͊֐�0
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			send_to_cbus_zero();						// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力関数0
+			send_to_dbus_zero();						// ﾃﾞｰﾀ出力関数0
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// �߰Ă���͂ɐݒ肷��
+		// ﾎﾟｰﾄを入力に設定する
 		case 7:
-			bus_to_in();							// �޽����͂ɐݒ�
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			bus_to_in();							// ﾊﾞｽを入力に設定
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_PRIO���uL�v�ɂ���
+		// C_PRIOを「L」にする
 		case 8:
 			C_PRIO_OUT	= 0;						// C_PRIO
 			if(SEQ.CBUS_NUMBER == 390){
@@ -77,8 +77,8 @@ void send_to_fpga_measure_stop(void)
 			SEQ.FPGA_SEND_STATUS = 11;
 			break;
 	
-		// FPGA �� RX���ް����M
-		// F_PRIO_IN���uH�v�ɂȂ�����C_ACK���uH�v�ɂ���
+		// FPGA → RXにﾃﾞｰﾀ送信
+		// F_PRIO_INが「H」になったらC_ACKを「H」にする
 		case 11:
 			if(C_PRIO_OUT == 1){
 				C_PRIO_OUT = 0;
@@ -88,8 +88,8 @@ void send_to_fpga_measure_stop(void)
 				C_ACK_OUT	= 0;					// C_ACK
 				
 			// ADD 170518
-			}else{	// F_PRIO_IN���u1�v�ɂȂ�Ȃ��Ƃ���U��~����
-				SEQ.FPGA_RESTART_COUNT++;				// FPGA�Ľ��Ķ���
+			}else{	// F_PRIO_INが「1」にならないとき一旦停止する
+				SEQ.FPGA_RESTART_COUNT++;				// FPGA再ｽﾀｰﾄｶｳﾝﾄ
 				if(SEQ.FPGA_RESTART_COUNT >= 100){
 					SEQ.FPGA_RESTART_COUNT = 0;
 					SEQ.FPGA_SEND_STATUS = 21;
@@ -98,21 +98,21 @@ void send_to_fpga_measure_stop(void)
 			}
 			break;
 			
-		case 14:	// ���荞�݌�
+		case 14:	// 割り込み後
 			SEQ.FPGA_SEND_STATUS++;
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 15:
 			SEQ.FPGA_SEND_STATUS++;
 			C_ACK_OUT	= 1;						// C_ACK
 			break;
 			
-		// C_ACK���uL�v�ɂ���
+		// C_ACKを「L」にする
 		case 16:
 			C_ACK_OUT	= 0;						// C_ACK
 			SEQ.FPGA_SEND_STATUS = 11;
-			if(SEQ.CBUS_NUMBER == SEQ.LAST_CBUS_NUMBER){	// CBUS���ް(1���ٍŏI)�̂Ƃ�
+			if(SEQ.CBUS_NUMBER == SEQ.LAST_CBUS_NUMBER){	// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)のとき
 // chg 2016.01.21 K.Uemura start	G12102
 				SEQ.FPGA_SEND_STATUS = 30;
 //				SEQ.FPGA_SEND_STATUS = 21;
@@ -120,22 +120,22 @@ void send_to_fpga_measure_stop(void)
 			}
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 17:
 			SEQ.FPGA_SEND_STATUS = 13;
 			C_ACK_OUT	= 1;						// C_ACK
 			break;
 			
-		// F_PRIO_IN���uL�v�ɂȂ��Ă��邱�Ƃ��m�F����
+		// F_PRIO_INが「L」になっていることを確認する
 		case 21:
-			//if(F_PRIO_IN == 0){					// F_PRIO_IN���uL�v�̂Ƃ�
+			//if(F_PRIO_IN == 0){					// F_PRIO_INが「L」のとき
 				SEQ.FPGA_SEND_STATUS = 11;
 			//}
 			
 			if(SEQ.FLAG.BIT.AFTER_STOPPING == 0){
-				if(F_PRIO_IN == 0){					// F_PRIO_IN���uL�v�̂Ƃ�
+				if(F_PRIO_IN == 0){					// F_PRIO_INが「L」のとき
 					if(SEQ.FLAG.BIT.MEASUREMENT == 0){
-						// �ҋ@�𑗐M(390)
+						// 待機を送信(390)
 						C_PRIO_OUT	= 1;			// C_PRIO
 						SEQ.CBUS_NUMBER = 390;
 						SEQ.FPGA_SEND_STATUS = 2;
@@ -144,27 +144,27 @@ void send_to_fpga_measure_stop(void)
 			}else{
 				SEQ.FLAG.BIT.AFTER_STOPPING = 0;
 				
-				// HDI�����̏I������
-				if(SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION == 1){			// HDI���������׸�
+				// HDIﾁｪｯｸの終了処理
+				if(SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION == 1){			// HDIﾁｪｯｸ完了ﾌﾗｸﾞ
 					SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION = 0;
 					SEQ.FLAG.BIT.MEASUREMENT = 1;
-					// �{�v���ֈړ�
-					if(SEQ.FLAG6.BIT.HDI_CHECK_OK == 1){			// HDI����OK�׸�
+					// 本計測へ移動
+					if(SEQ.FLAG6.BIT.HDI_CHECK_OK == 1){			// HDIﾁｪｯｸOKﾌﾗｸﾞ
 						SEQ.CBUS_NUMBER = 394;
-						SEQ.CHANGE_FPGA = 2;						// ����
+						SEQ.CHANGE_FPGA = 2;						// 測定
 						SEQ.FPGA_SEND_STATUS = 1;
 						
 						OUT.SUB_STATUS = 11;
 						
-					// ���Ұ��̐ݒ�ɖ߂�
+					// ﾊﾟﾗﾒｰﾀの設定に戻る
 					}else{
-						SEQ.FLAG.BIT.PARAM_INITIAL = 1;				// ���Ұ��������׸�
-						SEQ.CHANGE_FPGA = 1;						// ���Ұ�
+						SEQ.FLAG.BIT.PARAM_INITIAL = 1;				// ﾊﾟﾗﾒｰﾀ初期化ﾌﾗｸﾞ
+						SEQ.CHANGE_FPGA = 1;						// ﾊﾟﾗﾒｰﾀ
 						SEQ.FPGA_SEND_STATUS = 1;
-						SEQ.POWER_COUNT = 0;						// �d�����䶳�Ă�ؾ��
+						SEQ.POWER_COUNT = 0;						// 電源制御ｶｳﾝﾄをﾘｾｯﾄ
 					}
 					
-				// �ʏ�̏I������
+				// 通常の終了処理
 				}else{
 // add 2016.02.18 K.Uemura start	G21804
 					SEQ.FLAG6.BIT.CLEANING = 0;
@@ -199,9 +199,9 @@ void send_to_fpga_measure_stop(void)
 					COM2.SUB_STATUS = 1;
 #endif
 				
-					// ���̧�ق̂Ƃ�
+					// ﾌﾟﾛﾌｧｲﾙのとき
 					if(SEQ.SELECT.BIT.MEASURE == MODE_PROFILE){
-						if(COM0.NO300.BIT.EXE){					// ���s
+						if(COM0.NO300.BIT.EXE){					// 実行
 // add 2016.03.02 K.Uemura start	G30201
 #if	0
 //// add 2016.01.22 K.Uemura start	G12201
@@ -209,38 +209,38 @@ void send_to_fpga_measure_stop(void)
 //// add 2016.01.22 K.Uemura end
 //								COM0.NO310.BIT.STR = 1;			// STROBE
 //							}
-//							SEQ.FLAG2.BIT.PROFILE_AUTO = 1;		// ���̧�َ������ʍ��׸�
+//							SEQ.FLAG2.BIT.PROFILE_AUTO = 1;		// ﾌﾟﾛﾌｧｲﾙ自動判別済ﾌﾗｸﾞ
 //							
 //#if	1
-//							if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LOW){			// �u1:�H��a(d��4)�v
+//							if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LOW){			// 「1:工具径(d≦4)」
 //								if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
 //									temp = RESULT.LARGE_D_DIFF[0];
 //								}
-//							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LEFT){		// �u2:�H��a(d��4 ����)�v
+//							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LEFT){		// 「2:工具径(d＞4 左側)」
 //								if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
 //									temp = RESULT.GREATER_D_DIFF_MAX[0];
 //								}
-//							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_RIGHT){	// �u3:�H��a(d��4 �E��)�v
+//							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_RIGHT){	// 「3:工具径(d＞4 右側)」
 //								if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
 //									temp = RESULT.GREATER_D_DIFF_RIGHT_MIN[0];
 //								}
 //							}
 //							result = temp * 10.0;
 //							COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT] = result;
-//// add 2015.08.19 K.Uemura start	�v���t�@�C���ő�^�ŏ��o��
-//							SEQ.PROFILE_OUTPUT_COUNT++;			// �v���t�@�C���v���o�Ͷ���
+//// add 2015.08.19 K.Uemura start	プロファイル最大／最小出力
+//							SEQ.PROFILE_OUTPUT_COUNT++;			// プロファイル計測出力ｶｳﾝﾄ
 //							COM0.NO321 = (SEQ.PROFILE_OUTPUT_COUNT) >> 16;
 //							COM0.NO322 = (SEQ.PROFILE_OUTPUT_COUNT);
 //
 //							if(SEQ.PROFILE_OUTPUT_COUNT == 1){
-//								//������
+//								//初期化
 //								COM0.NO325 = COM0.NO326 = COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT];
 //							}else{
 //								if((short)COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT] < (short)COM0.NO325){
-//									COM0.NO325 = COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT];		// �ŏ�
+//									COM0.NO325 = COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT];		// 最小
 //								}
 //								if((short)COM0.NO326 < (short)COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT]){
-//									COM0.NO326 = COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT];		// �ő�
+//									COM0.NO326 = COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT];		// 最大
 //								}
 //							}
 //// add 2015.08.19 K.Uemura end
@@ -253,8 +253,8 @@ void send_to_fpga_measure_stop(void)
 //							COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT] = SEQ.INPUT_DBUS_LONG;
 //#endif
 //							
-//							SEQ.BUFFER_NO_NEW = SEQ.PROFILE_BUFFER_COUNT;				// �ޯ̧���ް�V
-//							SEQ.PROFILE_BUFFER_COUNT++;									// ���̧���ޯ̧�i�[�p����
+//							SEQ.BUFFER_NO_NEW = SEQ.PROFILE_BUFFER_COUNT;				// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ新
+//							SEQ.PROFILE_BUFFER_COUNT++;									// ﾌﾟﾛﾌｧｲﾙﾊﾞｯﾌｧ格納用ｶｳﾝﾄ
 //							if(SEQ.PROFILE_BUFFER_COUNT >= BUFFER_NUMBER)	SEQ.PROFILE_BUFFER_COUNT = 0;
 #endif
 // add 2016.03.02 K.Uemura end
@@ -262,9 +262,9 @@ void send_to_fpga_measure_stop(void)
 							COM0.NO310.BIT.RDY = 1;										// READY
 						}
 					}else{
-						if(COM0.NO300.BIT.RST){											// ����ؾ�Ă�ON�̂Ƃ�
-							COM0.NO310.BIT.RDY = 1;										// ����
-							COM0.NO310.BIT.FIN = 1;										// ����
+						if(COM0.NO300.BIT.RST){											// 強制ﾘｾｯﾄがONのとき
+							COM0.NO310.BIT.RDY = 1;										// 完了
+							COM0.NO310.BIT.FIN = 1;										// 完了
 							// ADD 170413
 							SEQ.FLAG6.BIT.CLEANING = 0;
 							SEQ.FPGA_SEND_STATUS = 71;
@@ -273,7 +273,7 @@ void send_to_fpga_measure_stop(void)
 							//
 							
 						}else{
-							// ���|�m�F���p�����̂Ƃ��͌v��������ύX���čČv��
+							// 清掃確認が継続中のときは計測方向を変更して再計測
 // chg 2016.06.22 K.Uemura start	G62202
 							if(((COM0.NO311 == 152)||(COM0.NO311 == 153))&&(COM0.NO300.BIT.EXE)){
 //							if((COM0.NO311 == 152)&&(COM0.NO300.BIT.EXE)){
@@ -281,32 +281,32 @@ void send_to_fpga_measure_stop(void)
 
 // chg 2016.06.22 K.Uemura start	G62202
 								if((COM0.NO311 == 153) && (SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION)){
-									//����I��
+									//測定終了
 									COM0.NO310.BIT.RDY = 1;								// READY
-									COM0.NO310.BIT.FIN = 1;								// ����
+									COM0.NO310.BIT.FIN = 1;								// 完了
 // add 2016.07.26 K.Uemura start	G72601
 									SEQ.MSEC_BUFFER[5][5] = SEQ.MSEC_COUNTER;
 // add 2016.07.26 K.Uemura end
 								}else{
 // chg 2016.06.22 K.Uemura end
-									SEQ.MEASUREMENT_DIRECTION = !SEQ.MEASUREMENT_DIRECTION;		// �v������
+									SEQ.MEASUREMENT_DIRECTION = !SEQ.MEASUREMENT_DIRECTION;		// 計測方向
 									
-									SEQ.FLAG.BIT.PARAM_INITIAL = 1;								// ���Ұ��������׸�
-									SEQ.CHANGE_FPGA = 1;										// ���Ұ�
+									SEQ.FLAG.BIT.PARAM_INITIAL = 1;								// ﾊﾟﾗﾒｰﾀ初期化ﾌﾗｸﾞ
+									SEQ.CHANGE_FPGA = 1;										// ﾊﾟﾗﾒｰﾀ
 									SEQ.FPGA_SEND_STATUS = 1;
-									SEQ.POWER_COUNT = 0;										// �d�����䶳�Ă�ؾ��
+									SEQ.POWER_COUNT = 0;										// 電源制御ｶｳﾝﾄをﾘｾｯﾄ
 									
 									SEQ.FLAG.BIT.MEASUREMENT = 1;
 								}
 							}else{
 								if(SEQ.FLAG3.BIT.AUTO_ERROR == 1){
-									SEQ.FLAG3.BIT.AUTO_ERROR = 0;							// �����װ�׸�
+									SEQ.FLAG3.BIT.AUTO_ERROR = 0;							// 自動ｴﾗｰﾌﾗｸﾞ
 
 									switch(SEQ.SELECT.BIT.MEASURE){
-										case MODE_D4_AUTO:				// 10:�H��a(����)
-										case MODE_D4_LOW:				// 0:�H��a(d��4)
-										case MODE_RUNOUT:				// 2:�U��
-										case MODE_PROFILE:				// 5:���̧��
+										case MODE_D4_AUTO:				// 10:工具径(自動)
+										case MODE_D4_LOW:				// 0:工具径(d≦4)
+										case MODE_RUNOUT:				// 2:振れ
+										case MODE_PROFILE:				// 5:ﾌﾟﾛﾌｧｲﾙ
 											COM0.NO310.BIT.RDY = 1;								// READY
 											if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){
 												SEQ.TP_CONTROL_STATUS++;
@@ -315,24 +315,24 @@ void send_to_fpga_measure_stop(void)
 									}
 								}else if(SEQ.FLAG3.BIT.TUNING_ERROR == 1){
 									SEQ.FLAG3.BIT.TUNING_ERROR = 0;
-									// ����ݸ޴װ�׸�
+									// ﾁｭｰﾆﾝｸﾞｴﾗｰﾌﾗｸﾞ
 									COM0.NO310.BIT.RDY = 1;									// READY
-									if(SEQ.SELECT.BIT.MEASURE != MODE_PROFILE){				// 5:���̧�وȊO�̎�
-										COM0.NO310.BIT.FIN = 1;								// ����
+									if(SEQ.SELECT.BIT.MEASURE != MODE_PROFILE){				// 5:ﾌﾟﾛﾌｧｲﾙ以外の時
+										COM0.NO310.BIT.FIN = 1;								// 完了
 									}
 									if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO)	SEQ.TP_CONTROL_STATUS++;
 								}else{
 // add 2016.03.08 K.Uemura start	G30802
 									switch(SEQ.SELECT.BIT.MEASURE){
-										case MODE_D4_LOW:			// d��4
+										case MODE_D4_LOW:			// d≦4
 											if(((COM0.NO318 << 16) | COM0.NO317) == 999999){
 												COM0.NO312 = ERR_NO_RESULT;
 											}
 											break;
 
-										case MODE_D4_AUTO:			// d��4 ����
-										case MODE_D4_LEFT:			// d��4 ��
-										case MODE_D4_RIGHT:			// d��4 �E
+										case MODE_D4_AUTO:			// d＞4 自動
+										case MODE_D4_LEFT:			// d＞4 左
+										case MODE_D4_RIGHT:			// d＞4 右
 											if(((COM0.NO315 << 16) | COM0.NO316) == 999999){
 												COM0.NO312 = ERR_NO_RESULT;
 											}
@@ -345,48 +345,48 @@ void send_to_fpga_measure_stop(void)
 						}
 					}
 					
-					led_measure_set();										// LED ����E�ݒ辯�  
+					led_measure_set();										// LED 測定・設定ｾｯﾄ  
 					
-					// �����f�I���׸ނ��u1�v�̂Ƃ�RS232C���玩�������ޯ�ޏo�͂��s��
-					if(SEQ.FLAG6.BIT.PIXEL_END == 1){						// �����f�I���׸�
-						SEQ.FLAG6.BIT.PIXEL_END = 0;						// �����f�I���׸�
-						SEQ.CBUS_NUMBER = 405;								// ���Z�O�ް��ǂݏo��
-						DEBUG_STR.DEBUG_OUTPUT = 0;							// ���ޯ�ޏo�͗p�o��̫�ϯ�		// 0 ����3��
+					// 特定画素終了ﾌﾗｸﾞが「1」のときRS232Cから自動でﾃﾞﾊﾞｯｸﾞ出力を行う
+					if(SEQ.FLAG6.BIT.PIXEL_END == 1){						// 特定画素終了ﾌﾗｸﾞ
+						SEQ.FLAG6.BIT.PIXEL_END = 0;						// 特定画素終了ﾌﾗｸﾞ
+						SEQ.CBUS_NUMBER = 405;								// 演算前ﾃﾞｰﾀ読み出し
+						DEBUG_STR.DEBUG_OUTPUT = 0;							// ﾃﾞﾊﾞｯｸﾞ出力用出力ﾌｫｰﾏｯﾄ		// 0 整数3桁
 						SEQ.CHANGE_FPGA = 10;
 						SEQ.FPGA_SEND_STATUS = 1;
-						DEBUG_STR.DEBUG_COUNT = 0;							// ���ޯ�ޏo�͗p����
-						SCI2.SCR.BIT.RIE = 0;								// RXI�����ERI���荞�ݗv�����֎~
-						SCI2.SCR.BIT.RE = 0;								// �رَ�M������֎~
-						COM2.SUB_STATUS = 4;								// ����
+						DEBUG_STR.DEBUG_COUNT = 0;							// ﾃﾞﾊﾞｯｸﾞ出力用ｶｳﾝﾀ
+						SCI2.SCR.BIT.RIE = 0;								// RXIおよびERI割り込み要求を禁止
+						SCI2.SCR.BIT.RE = 0;								// ｼﾘｱﾙ受信動作を禁止
+						COM2.SUB_STATUS = 4;								// 次へ
 					}
 					
-					// �ݻ�����׸ނ��u1�v�̂Ƃ�TP�����ޯ�ޏo�͂��s��
+					// ｾﾝｻﾚﾍﾞﾙﾌﾗｸﾞが「1」のときTPにﾃﾞﾊﾞｯｸﾞ出力を行う
 					if(SEQ.FLAG6.BIT.DEBUG_LEVEL == 1){
-						SEQ.FLAG6.BIT.DEBUG_LEVEL = 0;					// �ݻ�����׸�
-						SEQ.CBUS_NUMBER = 405;								// ���Z�O�ް��ǂݏo��
-						DEBUG_STR.DEBUG_OUTPUT = 0;							// ���ޯ�ޏo�͗p�o��̫�ϯ�		// 0 ����3��
+						SEQ.FLAG6.BIT.DEBUG_LEVEL = 0;					// ｾﾝｻﾚﾍﾞﾙﾌﾗｸﾞ
+						SEQ.CBUS_NUMBER = 405;								// 演算前ﾃﾞｰﾀ読み出し
+						DEBUG_STR.DEBUG_OUTPUT = 0;							// ﾃﾞﾊﾞｯｸﾞ出力用出力ﾌｫｰﾏｯﾄ		// 0 整数3桁
 						SEQ.CHANGE_FPGA = 17;
 						SEQ.FPGA_SEND_STATUS = 1;
-						DEBUG_STR.DEBUG_COUNT = 0;							// ���ޯ�ޏo�͗p����
+						DEBUG_STR.DEBUG_COUNT = 0;							// ﾃﾞﾊﾞｯｸﾞ出力用ｶｳﾝﾀ
 					}
 					
-					// �߰���ٔłŌv������Ӱ�ނ��؂�ւ���ꂽ�Ƃ��Čv�����s��
+					// ﾎﾟｰﾀﾌﾞﾙ版で計測中にﾓｰﾄﾞが切り替えられたとき再計測を行う
 					if(SEQ.FLAG.BIT.CHANGE_MODE == 1){
-						SEQ.FLAG.BIT.CHANGE_MODE = 0;						// �v��Ӱ�ސ؂�ւ��׸�
+						SEQ.FLAG.BIT.CHANGE_MODE = 0;						// 計測ﾓｰﾄﾞ切り替えﾌﾗｸﾞ
 						SEQ.FLAG.BIT.MEASUREMENT = 1;
 						
 						SEQ.CBUS_NUMBER = 394;
-						SEQ.CHANGE_FPGA = 2;								// ����
+						SEQ.CHANGE_FPGA = 2;								// 測定
 						SEQ.FPGA_SEND_STATUS = 1;
-						SEQ.FLAG.BIT.PORTABLE = OPERATION_MANUAL;			// �߰���ّ����׸�
+						SEQ.FLAG.BIT.PORTABLE = OPERATION_MANUAL;			// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 					}
 				}
 			}
 			break;
 			
 		case 22:
-			if(SEQ.FLAG.BIT.BUFFER_RESET == 1){							// �ޯ̧���Ă��u0�v�̂Ƃ�
-				SEQ.FLAG.BIT.BUFFER_RESET = 0;							// �ޯ̧ؾ���׸�
+			if(SEQ.FLAG.BIT.BUFFER_RESET == 1){							// ﾊﾞｯﾌｧｶｳﾝﾄが「0」のとき
+				SEQ.FLAG.BIT.BUFFER_RESET = 0;							// ﾊﾞｯﾌｧﾘｾｯﾄﾌﾗｸﾞ
 				SEQ.FPGA_SEND_STATUS = 11;
 			}
 			break;
@@ -394,7 +394,7 @@ void send_to_fpga_measure_stop(void)
 // add 2016.01.21 K.Uemura start	G12102
 		case 30:
 			if(SEQ.FLAG4.BIT.OKCOUNT_FLAG == 1){
-				if(COM0.NO300.BIT.ROF == 1){								// READY OFF���m���u1�v�̂Ƃ�
+				if(COM0.NO300.BIT.ROF == 1){								// READY OFF検知が「1」のとき
 					SEQ.FLAG4.BIT.OKCOUNT_FLAG = 0;
 					SEQ.FPGA_SEND_STATUS = 21;
 				}

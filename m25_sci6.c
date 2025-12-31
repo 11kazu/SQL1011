@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: m25_sci6.c
 ******************************************************************************/
 #include <stdint.h>
@@ -9,28 +9,28 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void sci6_init(void);					// M25�����ݒ�
+void sci6_init(void);					// M25初期設定
 
-void m25_rxi(void);						// M25��M
-void m25_txi(void);						// M25���M
-void m25_tei(void);						// M25���M�I��
+void m25_rxi(void);						// M25受信
+void m25_txi(void);						// M25送信
+void m25_tei(void);						// M25送信終了
 
-void m25_init(void);					// M25�������֐�
+void m25_init(void);					// M25初期化関数
 
-void m25_write_enable(void);			// M25ײĲȰ���
-void m25_bulk_erase(void);				// M25��ٸ�ڰ�
+void m25_write_enable(void);			// M25ﾗｲﾄｲﾈｰﾌﾞﾙ
+void m25_bulk_erase(void);				// M25ﾊﾞﾙｸｲﾚｰｽ
 
-void m25_status_register_read(void);	// M25�ð��ڼ޽�ذ��
+void m25_status_register_read(void);	// M25ｽﾃｰﾀｽﾚｼﾞｽﾀﾘｰﾄﾞ
 
 
 //************************************************************/
-//				RS232C�����ݒ�(SCI6)
+//				RS232C初期設定(SCI6)
 //************************************************************/
 void sci6_init(void)
 {
-	MSTP(SCI6) = 0;			// RIIC0Ӽޭ�ٽį�߉���
+	MSTP(SCI6) = 0;			// RIIC0ﾓｼﾞｭｰﾙｽﾄｯﾌﾟ解除
 	
-	// ���荞�ݗv���֎~
+	// 割り込み要求禁止
 	IEN(SCI6, TEI6) = 0;
 	IEN(SCI6, ERI6) = 0;
 	IEN(SCI6, TXI6) = 0;
@@ -42,7 +42,7 @@ void sci6_init(void)
 
 	// Select an On-chip baud rate generator to the clock source
 	//SCI6.SCR.BIT.CKE = 0;
-	SCI6.SCR.BIT.CKE = 1;	// SCK���瓯�����g���̸ۯ����o��
+	SCI6.SCR.BIT.CKE = 1;	// SCKから同じ周波数のｸﾛｯｸを出力
 
 	// SMR - Serial Mode Register
 	//SCI6.SMR.BYTE = 0x00;
@@ -57,8 +57,8 @@ void sci6_init(void)
 	
 	// BRR - Bit Rate Register
 	// 921600bps
-	// �ۯ�������Ӱ��
-	//Bit Rate: (48MHz/(8*2^(-1)*921600bps))-1 = 12.0208 �� 12
+	// ｸﾛｯｸ同期式ﾓｰﾄﾞ
+	//Bit Rate: (48MHz/(8*2^(-1)*921600bps))-1 = 12.0208 ≒ 12
 	//SCI6.BRR = 12;//			// 921600bps
 	//SCI6.BRR = 8;// 140821 PASS
 	
@@ -66,33 +66,33 @@ void sci6_init(void)
 	
 	//SCI6.BRR = 25;//			// 461538bps
 	
-	//�s����ωӏ� 2014/09/18
+	//市川改変箇所 2014/09/18
 	SCI6.BRR = 6;
 	
 	//SCI6.BRR = 12;	// 140919
 	//SCI6.BRR = 16;	// 140919
 	
-	delay_ms(1);			// 1�ޯĊ��ԑҋ@
+	delay_ms(1);			// 1ﾋﾞｯﾄ期間待機
 	
-	// ���荞�ݗD�����ِݒ�
+	// 割り込み優先ﾚﾍﾞﾙ設定
 /*	IPR(SCI6, TXI6) = 1;
 	IPR(SCI6, RXI6) = 1;
 	IPR(SCI6, TEI6) = 1;
 	IPR(SCI6, ERI6) = 1;*/
 	
-	//�s����ωӏ� 2014/09/18	
+	//市川改変箇所 2014/09/18	
 	IPR(SCI6, TXI6) = 14;
 	IPR(SCI6, RXI6) = 14;
 	IPR(SCI6, TEI6) = 14;
 	IPR(SCI6, ERI6) = 14;
 	
-	// ���荞�ݗv���ر
+	// 割り込み要求ｸﾘｱ
 	IR(SCI6, TXI6) = 0;
 	IR(SCI6, RXI6) = 0;
 	IR(SCI6, TEI6) = 0;
 	IR(SCI6, ERI6) = 0;
 	
-	// ���荞�ݗv������
+	// 割り込み要求許可
 	IEN(SCI6, TXI6) = 1;
 	IEN(SCI6, RXI6) = 1;
 	IEN(SCI6, ERI6) = 1;
@@ -100,7 +100,7 @@ void sci6_init(void)
 }
 
 /********************************************************/
-/*		M25(SCI6)RXI(��M�ް��ي��荞��)
+/*		M25(SCI6)RXI(受信ﾃﾞｰﾀﾌﾙ割り込み)
 /********************************************************/
 void m25_rxi(void)
 {
@@ -108,38 +108,38 @@ void m25_rxi(void)
 	COM6.RE_CONT++;
 	
 	if(COM6.RE_CONT == 256){
-		SCI6.SCR.BIT.RIE = 0;					// RXI�����ERI���荞�ݗv�����֎~
-		SCI6.SCR.BIT.RE = 0;					// �رَ�M������֎~
-		M25_CS_OUT = 1;								// M25_CS���uH�v�ɂ���
+		SCI6.SCR.BIT.RIE = 0;					// RXIおよびERI割り込み要求を禁止
+		SCI6.SCR.BIT.RE = 0;					// ｼﾘｱﾙ受信動作を禁止
+		M25_CS_OUT = 1;								// M25_CSを「H」にする
 		COM6.SUB_STATUS++;
 	}
 }
 
 /********************************************************/
-/*		M25(SCI6)TXI(���M�ް�����è���荞��)
+/*		M25(SCI6)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
 /********************************************************/
 void m25_txi(void)
 {
 	SCI6.TDR = COM6.WR_BUF[COM6.WR_CONT];
 	
-	if(COM6.WR_CONT == COM6.SEND_COUNT){		// �Ō�܂ő��M������
-		SCI6.SCR.BIT.TIE = 0;					// TXI���荞�ݗv�����֎~
-		SCI6.SCR.BIT.TEIE = 1;					// TEI���荞�ݗv��������
+	if(COM6.WR_CONT == COM6.SEND_COUNT){		// 最後まで送信したら
+		SCI6.SCR.BIT.TIE = 0;					// TXI割り込み要求を禁止
+		SCI6.SCR.BIT.TEIE = 1;					// TEI割り込み要求を許可
 		
-		while(SCI6.SSR.BIT.TEND != 1){}				// TEND�׸ނ��u1�v�ɂȂ�܂őҋ@
+		while(SCI6.SSR.BIT.TEND != 1){}				// TENDﾌﾗｸﾞが「1」になるまで待機
 		
-		SCI6.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-		SCI6.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-		SCI6.SCR.BIT.TE = 0;						// �رّ��M������֎~
+		SCI6.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+		SCI6.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+		SCI6.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 		
 		if(COM6.SUB_STATUS != 15){
-			M25_CS_OUT = 1;								// M25_CS���uH�v�ɂ���
+			M25_CS_OUT = 1;								// M25_CSを「H」にする
 		}
 		
 		if(COM6.SUB_STATUS == 15){
 			COM6.RE_CONT = 0;
-			SCI6.SCR.BIT.RIE = 1;						// RXI�����ERI���荞�ݗv��������
-			SCI6.SCR.BIT.RE = 1;						// �رَ�M���������
+			SCI6.SCR.BIT.RIE = 1;						// RXIおよびERI割り込み要求を許可
+			SCI6.SCR.BIT.RE = 1;						// ｼﾘｱﾙ受信動作を許可
 		}	
 		COM6.SUB_STATUS++;
 	}
@@ -148,51 +148,51 @@ void m25_txi(void)
 }
 
 /********************************************************/
-/*		M25(SCI6)TEI(���M�I�����荞��)
+/*		M25(SCI6)TEI(送信終了割り込み)
 /********************************************************/
 void m25_tei(void)
 {
-	while(SCI6.SSR.BIT.TEND != 1){}				// TEND�׸ނ��u1�v�ɂȂ�܂őҋ@
+	while(SCI6.SSR.BIT.TEND != 1){}				// TENDﾌﾗｸﾞが「1」になるまで待機
 	
-	SCI6.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-	SCI6.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-	SCI6.SCR.BIT.TE = 0;						// �رّ��M������֎~
+	SCI6.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+	SCI6.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+	SCI6.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 	
-	M25_CS_OUT = 1;								// M25_CS���uH�v�ɂ���
+	M25_CS_OUT = 1;								// M25_CSを「H」にする
 	
-	SCI6.SCR.BIT.RIE = 1;						// RXI�����ERI���荞�ݗv��������
-	SCI6.SCR.BIT.RE = 1;						// �رَ�M���������
+	SCI6.SCR.BIT.RIE = 1;						// RXIおよびERI割り込み要求を許可
+	SCI6.SCR.BIT.RE = 1;						// ｼﾘｱﾙ受信動作を許可
 	
 	COM6.SUB_STATUS++;
 }
 
 /********************************************************/
-/*		M25ײĲȰ���
+/*		M25ﾗｲﾄｲﾈｰﾌﾞﾙ
 /********************************************************/
 void m25_write_enable(void)
 {
-	M25_CS_OUT = 0;						// M25_CS���uL�v�ɂ���
+	M25_CS_OUT = 0;						// M25_CSを「L」にする
 	COM6.SEND_COUNT = 0;
 	COM6.WR_BUF[COM6.SEND_COUNT] = 0x06;
 }
 
 /********************************************************/
-/*		M25��ٸ�ڰ�
+/*		M25ﾊﾞﾙｸｲﾚｰｽ
 /********************************************************/
 void m25_bulk_erase(void)
 {
-	M25_CS_OUT = 0;						// M25_CS���uL�v�ɂ���
+	M25_CS_OUT = 0;						// M25_CSを「L」にする
 	COM6.START_ADDRESS = 0;
 	COM6.SEND_COUNT = 0;
 	COM6.WR_BUF[COM6.SEND_COUNT] = 0xC7;
 }
 
 /********************************************************/
-/*		M25�ð��ڼ޽�ذ��
+/*		M25ｽﾃｰﾀｽﾚｼﾞｽﾀﾘｰﾄﾞ
 /********************************************************/
 void m25_status_register_read(void)
 {
-	M25_CS_OUT = 0;						// M25_CS���uL�v�ɂ���
+	M25_CS_OUT = 0;						// M25_CSを「L」にする
 	COM6.START_ADDRESS = 0;
 	COM6.SEND_COUNT = 0;
 	COM6.WR_BUF[COM6.SEND_COUNT] = 0x05;
@@ -200,7 +200,7 @@ void m25_status_register_read(void)
 }
 
 //************************************************************/
-//				M25�������֐�
+//				M25初期化関数
 //************************************************************/
 void m25_init(void)
 {
@@ -217,34 +217,34 @@ void m25_init(void)
 	}
 	
 	switch(COM6.SUB_STATUS){
-		// ײĲȰ��ُ�������
+		// ﾗｲﾄｲﾈｰﾌﾞﾙ書き込み
 		case 1:
-			SCI6.SCR.BIT.RIE = 0;							// RXI�����ERI���荞�ݗv�����֎~
-			SCI6.SCR.BIT.RE = 0;							// �رَ�M������֎~
+			SCI6.SCR.BIT.RIE = 0;							// RXIおよびERI割り込み要求を禁止
+			SCI6.SCR.BIT.RE = 0;							// ｼﾘｱﾙ受信動作を禁止
 			
-			m25_write_enable();								// ײĲȰ���
+			m25_write_enable();								// ﾗｲﾄｲﾈｰﾌﾞﾙ
 			
 			COM6.WR_CONT = 0;
 			COM6.RE_CONT = 0;
 			
 			COM6.SUB_STATUS++;
 			
-			SCI6.SCR.BIT.TIE = 1;							// TIE���u1�v
-			SCI6.SCR.BIT.TE = 1;							// TE���u1�v
+			SCI6.SCR.BIT.TIE = 1;							// TIEを「1」
+			SCI6.SCR.BIT.TE = 1;							// TEを「1」
 			break;
 			
-		// �ް���������
+		// ﾃﾞｰﾀ書き込み
 		case 3:
-			SCI6.SCR.BIT.RIE = 0;							// RXI�����ERI���荞�ݗv�����֎~
-			SCI6.SCR.BIT.RE = 0;							// �رَ�M������֎~
+			SCI6.SCR.BIT.RIE = 0;							// RXIおよびERI割り込み要求を禁止
+			SCI6.SCR.BIT.RE = 0;							// ｼﾘｱﾙ受信動作を禁止
 			
-			M25_CS_OUT = 0;									// M25_CS���uL�v�ɂ���
+			M25_CS_OUT = 0;									// M25_CSを「L」にする
 			
-			// �߰����۸���
+			// ﾍﾟｰｼﾞﾌﾟﾛｸﾞﾗﾑ
 			COM6.SEND_COUNT = 0;
 			COM6.WR_BUF[COM6.SEND_COUNT] = 0x02;
 			
-			// ���ڽ
+			// ｱﾄﾞﾚｽ
 			COM6.SEND_COUNT++;
 			COM6.WR_BUF[COM6.SEND_COUNT] = (COM6.START_ADDRESS >> 8);
 			COM6.SEND_COUNT++;
@@ -252,7 +252,7 @@ void m25_init(void)
 			COM6.SEND_COUNT++;
 			COM6.WR_BUF[COM6.SEND_COUNT] = 0;
 			
-			// �ް�
+			// ﾃﾞｰﾀ
 			if(COM6.DATA_SELECT == 1){			// 0 - 255
 				for(i = 0; i<=255; i++){
 					COM6.SEND_COUNT++;
@@ -267,7 +267,7 @@ void m25_init(void)
 				}
 			}
 			
-			// ���ڽ��ݸ����
+			// ｱﾄﾞﾚｽをｲﾝｸﾘﾒﾝﾄ
 			COM6.START_ADDRESS++;
 			
 			COM6.WR_CONT = 0;
@@ -275,8 +275,8 @@ void m25_init(void)
 			
 			COM6.SUB_STATUS++;
 			
-			SCI6.SCR.BIT.TIE = 1;							// TIE���u1�v
-			SCI6.SCR.BIT.TE = 1;							// TE���u1�v
+			SCI6.SCR.BIT.TIE = 1;							// TIEを「1」
+			SCI6.SCR.BIT.TE = 1;							// TEを「1」
 			
 			break;
 			
@@ -284,15 +284,15 @@ void m25_init(void)
 			//COM6.SUB_STATUS = 5;
 			break;
 			
-		// �ް��ǂݍ���
+		// ﾃﾞｰﾀ読み込み
 		case 11:
-			CFG_PROG_OUT = 0;					// CFG_PROG���uL�v�ɂ���
+			CFG_PROG_OUT = 0;					// CFG_PROGを「L」にする
 			COM6.SUB_STATUS++;
 			break;
 			
 		case 12:
 			if(CFG_INT_IN == 0){
-				CFG_PROG_OUT = 1;					// CFG_PROG���uH�v�ɂ���
+				CFG_PROG_OUT = 1;					// CFG_PROGを「H」にする
 				COM6.SUB_STATUS++;
 			}
 			break;
@@ -303,22 +303,22 @@ void m25_init(void)
 			}
 			break;
 			
-		// �ް��ǂݍ���
+		// ﾃﾞｰﾀ読み込み
 		case 14:
-			SCI6.SCR.BIT.RIE = 0;							// RXI�����ERI���荞�ݗv�����֎~
-			SCI6.SCR.BIT.RE = 0;							// �رَ�M������֎~
+			SCI6.SCR.BIT.RIE = 0;							// RXIおよびERI割り込み要求を禁止
+			SCI6.SCR.BIT.RE = 0;							// ｼﾘｱﾙ受信動作を禁止
 			
-			// ����m�F�p
+			// 動作確認用
 			if(CFG_INT_IN == 0){
-				M25_CS_OUT = 0;						// M25_CS���uL�v�ɂ���
+				M25_CS_OUT = 0;						// M25_CSを「L」にする
 			}
 			
 			// 
-			M25_CS_OUT = 0;						// M25_CS���uL�v�ɂ���
+			M25_CS_OUT = 0;						// M25_CSを「L」にする
 			
 			COM6.SEND_COUNT = 0;
-			COM6.WR_BUF[COM6.SEND_COUNT] = 0x03;	// ذ��
-			// ���ڽ
+			COM6.WR_BUF[COM6.SEND_COUNT] = 0x03;	// ﾘｰﾄﾞ
+			// ｱﾄﾞﾚｽ
 			COM6.SEND_COUNT++;
 			COM6.WR_BUF[COM6.SEND_COUNT] = (COM6.START_ADDRESS >> 8);
 			COM6.SEND_COUNT++;
@@ -332,8 +332,8 @@ void m25_init(void)
 			
 			COM6.SUB_STATUS++;
 			
-			SCI6.SCR.BIT.TIE = 1;							// TIE���u1�v
-			SCI6.SCR.BIT.TE = 1;							// TE���u1�v
+			SCI6.SCR.BIT.TIE = 1;							// TIEを「1」
+			SCI6.SCR.BIT.TE = 1;							// TEを「1」
 			
 			break;
 			
@@ -346,14 +346,14 @@ void m25_init(void)
 				
 			COM6.SUB_STATUS++;
 			
-			SCI3.SCR.BIT.TIE = 1;							// TIE���u1�v
-			SCI3.SCR.BIT.TE = 1;							// TE���u1�v
+			SCI3.SCR.BIT.TIE = 1;							// TIEを「1」
+			SCI3.SCR.BIT.TE = 1;							// TEを「1」
 			
 			break;
 			
 		case 18:
 			if(CFG_DONE_IN == 0){
-				// �����đ��M
+				// 続けて送信
 				COM6.START_ADDRESS++;
 				COM6.SUB_STATUS = 14;
 				
@@ -363,56 +363,56 @@ void m25_init(void)
 				}
 			
 			}else{
-				// �I��
+				// 終了
 				COM6.SUB_STATUS++;
 				
 				//
-				SEQ.FLAG.BIT.POWER = !SEQ.FLAG.BIT.POWER;	// �d��(��Ԕ��])
+				SEQ.FLAG.BIT.POWER = !SEQ.FLAG.BIT.POWER;	// 電源(状態反転)
 				SEQ.FPGA_SEND_STATUS = 1;
-				//OUT.MASTER_STATUS = OUT_DRV_MODE;		// �ʏ�Ӱ��
+				//OUT.MASTER_STATUS = OUT_DRV_MODE;		// 通常ﾓｰﾄﾞ
 				//OUT.SUB_STATUS = 1;
-				SEQ.FLAG.BIT.POWER_ON = 1;				// �d��ON�׸ނ��
+				SEQ.FLAG.BIT.POWER_ON = 1;				// 電源ONﾌﾗｸﾞをｾｯﾄ
 				
-				SEQ.FLAG3.BIT.BLINK_LED = 1;				// LED�_���׸�
+				SEQ.FLAG3.BIT.BLINK_LED = 1;				// LED点滅ﾌﾗｸﾞ
 				
 				//
 				
-				//LED.FLAG.BIT.LOGO = 0;				// ��
-				//led_logo();					// ۺޓ_���F�ݒ�
+				//LED.FLAG.BIT.LOGO = 0;				// 緑
+				//led_logo();					// ﾛｺﾞ点灯色設定
 			}
 			break;
 			
-		// ײĲȰ��ُ�������
+		// ﾗｲﾄｲﾈｰﾌﾞﾙ書き込み
 		case 21:
-			SCI6.SCR.BIT.RIE = 0;							// RXI�����ERI���荞�ݗv�����֎~
-			SCI6.SCR.BIT.RE = 0;							// �رَ�M������֎~
+			SCI6.SCR.BIT.RIE = 0;							// RXIおよびERI割り込み要求を禁止
+			SCI6.SCR.BIT.RE = 0;							// ｼﾘｱﾙ受信動作を禁止
 			
-			m25_write_enable();								// ײĲȰ���
+			m25_write_enable();								// ﾗｲﾄｲﾈｰﾌﾞﾙ
 			
 			COM6.WR_CONT = 0;
 			COM6.RE_CONT = 0;
 			
 			COM6.SUB_STATUS++;
 			
-			SCI6.SCR.BIT.TIE = 1;							// TIE���u1�v
-			SCI6.SCR.BIT.TE = 1;							// TE���u1�v
+			SCI6.SCR.BIT.TIE = 1;							// TIEを「1」
+			SCI6.SCR.BIT.TE = 1;							// TEを「1」
 			
 			break;
 			
-		// ��ٸ�ڰ���������
+		// ﾊﾞﾙｸｲﾚｰｽ書き込み
 		case 23:
-			SCI6.SCR.BIT.RIE = 0;							// RXI�����ERI���荞�ݗv�����֎~
-			SCI6.SCR.BIT.RE = 0;							// �رَ�M������֎~
+			SCI6.SCR.BIT.RIE = 0;							// RXIおよびERI割り込み要求を禁止
+			SCI6.SCR.BIT.RE = 0;							// ｼﾘｱﾙ受信動作を禁止
 			
-			m25_bulk_erase();								// ��ٸ�ڰ�
+			m25_bulk_erase();								// ﾊﾞﾙｸｲﾚｰｽ
 			
 			COM6.WR_CONT = 0;
 			COM6.RE_CONT = 0;
 			
 			COM6.SUB_STATUS++;
 			
-			SCI6.SCR.BIT.TIE = 1;							// TIE���u1�v
-			SCI6.SCR.BIT.TE = 1;							// TE���u1�v
+			SCI6.SCR.BIT.TIE = 1;							// TIEを「1」
+			SCI6.SCR.BIT.TE = 1;							// TEを「1」
 			
 			break;
 	}
