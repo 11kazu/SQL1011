@@ -1,0 +1,36 @@
+/************************************************************************
+*
+* Device     : RX/RX600/RX62N
+*
+* File Name  : iodefine.h
+*
+* Abstract   : Definition of I/O Register.
+*
+* History    : 1.00  (2010-02-18)  [Hardware Manual Revision : 0.5]
+*            : 1.01  (2010-04-21)  [Hardware Manual Revision : 0.5]
+*            : 1.2   (2010-08-21)  [Hardware Manual Revision : 1.0]
+*            : 1.3B  (2012-06-17)  [Hardware Manual Revision : 1.30]
+*            : 1.3C  (2012-07-05)  [Hardware Manual Revision : 1.30]
+*
+* NOTE       : THIS IS A TYPICAL EXAMPLE.
+*
+* Copyright (C) 2012(2010) Renesas Electronics Corporation and
+* Renesas Solutions Corp. All rights reserved.
+*
+************************************************************************/
+/********************************************************************************/
+/*                                                                              */
+/*  DESCRIPTION : Definition of ICU Register                                    */
+/*  CPU TYPE    : RX62N                                                         */
+/*                                                                              */
+/*  Usage : IR,DTCER,IER,IPR of ICU Register                                    */
+/*     The following IR, DTCE, IEN, IPR macro functions simplify usage.         */
+/*     The bit access operation is "Bit_Name(interrupt source,name)".           */
+/*     A part of the name can be omitted.                                       */
+/*     for example :                                                            */
+/*       IR(MTU0,TGIA0) = 0;     expands to :                                   */
+/*         ICU.IR[114].BIT.IR = 0;                                              */
+/*                                                                              */
+/*       DTCE(ICU,IRQ0) = 1;     expands to :                                   */
+/*         ICU.DTCER[64].BIT.DTCE = 1;                                          */
+/*          
