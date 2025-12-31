@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: fpga_measure.c
 ******************************************************************************/
 #include <machine.h>
@@ -13,50 +13,50 @@
 #include "usercopy.h"
 
 // deb 2015.07.29 K.Uemura start	
-#define	__GET_SCANMODE	0			// ��������(0:�E�G�b�W 1:���G�b�W)
-									// ��Z����́u0�v�ł��邱��
+#define	__GET_SCANMODE	0			// 走査方向(0:右エッジ 1:左エッジ)
+									// ※Z測定は「0」であること
 // deb 2015.07.29 K.Uemura end
 
-void send_to_fpga2(void);						// FPGA�ւ��ް����M�֐�
+void send_to_fpga2(void);						// FPGAへのﾃﾞｰﾀ送信関数
 
-void set_result_edge_left(void);				// �����ތ��o���ʂ̐ݒ�A���W�ϊ�
-void set_result_edge_right(void);				// �E���ތ��o���ʂ̐ݒ�A���W�ϊ�
-void set_result_focus_left(void);				// �����ޏœ_���ʂ̐ݒ�
-void set_result_focus_right(void);				// �E���ޏœ_���ʂ̐ݒ�
+void set_result_edge_left(void);				// 左ｴｯｼﾞ検出結果の設定、座標変換
+void set_result_edge_right(void);				// 右ｴｯｼﾞ検出結果の設定、座標変換
+void set_result_focus_left(void);				// 左ｴｯｼﾞ焦点結果の設定
+void set_result_focus_right(void);				// 右ｴｯｼﾞ焦点結果の設定
 
-void set_result_skip(void);						// SKIP���ʂ̐ݒ�
-void result_output(void);						// ���ʏo��
-void max_min_reset(void);						// �ő�l�E�ŏ��lؾ��
-void swing_no_tooth_reset(void);				// �ő�l�E�ŏ��lؾ��(�U��n��0)
+void set_result_skip(void);						// SKIP結果の設定
+void result_output(void);						// 結果出力
+void max_min_reset(void);						// 最大値・最小値ﾘｾｯﾄ
+void swing_no_tooth_reset(void);				// 最大値・最小値ﾘｾｯﾄ(振れ刃数0)
 void output_error(unsigned long);
-_UWORD get_execute_timer(void);					// ���s���Ԃ̎擾
-_UBYTE get_execute_mode(_UBYTE, _UBYTE);		// ����Ӱ�ނ̎擾(ORIGIN�^d��4�^�E�E�E)
-_UBYTE get_execute_mode_edge(_UBYTE, _UBYTE);	// ����Ӱ�ނ̎擾(�E���ށ^�����ށ^������)
-_UBYTE get_scan_mode(_UBYTE, _UBYTE);			// ����Ӱ�ނ̎擾(�E���ށ^������)
-_UBYTE get_tuning_mode(_UBYTE);					// ����ݸގ��{�̎擾(����ݸގ��{�^���Ȃ�)
-float get_threshold(_UBYTE, _UBYTE );			// �������l�擾(�v���e��^�œ_���킹�^ORIGIN[���ލl��])
+_UWORD get_execute_timer(void);					// 実行時間の取得
+_UBYTE get_execute_mode(_UBYTE, _UBYTE);		// 動作ﾓｰﾄﾞの取得(ORIGIN／d≦4／・・・)
+_UBYTE get_execute_mode_edge(_UBYTE, _UBYTE);	// 動作ﾓｰﾄﾞの取得(右ｴｯｼﾞ／左ｴｯｼﾞ／両ｴｯｼﾞ)
+_UBYTE get_scan_mode(_UBYTE, _UBYTE);			// 動作ﾓｰﾄﾞの取得(右ｴｯｼﾞ／左ｴｯｼﾞ)
+_UBYTE get_tuning_mode(_UBYTE);					// ﾁｭｰﾆﾝｸﾞ実施の取得(ﾁｭｰﾆﾝｸﾞ実施／しない)
+float get_threshold(_UBYTE, _UBYTE );			// しきい値取得(計測各種／焦点合わせ／ORIGIN[ｴｯｼﾞ考慮])
 short set_scan_flag(_UWORD);
 short set_ok_flag(_UWORD);
 short set_result(_UWORD);
 short set_7seg_led_upper(long, _UBYTE);
 short set_7seg_led_lower(long, _UBYTE);
-void set_7seg_upper_no_data(void);				// 7��ޕ\��(-----)(��i)
-void set_7seg_lower_no_data(void);				// 7��ޕ\��(-----)(���i)
+void set_7seg_upper_no_data(void);				// 7ｾｸﾞ表示(-----)(上段)
+void set_7seg_lower_no_data(void);				// 7ｾｸﾞ表示(-----)(下段)
 
 //************************************************************/
-//				FPGA�ւ��ް����M�֐�(�v��)
-//	22 �� 11 �� 14 �� 15 �� 16 �� 11
-//	                           �� 21 �� 11
-//	                                 �� 2 �� 3 �� 4 �� 5 �� 6 �� 7 �� 8 �� 11
-//	                                 �� 22 [16]�v���t�@�C���J�n(send_to_fpga_profile��)
-//	                                 �� 71 [ 0]����I��
-//	                           �� 103 [ 2]�Čv��(fpga_idle��)
+//				FPGAへのﾃﾞｰﾀ送信関数(計測)
+//	22 → 11 → 14 → 15 → 16 → 11
+//	                           → 21 → 11
+//	                                 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 11
+//	                                 → 22 [16]プロファイル開始(send_to_fpga_profileへ)
+//	                                 → 71 [ 0]測定終了
+//	                           → 103 [ 2]再計測(fpga_idleへ)
 //************************************************************/
-// �v��
+// 計測
 void send_to_fpga2(void)
 {
 	_UWORD i;
-	_UWORD ave_data,min_data,max_data;				// ���ϒl�E�ŏ��l�E�ő�l�̈ꎞ�ް�
+	_UWORD ave_data,min_data,max_data;				// 平均値・最小値・最大値の一時ﾃﾞｰﾀ
 	float temp[RESULT_AREA_MAX];
 	long result[RESULT_AREA_MAX];
 	_UBYTE exec_mode;
@@ -67,45 +67,45 @@ void send_to_fpga2(void)
 	
 	switch(SEQ.FPGA_SEND_STATUS){
 		
-		// �߰Ă��o�͂ɐݒ肷��
+		// ﾎﾟｰﾄを出力に設定する
 		case 2:
-			bus_to_out();							// �޽���o�͂ɐݒ�
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			bus_to_out();							// ﾊﾞｽを出力に設定
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// ������޽�E�ް��޽��ݒ肷��
+		// ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを設定する
 		case 3:
-			send_to_cbus(SEQ.CBUS_NUMBER);			// ��������ް�o��
-			send_to_dbus_zero();					// �ް��o�͊֐�0
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			send_to_cbus(SEQ.CBUS_NUMBER);			// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力
+			send_to_dbus_zero();					// ﾃﾞｰﾀ出力関数0
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 4:
 			C_ACK_OUT	= 1;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_ACK���uL�v�ɂ���
+		// C_ACKを「L」にする
 		case 5:
 			C_ACK_OUT	= 0;						// C_ACK
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_PRIO�E������޽�E�ް��޽���uL�v�ɂ���
+		// C_PRIO・ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを「L」にする
 		case 6:
-			send_to_cbus_zero();						// ��������ް�o�͊֐�0
-			send_to_dbus_zero();						// �ް��o�͊֐�0
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			send_to_cbus_zero();						// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力関数0
+			send_to_dbus_zero();						// ﾃﾞｰﾀ出力関数0
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// �߰Ă���͂ɐݒ肷��
+		// ﾎﾟｰﾄを入力に設定する
 		case 7:
-			bus_to_in();							// �޽����͂ɐݒ�
-			SEQ.FPGA_SEND_STATUS++;					// ����
+			bus_to_in();							// ﾊﾞｽを入力に設定
+			SEQ.FPGA_SEND_STATUS++;					// 次へ
 			break;
 			
-		// C_PRIO���uL�v�ɂ���
+		// C_PRIOを「L」にする
 		case 8:
 			C_PRIO_OUT	= 0;						// C_PRIO
 			if(SEQ.CBUS_NUMBER == 390){
@@ -115,8 +115,8 @@ void send_to_fpga2(void)
 			SEQ.FPGA_SEND_STATUS = 11;
 			break;
 	
-		// FPGA �� RX���ް����M
-		// F_PRIO_IN���uH�v�ɂȂ�����C_ACK���uH�v�ɂ���
+		// FPGA → RXにﾃﾞｰﾀ送信
+		// F_PRIO_INが「H」になったらC_ACKを「H」にする
 		case 11:
 			if(C_PRIO_OUT == 1){
 				C_PRIO_OUT = 0;
@@ -126,38 +126,38 @@ void send_to_fpga2(void)
 				C_ACK_OUT	= 1;					// C_ACK
 				C_ACK_OUT	= 0;					// C_ACK
 			// ADD 160907
-			}else{	// F_PRIO_IN���u1�v�ɂȂ�Ȃ��Ƃ���U��~����
-				SEQ.FPGA_RESTART_COUNT++;				// FPGA�Ľ��Ķ���
+			}else{	// F_PRIO_INが「1」にならないとき一旦停止する
+				SEQ.FPGA_RESTART_COUNT++;				// FPGA再ｽﾀｰﾄｶｳﾝﾄ
 				if(SEQ.FPGA_RESTART_COUNT >= 100){
 					SEQ.FPGA_RESTART_COUNT = 0;
 					C_PRIO_OUT	= 1;					// C_PRIO
 					SEQ.CBUS_NUMBER = 394;
-					SEQ.FPGA_SEND_STATUS = 2;			// ����
+					SEQ.FPGA_SEND_STATUS = 2;			// 次へ
 				}
 			}
 			break;
 			
-		case 14:	// ���荞�݌�
+		case 14:	// 割り込み後
 			switch(SEQ.CBUS_NUMBER){
-				case 211:		// �����ލŏ��ʒu
-					SEQ.BUFFER_COUNT = 2;						// �ޯ̧
-					set_result_edge_left();			// �����ތ��o���ʂ̐ݒ�A���W�ϊ�
+				case 211:		// 左ｴｯｼﾞ最小位置
+					SEQ.BUFFER_COUNT = 2;						// ﾊﾞｯﾌｧ
+					set_result_edge_left();			// 左ｴｯｼﾞ検出結果の設定、座標変換
 					break;
 					
-				case 212:		// �E���ލő�ʒu
-					set_result_edge_right();		// �E���ތ��o���ʂ̐ݒ�A���W�ϊ�
+				case 212:		// 右ｴｯｼﾞ最大位置
+					set_result_edge_right();		// 右ｴｯｼﾞ検出結果の設定、座標変換
 					break;
 					
-				case 213:		// �����ތX��
-					set_result_focus_left();		// �����ޏœ_���ʂ̐ݒ�
+				case 213:		// 左ｴｯｼﾞ傾斜
+					set_result_focus_left();		// 左ｴｯｼﾞ焦点結果の設定
 					break;
 					
-				case 214:		// �E���ތX��
-					set_result_focus_right();		// �E���ޏœ_���ʂ̐ݒ�
+				case 214:		// 右ｴｯｼﾞ傾斜
+					set_result_focus_right();		// 右ｴｯｼﾞ焦点結果の設定
 					break;
 					
-				case 215:		// ���ފԂ̍�
-					// ���������_���ް��ɕϊ����l��\������
+				case 215:		// ｴｯｼﾞ間の差
+					// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 					Variable.lLong = SEQ.INPUT_DBUS_LONG;
 					SEQ.INPUT_DBUS = Variable.fFloat;
 					//SEQ.INPUT_DBUS_LONG = SEQ.INPUT_DBUS * 10.0;
@@ -165,8 +165,8 @@ void send_to_fpga2(void)
 					COM0.NO105 = SEQ.INPUT_DBUS_LONG;
 					
 // add 2016.02.18 K.Uemura start	G21804
-					// �ǉ��ް��׸ނ��u0�v�̂Ƃ� ADD 160226
-					if(SEQ.FLAG6.BIT.ADD_DATA == 0)		result_output();	// ���ʏo��
+					// 追加ﾃﾞｰﾀﾌﾗｸﾞが「0」のとき ADD 160226
+					if(SEQ.FLAG6.BIT.ADD_DATA == 0)		result_output();	// 結果出力
 // add 2016.02.18 K.Uemura end
 					
 // deb 2015.07.29 K.Uemura start	
@@ -183,12 +183,12 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 		SEQ.TABLE_TEMP_DATA[2] = RESULT.EDGE_RIGHT_PIXEL[SEQ.BUFFER_COUNT];
 #endif
 
-		// FOCUS�l��25.5�𒴂���ꍇ�́A�S��25.5�Ƃ���
+		// FOCUS値が25.5を超える場合は、全て25.5とする
 		if(25.5 < SEQ.TABLE_TEMP_DATA[1]){
 			SEQ.TABLE_TEMP_DATA[1] = 25.5;
 		}
 
-		// �ݒ�
+		// 設定
 		DEBUG_STR.DEBUG_FOCUS[DEBUG_STR.DEBUG_COUNT] = (unsigned char)(SEQ.TABLE_TEMP_DATA[0] * 10.0);
 		DEBUG_STR.DEBUG_EDGE[DEBUG_STR.DEBUG_COUNT] = (unsigned short)(SEQ.TABLE_TEMP_DATA[1] * 10.0);
 //		DEBUG_STR.DEBUG_EDGE2[DEBUG_STR.DEBUG_COUNT] = (unsigned short)(SEQ.TABLE_TEMP_DATA[2] * 10.0);
@@ -208,46 +208,46 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 					
 // add 2016.02.18 K.Uemura start	G21804
 				// ADD 160304
-				case 216:		// ���ϒl�E�ŏ��l�E�ő�l
+				case 216:		// 平均値・最小値・最大値
 // chg 2016.07.13 K.Uemura start	G71302
-					ave_data = (short)((SEQ.INPUT_DBUS_LONG >> 16) & 0x000000FF);		// ���ϒl
-					min_data = (short)((SEQ.INPUT_DBUS_LONG >> 8) & 0x000000FF);		// �ŏ��l
-					max_data = (short)(SEQ.INPUT_DBUS_LONG & 0x000000FF);				// �ő�l
-//					ave_data = (short)(SEQ.INPUT_DBUS_LONG & 0x000000FF);				// ���ϒl
-//					min_data = (short)((SEQ.INPUT_DBUS_LONG >> 8) & 0x000000FF);		// �ŏ��l
-//					max_data = (short)((SEQ.INPUT_DBUS_LONG >> 16) & 0x000000FF);		// �ő�l
+					ave_data = (short)((SEQ.INPUT_DBUS_LONG >> 16) & 0x000000FF);		// 平均値
+					min_data = (short)((SEQ.INPUT_DBUS_LONG >> 8) & 0x000000FF);		// 最小値
+					max_data = (short)(SEQ.INPUT_DBUS_LONG & 0x000000FF);				// 最大値
+//					ave_data = (short)(SEQ.INPUT_DBUS_LONG & 0x000000FF);				// 平均値
+//					min_data = (short)((SEQ.INPUT_DBUS_LONG >> 8) & 0x000000FF);		// 最小値
+//					max_data = (short)((SEQ.INPUT_DBUS_LONG >> 16) & 0x000000FF);		// 最大値
 // chg 2016.07.13 K.Uemura end
 					
-					// ���ϒl�E�ŏ��l�E�ő�l���S�āu0�v�łȂ��Ƃ�
+					// 平均値・最小値・最大値が全て「0」でないとき
 					if((ave_data != 0)&&(min_data != 0)&&(max_data != 0)){
-						COM0.NO133 = ave_data;											// ���ϒl
-						COM0.NO134 = min_data;											// �ŏ��l
-						COM0.NO135 = max_data;											// �ő�l
+						COM0.NO133 = ave_data;											// 平均値
+						COM0.NO134 = min_data;											// 最小値
+						COM0.NO135 = max_data;											// 最大値
 						
-						SEQ.AVE_TOTAL += COM0.NO133;									// ���v
-						if(SEQ.AVE_MIN > COM0.NO133)	SEQ.AVE_MIN = COM0.NO133;		// �ŏ�
-						if(SEQ.AVE_MAX < COM0.NO133)	SEQ.AVE_MAX = COM0.NO133;		// �ő�
+						SEQ.AVE_TOTAL += COM0.NO133;									// 合計
+						if(SEQ.AVE_MIN > COM0.NO133)	SEQ.AVE_MIN = COM0.NO133;		// 最小
+						if(SEQ.AVE_MAX < COM0.NO133)	SEQ.AVE_MAX = COM0.NO133;		// 最大
 						
-						SEQ.MIN_TOTAL += COM0.NO134;									// ���v
-						if(SEQ.MIN_MIN > COM0.NO134)	SEQ.MIN_MIN = COM0.NO134;		// �ŏ�
-						if(SEQ.MIN_MAX < COM0.NO134)	SEQ.MIN_MAX = COM0.NO134;		// �ő�
+						SEQ.MIN_TOTAL += COM0.NO134;									// 合計
+						if(SEQ.MIN_MIN > COM0.NO134)	SEQ.MIN_MIN = COM0.NO134;		// 最小
+						if(SEQ.MIN_MAX < COM0.NO134)	SEQ.MIN_MAX = COM0.NO134;		// 最大
 						
-						SEQ.MAX_TOTAL += COM0.NO135;									// ���v
-						if(SEQ.MAX_MIN > COM0.NO135)	SEQ.MAX_MIN = COM0.NO135;		// �ŏ�
-						if(SEQ.MAX_MAX < COM0.NO135)	SEQ.MAX_MAX = COM0.NO135;		// �ő�
+						SEQ.MAX_TOTAL += COM0.NO135;									// 合計
+						if(SEQ.MAX_MIN > COM0.NO135)	SEQ.MAX_MIN = COM0.NO135;		// 最小
+						if(SEQ.MAX_MAX < COM0.NO135)	SEQ.MAX_MAX = COM0.NO135;		// 最大
 						
-						SEQ.CLEANING_COUNT_PASS++;										// ���|��ٽ����(����)
+						SEQ.CLEANING_COUNT_PASS++;										// 清掃ﾊﾟﾙｽｶｳﾝﾄ(正常)
 					}
-					SEQ.CLEANING_COUNT_TOTAL++;											// ���|��ٽ����(���v)
+					SEQ.CLEANING_COUNT_TOTAL++;											// 清掃ﾊﾟﾙｽｶｳﾝﾄ(合計)
 					
-					result_output();	// ���ʏo��
+					result_output();	// 結果出力
 					break;
 				//
 // add 2016.02.18 K.Uemura end
 				
-				case 223:		// ����ߏo��
+				case 223:		// ｽｷｯﾌﾟ出力
 					set_result_skip();
-					hdi_output();					// HDI�o��
+					hdi_output();					// HDI出力
 // add 2016.07.26 K.Uemura start	G72601
 					if(SEQ.MSEC_FLAG == 26){
 						SEQ.MSEC_BUFFER[25][1] = SEQ.MSEC_COUNTER;
@@ -259,42 +259,42 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 			SEQ.FPGA_SEND_STATUS++;
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 15:
 			SEQ.FPGA_SEND_STATUS++;
 			C_ACK_OUT	= 1;						// C_ACK
 			break;
 			
-		// C_ACK���uL�v�ɂ���
+		// C_ACKを「L」にする
 		case 16:
 			C_ACK_OUT	= 0;						// C_ACK
 			SEQ.FPGA_SEND_STATUS = 11;
 			
-			if(SEQ.CBUS_NUMBER == SEQ.LAST_CBUS_NUMBER){	// CBUS���ް(1���ٍŏI)�̂Ƃ�
+			if(SEQ.CBUS_NUMBER == SEQ.LAST_CBUS_NUMBER){	// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)のとき
 			
 				SEQ.FPGA_SEND_STATUS = 21;
 				
-				SEQ.BUFFER_COUNT2++;						// �ޯ̧����2(����m�F�p)
+				SEQ.BUFFER_COUNT2++;						// ﾊﾞｯﾌｧｶｳﾝﾄ2(動作確認用)
 				
 				// ADD 150728
 				if(SEQ.FLAG6.BIT.DATA_TRANSMISSION == 0){
 					if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
-						SEQ.FLAG.BIT.BUFFER_RESET = 1;			// �ޯ̧ؾ���׸�
+						SEQ.FLAG.BIT.BUFFER_RESET = 1;			// ﾊﾞｯﾌｧﾘｾｯﾄﾌﾗｸﾞ
 					}
 				}
 				
-				// 100ms�Ԋu���ް����M
-				if(SEQ.FLAG.BIT.BUFFER_RESET == 1){			// �ޯ̧���Ă��u0�v�̂Ƃ�
-					SEQ.FLAG.BIT.BUFFER_RESET = 0;			// �ޯ̧ؾ���׸�
+				// 100ms間隔でﾃﾞｰﾀ送信
+				if(SEQ.FLAG.BIT.BUFFER_RESET == 1){			// ﾊﾞｯﾌｧｶｳﾝﾄが「0」のとき
+					SEQ.FLAG.BIT.BUFFER_RESET = 0;			// ﾊﾞｯﾌｧﾘｾｯﾄﾌﾗｸﾞ
 					
-					SEQ.FLAG6.BIT.DATA_TRANSMISSION = 1;	// �ް����M�׸�
+					SEQ.FLAG6.BIT.DATA_TRANSMISSION = 1;	// ﾃﾞｰﾀ送信ﾌﾗｸﾞ
 					
 					// ADD 150608
-					COM0.NO132 = SEQ.BUFFER_COUNT2;			// �ޯ̧����2(����m�F�p)
-					SEQ.BUFFER_COUNT2 = 0;					// �ޯ̧����2(����m�F�p)
+					COM0.NO132 = SEQ.BUFFER_COUNT2;			// ﾊﾞｯﾌｧｶｳﾝﾄ2(動作確認用)
+					SEQ.BUFFER_COUNT2 = 0;					// ﾊﾞｯﾌｧｶｳﾝﾄ2(動作確認用)
 					//
 					
-					COM0.NO310.BIT.RDY = 0;					// READY���ޯĂ�OFF�ɂ���Ԕԍ���Ă���
+					COM0.NO310.BIT.RDY = 0;					// READYのﾋﾞｯﾄをOFFにし状態番号をｾｯﾄする
 // add 2016.07.26 K.Uemura start	G72601
 					if(SEQ.MSEC_FLAG == 27){
 						SEQ.MSEC_BUFFER[25][2] = SEQ.MSEC_COUNTER;
@@ -302,7 +302,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 					}
 // add 2016.07.26 K.Uemura end
 					
-					// ���o�׸ނ̐ݒ�
+					// 検出ﾌﾗｸﾞの設定
 					if(SEQ.FLAG4.BIT.EDGE_L_POLLING == 1){
 						SEQ.FLAG4.BIT.EDGE_L_SCAN = 1;
 					}
@@ -313,21 +313,21 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 						SEQ.FLAG4.BIT.EDGE_LR_SCAN = 1;
 					}
 
-					// ����Ӱ�ގ擾
+					// 動作ﾓｰﾄﾞ取得
 					exec_mode = get_execute_mode( SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE );
 
-					// ���������擾
+					// 走査方向取得
 					scan_mode = get_scan_mode( SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE );
 
-					// ������
+					// 初期化
 					for(i=0; i<RESULT_AREA_MAX; i++){
 						temp[i] = 999999.9;
 						result[i] = 999999;
 					}
-					result_flag = 0;		// 0:���ʂȂ� 1:���ʂ���
+					result_flag = 0;		// 0:結果なし 1:結果あり
 
 					switch(exec_mode){
-						case MODE_D4_LOW:			// 0:d��4
+						case MODE_D4_LOW:			// 0:d≦4
 							if(SEQ.FLAG4.BIT.EDGE_LR_POLLING == 1){
 								temp[0] = RESULT.WORK_EDGE_DIFF[SEQ.BUFFER_COUNT];	// d
 								result[0] = temp[0] * 10.0;
@@ -339,18 +339,18 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							}
 
 							if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
-								temp[2] = RESULT.LARGE_D_DIFF[0];					// D(���E���ލő�ŏ��̍�)
+								temp[2] = RESULT.LARGE_D_DIFF[0];					// D(左右ｴｯｼﾞ最大最小の差)
 								result[2] = temp[2] * 10.0;
 
-								temp[3] = RESULT.DELTA_X_DIFF[0];					// ��X ��
+								temp[3] = RESULT.DELTA_X_DIFF[0];					// ΔX 差
 								result[3] = temp[3] * 10.0;
 
 								if(SEQ.FLAG4.BIT.EDGE_LR_SCAN == 1){
-									result[4] = result[2] - result[1];					// �U��(D��d-max�̍�)
+									result[4] = result[2] - result[1];					// 振れ(Dとd-maxの差)
 								}
 							}
 
-							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 								if(SEQ.SELECT.BIT.PEAKHOLD == PEAK_HOLD_OFF){
 									if(SEQ.FLAG4.BIT.EDGE_LR_POLLING == 1){
 										SEQ.PEAKHOLD_DATA1[1] = result[0];		// d
@@ -358,7 +358,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								}else{
 									if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
 										SEQ.PEAKHOLD_DATA1[1] = result[2];		// D
-										SEQ.PEAKHOLD_DATA2[1] = result[4];		// �U��
+										SEQ.PEAKHOLD_DATA2[1] = result[4];		// 振れ
 									}
 								}
 							}
@@ -368,12 +368,12 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								SEQ.SELECT.BIT.PEAKHOLD = PEAK_HOLD_5S;
 								if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
 									SEQ.PEAKHOLD_DATA1[1] = result[2];			// D
-									SEQ.PEAKHOLD_DATA2[1] = result[4];			// �U��
+									SEQ.PEAKHOLD_DATA2[1] = result[4];			// 振れ
 								}
 							}
 #endif
 // add 2017.02.10 K.Uemura start	H21001
-							// �ud�v�̍X�V���Ɍ��茋�ʍX�V���s��
+							// 「d」の更新時に限り結果更新を行う
 							if(SEQ.FLAG4.BIT.EDGE_LR_POLLING == 1){
 // add 2017.02.10 K.Uemura end
 								COM0.NO313 = result[0] >> 16;
@@ -387,8 +387,8 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								COM0.NO321 = result[4] >> 16;
 								COM0.NO322 = result[4];
 
-								// 7seg�\��(��i)
-								if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+								// 7seg表示(上段)
+								if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 									set_7seg_led_upper( SEQ.PEAKHOLD_DATA1[1], SEQ.SELECT.BIT.MEASURE );
 								}else{
 #if	EXHIBITION
@@ -399,10 +399,10 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 #endif
 								}
 
-								// 7seg�\��(���i)
+								// 7seg表示(下段)
 								if((SEQ.FLUTES & 1) == 0){
-									// �n���������̂Ƃ�
-									if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){			// �߰���ّ����׸�
+									// 刃数が偶数のとき
+									if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){			// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 #if	EXHIBITION
 										// for exhibitions 141021
 										set_7seg_led_lower( SEQ.PEAKHOLD_DATA2[1], SEQ.SELECT.BIT.MEASURE );
@@ -411,7 +411,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 #endif
 									}else{
 										if(SEQ.SELECT.BIT.PEAKHOLD == PEAK_HOLD_OFF){
-											set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+											set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 										}else{
 											set_7seg_led_lower( SEQ.PEAKHOLD_DATA2[1], SEQ.SELECT.BIT.MEASURE );
 										}
@@ -419,13 +419,13 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 									}
 								
 								}else{
-									set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+									set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 								}
 							}
 							break;
 							
-						case MODE_D4_LEFT:			//  1:d��4 ��
-													// 30:�H�(Z)
+						case MODE_D4_LEFT:			//  1:d＞4 左
+													// 30:工具長(Z)
 							if(SEQ.FLAG4.BIT.EDGE_R_POLLING == 1){
 								temp[0] = RESULT.GREATER_D_DIFF[SEQ.BUFFER_COUNT];	// REAL
 								result[0] = temp[0] * 10.0;
@@ -439,7 +439,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							}
 
 							if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
-								temp[1] = RESULT.GREATER_D_DIFF_MAX[0];				// D>4 �ő�
+								temp[1] = RESULT.GREATER_D_DIFF_MAX[0];				// D>4 最大
 								result[1] = temp[1] * 10.0;
 
 // chg 2016.09.08 K.Uemura start	G90801
@@ -451,18 +451,18 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								result_flag = 1;
 							}
 
-							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 								if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
 									if(SEQ.SELECT.BIT.PEAKHOLD == PEAK_HOLD_OFF){
 										SEQ.PEAKHOLD_DATA1[1] = result[0];		// REAL
 									}else{
-										SEQ.PEAKHOLD_DATA1[1] = result[1];		// D>4 �ő�
+										SEQ.PEAKHOLD_DATA1[1] = result[1];		// D>4 最大
 									}
 								}
 							}
 
 							if(result_flag == 1){
-								//�o�͔͈͂̊m�F
+								//出力範囲の確認
 								result[2] = DL_MAX;
 								result[3] = DL_Z_MAX;
 							}
@@ -478,10 +478,10 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							COM0.NO321 = 0;
 							COM0.NO322 = 0;
 
-							// 7seg�\��
-							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+							// 7seg表示
+							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 								set_7seg_led_upper( SEQ.PEAKHOLD_DATA1[1], SEQ.SELECT.BIT.MEASURE );
-								set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+								set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 							}else{
 								set_7seg_led_upper( result[1], SEQ.SELECT.BIT.MEASURE );
 								set_7seg_led_lower( result[0], SEQ.SELECT.BIT.MEASURE );
@@ -489,7 +489,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							break;
 							
 							//
-						case MODE_GROWTH:			// 6:�L�ё���
+						case MODE_GROWTH:			// 6:伸び測定
 							if(SEQ.FLAG4.BIT.EDGE_R_POLLING == 1){
 								temp[0] = RESULT.GREATER_D_DIFF[SEQ.BUFFER_COUNT];	// REAL
 								result[0] = temp[0] * 10.0;
@@ -504,11 +504,11 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 // chg 2015.08.21 K.Uemura start	
 #if	0
 //							if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
-//								temp[1] = RESULT.GREATER_D_DIFF_MAX[0];				// D>4 �ő�
+//								temp[1] = RESULT.GREATER_D_DIFF_MAX[0];				// D>4 最大
 //								result[1] = temp[1] * 10.0;
 //
 //// chg 2015.06.10 K.Uemura start	
-//								temp[2] = RESULT.GREATER_D_DIFF_MIN[0];				// D>4 �ŏ�
+//								temp[2] = RESULT.GREATER_D_DIFF_MIN[0];				// D>4 最小
 //								result[2] = temp[2] * 10.0;
 //
 //								if(RESULT_SIGN == 1){
@@ -522,12 +522,12 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 //// chg 2015.06.10 K.Uemura end
 //							}
 //
-//							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+//							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 //								if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
 //									if(SEQ.SELECT.BIT.PEAKHOLD == PEAK_HOLD_OFF){
 //										SEQ.PEAKHOLD_DATA1[1] = result[0];		// REAL
 //									}else{
-//										SEQ.PEAKHOLD_DATA1[1] = result[1];		// D>4 �ő�
+//										SEQ.PEAKHOLD_DATA1[1] = result[1];		// D>4 最大
 //									}
 //								}
 //							}
@@ -543,7 +543,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							COM0.NO314 = result[0];
 
 // chg 2015.06.10 K.Uemura start	
-							//COM0.NO319 320�́Amain.c���Ŏ��{
+							//COM0.NO319 320は、main.c内で実施
 							if(SEQ.GROWTH_OUTPUT_COUNT == 0 && SEQ.SWING_BUFFER_COUNT == 0){
 								COM0.NO315 = 0;
 								COM0.NO316 = 0;
@@ -569,43 +569,43 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							//COM0.NO321 = 0;
 							//COM0.NO322 = 0;
 
-							// 7seg�\��
-							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+							// 7seg表示
+							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 								set_7seg_led_upper( SEQ.PEAKHOLD_DATA1[1], SEQ.SELECT.BIT.MEASURE );
-								set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+								set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 							}else{
 								set_7seg_led_upper( result[1], SEQ.SELECT.BIT.MEASURE );
 								set_7seg_led_lower( result[0], SEQ.SELECT.BIT.MEASURE );
 							}
 							
-							// �L�ё��茋�ʏo��	150512
-							// RESULT.GROWTH[0] : �ő�l(�ޯ̧�o��)
-							// RESULT.GROWTH[1] : ���ݒl
-							// RESULT.GROWTH[2] : ��l(���Βl�̂Ƃ�)
+							// 伸び測定結果出力	150512
+							// RESULT.GROWTH[0] : 最大値(ﾊﾞｯﾌｧ出力)
+							// RESULT.GROWTH[1] : 現在値
+							// RESULT.GROWTH[2] : 基準値(相対値のとき)
 							
-							RESULT.GROWTH[1] = result[0];	// ���茋�ʂ��i�[����
+							RESULT.GROWTH[1] = result[0];	// 測定結果を格納する
 							
-							// ���ʂ������ꍇ�͍ő�l�ɂ���
+							// 結果が無い場合は最大値にする
 							if(result[0] > 9999)	RESULT.GROWTH[1] = 9999;
 							
-							// �l���������Ƃ��X�V����(ϲŽ�������ő�Ƃ���)
+							// 値が小さいとき更新する(ﾏｲﾅｽ方向を最大とする)
 							if(RESULT.GROWTH[0] > RESULT.GROWTH[1])		RESULT.GROWTH[0] = RESULT.GROWTH[1];
 							
-							// �L�ьv���Ԋu���u0�v�łȂ��Ƃ�
+							// 伸び計測間隔が「0」でないとき
 							if(GROWTH_INTERVAL > 0){
-								SEQ.GROWTH_INTERVAL_COUNT++;				// �L�ьv���Ԋu����
-								// �L�ьv���Ԋu���ĂƐL�ьv���Ԋu����v�����Ƃ�
+								SEQ.GROWTH_INTERVAL_COUNT++;				// 伸び計測間隔ｶｳﾝﾄ
+								// 伸び計測間隔ｶｳﾝﾄと伸び計測間隔が一致したとき
 // add 2016.03.10 K.Uemura start	G31002
 								if(SEQ.EXTEND_CYCLE){
 									if(SEQ.GROWTH_INTERVAL_COUNT >= (SEQ.EXTEND_CYCLE * 10)){
-										SEQ.GROWTH_INTERVAL_COUNT = 0;			// �L�ьv���Ԋu����
-										SEQ.FLAG.BIT.GROWTH_OUTPUT = 1;			// �L�ьv���o���׸�
+										SEQ.GROWTH_INTERVAL_COUNT = 0;			// 伸び計測間隔ｶｳﾝﾄ
+										SEQ.FLAG.BIT.GROWTH_OUTPUT = 1;			// 伸び計測出力ﾌﾗｸﾞ
 									}
 								}else
 // add 2016.03.10 K.Uemura end
 								if(SEQ.GROWTH_INTERVAL_COUNT >= GROWTH_INTERVAL){
-									SEQ.GROWTH_INTERVAL_COUNT = 0;			// �L�ьv���Ԋu����
-									SEQ.FLAG.BIT.GROWTH_OUTPUT = 1;			// �L�ьv���o���׸�
+									SEQ.GROWTH_INTERVAL_COUNT = 0;			// 伸び計測間隔ｶｳﾝﾄ
+									SEQ.FLAG.BIT.GROWTH_OUTPUT = 1;			// 伸び計測出力ﾌﾗｸﾞ
 								}
 							}
 							//
@@ -613,7 +613,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							break;
 							//
 							
-						case MODE_D4_RIGHT:			// 11:d��4 �E
+						case MODE_D4_RIGHT:			// 11:d＞4 右
 							if(SEQ.FLAG4.BIT.EDGE_L_POLLING == 1){
 								temp[0] = RESULT.GREATER_D_DIFF_RIGHT[SEQ.BUFFER_COUNT];			// REAL
 								result[0] = temp[0] * 10.0;
@@ -624,7 +624,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							}
 
 							if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
-								temp[1] = RESULT.GREATER_D_DIFF_RIGHT_MIN[0];						// D>4 �ő�
+								temp[1] = RESULT.GREATER_D_DIFF_RIGHT_MIN[0];						// D>4 最大
 								result[1] = temp[1] * 10.0;
 
 								if(RESULT_SIGN == 1){
@@ -632,12 +632,12 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								}
 							}
 
-							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 								if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
 									if(SEQ.SELECT.BIT.PEAKHOLD == PEAK_HOLD_OFF){
 										SEQ.PEAKHOLD_DATA1[1] = result[0];		// REAL
 									}else{
-										SEQ.PEAKHOLD_DATA1[1] = result[1];		// D>4 �ő�
+										SEQ.PEAKHOLD_DATA1[1] = result[1];		// D>4 最大
 									}
 								}
 							}
@@ -653,19 +653,19 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							COM0.NO321 = 0;
 							COM0.NO322 = 0;
 
-							// 7seg�\��
-							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// �߰���ّ����׸�
+							// 7seg表示
+							if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){				// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 								set_7seg_led_upper( SEQ.PEAKHOLD_DATA1[1], SEQ.SELECT.BIT.MEASURE );
-								set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+								set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 							}else{
 								set_7seg_led_upper( result[1], SEQ.SELECT.BIT.MEASURE );
 								set_7seg_led_lower( result[0], SEQ.SELECT.BIT.MEASURE );
 							}
 							break;
 							
-						case MODE_RUNOUT:			// 2:�U��
+						case MODE_RUNOUT:			// 2:振れ
 							if(scan_mode == TOOL_LEFT){
-								// �E����
+								// 右ｴｯｼﾞ
 								if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
 									temp[0] = RESULT.TIR[0];
 									temp[1] = RESULT.TIR[3];
@@ -673,7 +673,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 									result_flag = 1;
 								}
 							}else{
-								// ������
+								// 左ｴｯｼﾞ
 								if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
 									temp[0] = RESULT.TIR[0];
 									temp[1] = RESULT.TIR[3];
@@ -683,10 +683,10 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							}
 
 							if(result_flag == 1){
-								result[0] = temp[0] * 10.0;						// �ő�ŏ��̍� (REAL)
-								result[1] = temp[1] * 10.0;						// �ő�
-								result[2] = temp[2] * 10.0;						// �ŏ�
-								result[3] = abs(result[1] - result[2]);			// �ő�ŏ��̍�
+								result[0] = temp[0] * 10.0;						// 最大最小の差 (REAL)
+								result[1] = temp[1] * 10.0;						// 最大
+								result[2] = temp[2] * 10.0;						// 最小
+								result[3] = abs(result[1] - result[2]);			// 最大最小の差
 
 								if(RESULT_SIGN == 1){
 									result[0] *= -1;
@@ -709,11 +709,11 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 //									COM0.NO321 = 0;
 //									COM0.NO322 = 0;
 									
-									// 7seg�\��
+									// 7seg表示
 									if((SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL) && (SEQ.SELECT.BIT.PEAKHOLD == PEAK_HOLD_OFF)){
-										// �߰���ّ����׸ށ^�s�[�N�z�[���hOFF�̏ꍇ
+										// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ／ピークホールドOFFの場合
 										set_7seg_led_upper( result[0], SEQ.SELECT.BIT.MEASURE);
-										set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+										set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 									}else{
 										set_7seg_led_upper( result[1], SEQ.SELECT.BIT.MEASURE );
 										set_7seg_led_lower( result[3], SEQ.SELECT.BIT.MEASURE );
@@ -722,21 +722,21 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							}
 							break;
 							
-						case MODE_FOCUS:			// 3:�œ_
+						case MODE_FOCUS:			// 3:焦点
 							if(SEQ.FLAG4.BIT.EDGE_L_POLLING == 1){
-								result[0] = RESULT.FOCUS_LEFT_MIN[SEQ.BUFFER_COUNT] * 1000.0;		// �œ_ ���ŏ� (REAL)
+								result[0] = RESULT.FOCUS_LEFT_MIN[SEQ.BUFFER_COUNT] * 1000.0;		// 焦点 左最小 (REAL)
 							}
 
 							if(SEQ.FLAG4.BIT.EDGE_R_POLLING == 1){
-								result[1] = RESULT.FOCUS_RIGHT_MIN[SEQ.BUFFER_COUNT] * 1000.0;		// �œ_ �E�ŏ� (REAL)
+								result[1] = RESULT.FOCUS_RIGHT_MIN[SEQ.BUFFER_COUNT] * 1000.0;		// 焦点 右最小 (REAL)
 							}
 
 							if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
-								result[2] = RESULT.FOCUS_LEFT_MIN[0] * 1000.0;						// �œ_ ���ŏ�
+								result[2] = RESULT.FOCUS_LEFT_MIN[0] * 1000.0;						// 焦点 左最小
 							}
 
 							if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
-								result[3] = RESULT.FOCUS_RIGHT_MIN[0] * 1000.0;						// �œ_ �E�ŏ�
+								result[3] = RESULT.FOCUS_RIGHT_MIN[0] * 1000.0;						// 焦点 右最小
 							}
 
 							COM0.NO313 = result[0] >> 16;
@@ -750,15 +750,15 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							COM0.NO321 = 0;
 							COM0.NO322 = 0;
 
-							// 7seg�\��
+							// 7seg表示
 							set_7seg_led_upper( result[0], SEQ.SELECT.BIT.MEASURE );
 							set_7seg_led_lower( result[1], SEQ.SELECT.BIT.MEASURE );
 
 							break;
 							
-						case MODE_CENTER:			// 4:���S�ʒu�ݒ�
+						case MODE_CENTER:			// 4:中心位置設定
 							if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
-								temp[0] = RESULT.DELTA_X_DIFF[0];						// ��X ��
+								temp[0] = RESULT.DELTA_X_DIFF[0];						// ΔX 差
 								result[0] = temp[0] * 10.0;
 
 								if(RESULT_SIGN == 1){
@@ -777,14 +777,14 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							COM0.NO321 = 0;
 							COM0.NO322 = 0;
 
-							// 7seg�\��
+							// 7seg表示
 							set_7seg_led_upper( result[0], SEQ.SELECT.BIT.MEASURE );
-							set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+							set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 							
 							break;
 							
-						case MODE_PROFILE:			// 5:���̧��
-							if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LOW){			// �u1:�H��a(d��4)�v
+						case MODE_PROFILE:			// 5:ﾌﾟﾛﾌｧｲﾙ
+							if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LOW){			// 「1:工具径(d≦4)」
 								// d (REAL)
 								if(SEQ.FLAG4.BIT.EDGE_LR_POLLING == 1){
 									temp[0] = RESULT.WORK_EDGE_DIFF[SEQ.BUFFER_COUNT];
@@ -792,7 +792,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
 									temp[1] = RESULT.LARGE_D_DIFF[0];
 								}
-							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LEFT){		// �u2:�H��a(d��4 ����)�v
+							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_LEFT){		// 「2:工具径(d＞4 左側)」
 								if(SEQ.FLAG4.BIT.EDGE_R_POLLING == 1){
 									temp[0] = RESULT.GREATER_D_DIFF[SEQ.BUFFER_COUNT];
 // chg 2016.09.08 K.Uemura start	G90801
@@ -811,7 +811,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 										temp[1] *= -1;
 									}
 								}
-							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_RIGHT){	// �u3:�H��a(d��4 �E��)�v
+							}else if(SEQ.FLAG2.BIT.AUTO_MODE == MODE_D4_AUTO_RIGHT){	// 「3:工具径(d＞4 右側)」
 								if(SEQ.FLAG4.BIT.EDGE_L_POLLING == 1){
 									temp[0] = RESULT.GREATER_D_DIFF_RIGHT[SEQ.BUFFER_COUNT];
 									if(RESULT_SIGN == 1){
@@ -839,16 +839,16 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							COM0.NO321 = 0;
 							COM0.NO322 = 0;
 							
-							// 7seg�\��(��i)
+							// 7seg表示(上段)
 							set_7seg_led_upper( result[0], SEQ.SELECT.BIT.MEASURE );
-							// 7seg�\��(���i)
+							// 7seg表示(下段)
 							set_7seg_led_lower( result[1], SEQ.SELECT.BIT.MEASURE );
 							break;
 							
 						case MODE_ORIGIN:			// 7:ORIGIN
-						case MODE_ORIGIN_EDGE:		// 8:ORIGIN(���ލl��)
+						case MODE_ORIGIN_EDGE:		// 8:ORIGIN(ｴｯｼﾞ考慮)
 							if(SEQ.FLAG6.BIT.CLEANING == 0){
-								// 313 ���G�b�W(REAL)
+								// 313 左エッジ(REAL)
 								if(SEQ.FLAG4.BIT.EDGE_L_POLLING == 1){
 									temp[0] = RESULT.GREATER_D_DIFF_RIGHT[SEQ.BUFFER_COUNT];			// REAL
 									result[0] = temp[0] * 10.0;
@@ -861,9 +861,9 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 									}
 								}
 
-								// 315 ���G�b�W(MAX)
+								// 315 左エッジ(MAX)
 								if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
-									temp[1] = RESULT.GREATER_D_DIFF_RIGHT_MIN[0];						// D>4 �ő�
+									temp[1] = RESULT.GREATER_D_DIFF_RIGHT_MIN[0];						// D>4 最大
 									result[1] = temp[1] * 10.0;
 
 // chg 2016.09.08 K.Uemura start	G90801
@@ -874,7 +874,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 									}
 								}
 
-								// 317 �E�G�b�W(REAL)
+								// 317 右エッジ(REAL)
 								if(SEQ.FLAG4.BIT.EDGE_R_POLLING == 1){
 									temp[2] = RESULT.GREATER_D_DIFF[SEQ.BUFFER_COUNT];	// REAL
 									result[2] = temp[2] * 10.0;
@@ -887,9 +887,9 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 									}
 								}
 
-								// 319 �E�G�b�W(MAX)
+								// 319 右エッジ(MAX)
 								if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
-									temp[3] = RESULT.GREATER_D_DIFF_MAX[0];				// D>4 �ő�
+									temp[3] = RESULT.GREATER_D_DIFF_MAX[0];				// D>4 最大
 									result[3] = temp[3] * 10.0;
 
 // chg 2016.09.08 K.Uemura start	G90801
@@ -909,7 +909,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 								COM0.NO319 = result[3] >> 16;
 								COM0.NO320 = result[3];
 							}else{
-								// ���|�m�F
+								// 清掃確認
 								temp[0] = min(SEQ.AVE_RATE, SEQ.MIN_RATE);
 								temp[0] = min(SEQ.MAX_RATE, temp[0]);
 								if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
@@ -932,7 +932,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 									set_7seg_led_lower( result[1], SEQ.SELECT.BIT.MEASURE );
 
 // add 2016.06.22 K.Uemura start	G62202
-									//�������l�����̏ꍇ�A�G���[�o��
+									//しきい値未満の場合、エラー出力
 									RESULT.SENSOR_LEVEL_Z = (short)(result[1]);
 
 									if(COM0.NO311 == 153){
@@ -950,28 +950,28 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							break;
 					}
 					
-					//COM0.NO9030 = ADCOV.V_BATT;			// ctl_ad_func()�Ɉړ�	150512
-					//COM0.NO9031 = EXT_POWER_IN;			// main()�Ɉړ�			150512
+					//COM0.NO9030 = ADCOV.V_BATT;			// ctl_ad_func()に移動	150512
+					//COM0.NO9031 = EXT_POWER_IN;			// main()に移動			150512
 					
-					SEQ.FLAG3.BIT.EDGE_L_ERROR = 0;			// ����L�װ�׸�
-					SEQ.FLAG3.BIT.EDGE_R_ERROR = 0;			// ����R�װ�׸�
-					SEQ.FLAG4.BIT.EDGE_L_POLLING = 0;		// ����L���o�׸�(�߰�ݸފ�)
-					SEQ.FLAG4.BIT.EDGE_R_POLLING = 0;		// ����R���o�׸�(�߰�ݸފ�)
-					SEQ.FLAG4.BIT.EDGE_LR_POLLING = 0;		// ����LR���o�׸�(�߰�ݸފ�)
+					SEQ.FLAG3.BIT.EDGE_L_ERROR = 0;			// ｴｯｼﾞLｴﾗｰﾌﾗｸﾞ
+					SEQ.FLAG3.BIT.EDGE_R_ERROR = 0;			// ｴｯｼﾞRｴﾗｰﾌﾗｸﾞ
+					SEQ.FLAG4.BIT.EDGE_L_POLLING = 0;		// ｴｯｼﾞL検出ﾌﾗｸﾞ(ﾎﾟｰﾘﾝｸﾞ間)
+					SEQ.FLAG4.BIT.EDGE_R_POLLING = 0;		// ｴｯｼﾞR検出ﾌﾗｸﾞ(ﾎﾟｰﾘﾝｸﾞ間)
+					SEQ.FLAG4.BIT.EDGE_LR_POLLING = 0;		// ｴｯｼﾞLR検出ﾌﾗｸﾞ(ﾎﾟｰﾘﾝｸﾞ間)
 					SEQ.BUFFER_COUNT = 0;
 
-					if(SEQ.FLAG2.BIT.MEMORY_RESET == 1){			// �L��ؾ���׸�
-						SEQ.FLAG2.BIT.MEMORY_RESET = 0;				// �L��ؾ���׸�
+					if(SEQ.FLAG2.BIT.MEMORY_RESET == 1){			// 記憶ﾘｾｯﾄﾌﾗｸﾞ
+						SEQ.FLAG2.BIT.MEMORY_RESET = 0;				// 記憶ﾘｾｯﾄﾌﾗｸﾞ
 						max_min_reset();
 					}
 
-					if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){		// �߰���ّ����׸�
+					if(SEQ.FLAG.BIT.PORTABLE == OPERATION_MANUAL){		// ﾎﾟｰﾀﾌﾞﾙ操作ﾌﾗｸﾞ
 						if(SEQ.FLAG3.BIT.PEAKHOLD_RESET == 1){
-							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 0;			// �߰�ΰ���ؾ���׸�
+							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 0;			// ﾋﾟｰｸﾎｰﾙﾄﾞﾘｾｯﾄﾌﾗｸﾞ
 							max_min_reset();
 
 							if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){
-								// �Čv��(fpga_idle����ăX�^�[�g)
+								// 再計測(fpga_idleから再スタート)
 								SEQ.CHANGE_FPGA = 2;			// FPGA idle
 								SEQ.FPGA_SEND_STATUS = 103;
 								OUT.SUB_STATUS = 11;
@@ -983,7 +983,7 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 					// for exhibitions 141021
 					else{
 						if(SEQ.FLAG3.BIT.PEAKHOLD_RESET == 1){
-							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 0;		// �߰�ΰ���ؾ���׸�
+							SEQ.FLAG3.BIT.PEAKHOLD_RESET = 0;		// ﾋﾟｰｸﾎｰﾙﾄﾞﾘｾｯﾄﾌﾗｸﾞ
 							max_min_reset();
 						}
 					}
@@ -993,28 +993,28 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 			}
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 17:
 			SEQ.FPGA_SEND_STATUS = 13;
 			C_ACK_OUT	= 1;						// C_ACK
 			break;
 			
-		// F_PRIO_IN���uL�v�ɂȂ��Ă��邱�Ƃ��m�F����
+		// F_PRIO_INが「L」になっていることを確認する
 		case 21:
-			//if(F_PRIO_IN == 0){					// F_PRIO_IN���uL�v�̂Ƃ�
+			//if(F_PRIO_IN == 0){					// F_PRIO_INが「L」のとき
 				SEQ.FPGA_SEND_STATUS = 11;
 			//}
 			
 			if(SEQ.FLAG.BIT.AFTER_STOPPING == 0){
-				if(F_PRIO_IN == 0){					// F_PRIO_IN���uL�v�̂Ƃ�
+				if(F_PRIO_IN == 0){					// F_PRIO_INが「L」のとき
 					if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
-						if(SEQ.FLAG6.BIT.DATA_TRANSMISSION == 1){		// �ް����M�׸�
-							if((SEQ.SELECT.BIT.MEASURE == MODE_PROFILE)&&(COM0.NO300.BIT.EXE == 1)){	// ���̧�قŎ��s���̂Ƃ�
-								SEQ.FLAG.BIT.MEASUREMENT = 1;		// �v�����J�n����
-								SEQ.CHANGE_FPGA = 16;				// ���̧�ُ���
+						if(SEQ.FLAG6.BIT.DATA_TRANSMISSION == 1){		// ﾃﾞｰﾀ送信ﾌﾗｸﾞ
+							if((SEQ.SELECT.BIT.MEASURE == MODE_PROFILE)&&(COM0.NO300.BIT.EXE == 1)){	// ﾌﾟﾛﾌｧｲﾙで実行中のとき
+								SEQ.FLAG.BIT.MEASUREMENT = 1;		// 計測を開始する
+								SEQ.CHANGE_FPGA = 16;				// ﾌﾟﾛﾌｧｲﾙ処理
 								SEQ.FPGA_SEND_STATUS = 22;
 							}else{
-								// �ҋ@�𑗐M(390)
+								// 待機を送信(390)
 								C_PRIO_OUT	= 1;					// C_PRIO
 								SEQ.CBUS_NUMBER = 390;
 								SEQ.FPGA_SEND_STATUS = 2;
@@ -1028,9 +1028,9 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 				SEQ.CHANGE_FPGA = 0;
 				DA.DADR0 = 0;							// DA0
 				
-				// ���̧�ق̂Ƃ�
+				// ﾌﾟﾛﾌｧｲﾙのとき
 				if(SEQ.SELECT.BIT.MEASURE == MODE_PROFILE){
-					if(COM0.NO300.BIT.EXE){								// ���s
+					if(COM0.NO300.BIT.EXE){								// 実行
 						COM0.NO310.BIT.STR = 1;							// STROBE
 						if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
 							SEQ.INPUT_DBUS_LONG = RESULT.LARGE_D_DIFF[0] * 10.0;
@@ -1038,16 +1038,16 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 							SEQ.INPUT_DBUS_LONG = 99999;
 						}
 						COM0.NO3000[SEQ.PROFILE_BUFFER_COUNT] = SEQ.INPUT_DBUS_LONG;
-						SEQ.BUFFER_NO_NEW = SEQ.PROFILE_BUFFER_COUNT;	// �ޯ̧���ް�V
-						SEQ.PROFILE_BUFFER_COUNT++;						// ���̧���ޯ̧�i�[�p����
+						SEQ.BUFFER_NO_NEW = SEQ.PROFILE_BUFFER_COUNT;	// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ新
+						SEQ.PROFILE_BUFFER_COUNT++;						// ﾌﾟﾛﾌｧｲﾙﾊﾞｯﾌｧ格納用ｶｳﾝﾄ
 						if(SEQ.PROFILE_BUFFER_COUNT >= BUFFER_NUMBER)	SEQ.PROFILE_BUFFER_COUNT = 0;
 						
 					}else{
 						COM0.NO310.BIT.RDY = 1;							// READY
 					}
 				}else{
-					if(COM0.NO300.BIT.RST){								// ����ؾ�Ă�ON�̂Ƃ�
-						COM0.NO310.BIT.FIN = 1;							// ����
+					if(COM0.NO300.BIT.RST){								// 強制ﾘｾｯﾄがONのとき
+						COM0.NO310.BIT.FIN = 1;							// 完了
 					}else{
 						COM0.NO310.BIT.RDY = 1;							// READY
 					}
@@ -1056,58 +1056,58 @@ if(SEQ.FLAG3.BIT.SWING_RESET){
 			break;
 			
 		case 22:
-			if(SEQ.FLAG.BIT.BUFFER_RESET == 1){				// �ޯ̧���Ă��u0�v�̂Ƃ�
-				SEQ.FLAG.BIT.BUFFER_RESET = 0;				// �ޯ̧ؾ���׸�
-				SEQ.BUFFER_COUNT2 = 0;						// �ޯ̧����2(����m�F�p)
+			if(SEQ.FLAG.BIT.BUFFER_RESET == 1){				// ﾊﾞｯﾌｧｶｳﾝﾄが「0」のとき
+				SEQ.FLAG.BIT.BUFFER_RESET = 0;				// ﾊﾞｯﾌｧﾘｾｯﾄﾌﾗｸﾞ
+				SEQ.BUFFER_COUNT2 = 0;						// ﾊﾞｯﾌｧｶｳﾝﾄ2(動作確認用)
 				
-				OUT.SUB_STATUS = 99;						// �\����~
+				OUT.SUB_STATUS = 99;						// 表示停止
 // chg 2016.06.22 K.Uemura start	G62202
 				if(((COM0.NO311 != 152) && (COM0.NO311 != 153)) || (SEQ.CLEANING_CYCLE == 0)){
 //				if((COM0.NO311 != 152) || (SEQ.CLEANING_CYCLE == 0)){
 // chg 2016.06.22 K.Uemura end
-					set_7seg_upper_no_data();					// 7��ޕ\��(-----)(��i)
-					set_7seg_lower_no_data();					// 7��ޕ\��(-----)(���i)
+					set_7seg_upper_no_data();					// 7ｾｸﾞ表示(-----)(上段)
+					set_7seg_lower_no_data();					// 7ｾｸﾞ表示(-----)(下段)
 				}
 				
-				SEQ.FLAG3.BIT.HDI_OUTPUT = 1;				// HDI�o���׸�
+				SEQ.FLAG3.BIT.HDI_OUTPUT = 1;				// HDI出力ﾌﾗｸﾞ
 				
 				SEQ.FPGA_SEND_STATUS = 11;
 				max_min_reset();
-				swing_no_tooth_reset();						// �ő�l�E�ŏ��lؾ��(�U��n��0)
+				swing_no_tooth_reset();						// 最大値・最小値ﾘｾｯﾄ(振れ刃数0)
 				//
-				SEQ.PEAKHOLD_COUNT = 0;						// �߰�ΰ��޶���
-				// �߰�ΰ��ގ��{�׸�(�U��̏ꍇ�́A�߰�1�_�ڎ擾���ON)
+				SEQ.PEAKHOLD_COUNT = 0;						// ﾋﾟｰｸﾎｰﾙﾄﾞｶｳﾝﾀ
+				// ﾋﾟｰｸﾎｰﾙﾄﾞ実施ﾌﾗｸﾞ(振れの場合は、ﾋﾟｰｸ1点目取得後にON)
 				if(SEQ.SELECT.BIT.MEASURE != MODE_RUNOUT){
-					SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 1;		// �߰�ΰ��ޗL���׸�
+					SEQ.FLAG3.BIT.PEAKHOLD_ENABLE = 1;		// ﾋﾟｰｸﾎｰﾙﾄﾞ有効ﾌﾗｸﾞ
 				}
 				SEQ.PEAKHOLD_DATA1[0] = SEQ.PEAKHOLD_DATA2[0] = 0;
 				//
-				RESULT.GROWTH[0] = 9999;				// �L�ё���ő�l������(�l�������ꍇ�́u9999�v�Ƃ���)	150512
-				RESULT.GROWTH[2] = 10000;				// �L�ё���ݒ�l������	150512
+				RESULT.GROWTH[0] = 9999;				// 伸び測定最大値初期化(値が無い場合は「9999」とする)	150512
+				RESULT.GROWTH[2] = 10000;				// 伸び測定設定値初期化	150512
 				
-				SEQ.FLAG6.BIT.DATA_TRANSMISSION = 0;		// �ް����M�׸�
+				SEQ.FLAG6.BIT.DATA_TRANSMISSION = 0;		// ﾃﾞｰﾀ送信ﾌﾗｸﾞ
 				
-				SEQ.END_TIMEOUT_PERIOD	= 0;				// ��ѱ�Ď���
+				SEQ.END_TIMEOUT_PERIOD	= 0;				// ﾀｲﾑｱｳﾄ時間
 
-// add 2015.08.19 K.Uemura start	�U����W�o��
+// add 2015.08.19 K.Uemura start	振れ座標出力
 				if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){
-					// ���I�t�Z�b�g(�E�G�b�W���o���v���X���ő�)
-					COM0.NO325 = 0x7FFF;		// �ŏ�(�ő�ŏ�����)
-					COM0.NO326 = 0x8000;		// �ő�(�ŏ��ŏ�����)
+					// 左オフセット(右エッジ検出＠プラスが最大)
+					COM0.NO325 = 0x7FFF;		// 最小(最大で初期化)
+					COM0.NO326 = 0x8000;		// 最大(最小で初期化)
 				}
 #if	0
 				if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){
 					if(SEQ.FLAG2.BIT.AUTO_MODE == 3){
-						// max �` min�̐ݒ�𔽓]����i�O���t�`��ł��Ȃ����߁j
-						COM0.NO325 = 0x7FFF;		// �ŏ�(�ő�ŏ�����)
-						COM0.NO326 = 0x8000;		// �ő�(�ŏ��ŏ�����)
-//						// �E�I�t�Z�b�g(���G�b�W���o���}�C�i�X���ő�)
-//						COM0.NO325 = 0x8000;		// �ő�(�ŏ��ŏ�����)
-//						COM0.NO326 = 0x7FFF;		// �ŏ�(�ő�ŏ�����)
+						// max ～ minの設定を反転する（グラフ描画できないため）
+						COM0.NO325 = 0x7FFF;		// 最小(最大で初期化)
+						COM0.NO326 = 0x8000;		// 最大(最小で初期化)
+//						// 右オフセット(左エッジ検出＠マイナスが最大)
+//						COM0.NO325 = 0x8000;		// 最大(最小で初期化)
+//						COM0.NO326 = 0x7FFF;		// 最小(最大で初期化)
 					}else{
-						// ���I�t�Z�b�g(�E�G�b�W���o���v���X���ő�)
-						COM0.NO325 = 0x7FFF;		// �ŏ�(�ő�ŏ�����)
-						COM0.NO326 = 0x8000;		// �ő�(�ŏ��ŏ�����)
+						// 左オフセット(右エッジ検出＠プラスが最大)
+						COM0.NO325 = 0x7FFF;		// 最小(最大で初期化)
+						COM0.NO326 = 0x8000;		// 最大(最小で初期化)
 					}
 				}
 #endif
@@ -1136,148 +1136,148 @@ COM0.NO140 = 0;
 }
 
 //************************************************************/
-//		�G�b�W���o���ʂ̐ݒ�
-//			FPGA���擾�������ʁi��f�j���A
-//			���炩���ߐݒ肳�ꂽ�e�[�u���f�[�^�ƏƂ炵���킹
-//			��f����m�ϊ����s��
-//				RESULT_EDGE_LEFT      :����
-//				RESULT_EDGE_LEFT_PIXEL:��f
+//		エッジ検出結果の設定
+//			FPGAより取得した結果（画素）を、
+//			あらかじめ設定されたテーブルデータと照らし合わせ
+//			画素→μm変換を行う
+//				RESULT_EDGE_LEFT      :実寸
+//				RESULT_EDGE_LEFT_PIXEL:画素
 //************************************************************/
-// �����ތ��o���ʂ̐ݒ�A���W�ϊ�
+// 左ｴｯｼﾞ検出結果の設定、座標変換
 void set_result_edge_left(void)
 {
 	_UWORD i;
 	union UFloatLong Variable;
 
-	// ���G�b�W�i0��f�ڂ��ő�j
+	// 左エッジ（0画素目が最大）
 
-	// ���������_���ް��ɕϊ����l��\������
+	// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 	Variable.lLong = SEQ.INPUT_DBUS_LONG;
 	SEQ.INPUT_DBUS = Variable.fFloat;
 	RESULT.EDGE_LEFT_PIXEL[SEQ.BUFFER_COUNT] = SEQ.INPUT_DBUS;
-	// �G�b�W(�ŏ�)
+	// エッジ(最小)
 	if(RESULT.EDGE_LEFT_PIXEL[SEQ.BUFFER_COUNT] < RESULT.EDGE_LEFT_PIXEL[0]){
 		RESULT.EDGE_LEFT_PIXEL[0] = RESULT.EDGE_LEFT_PIXEL[SEQ.BUFFER_COUNT];
 	}
 	COM0.NO101 = SEQ.INPUT_DBUS * 10;
 	
-	SEQ.FLAG3.BIT.EDGE_L_ERROR = 1;							// ����L�װ�׸�
-	RESULT.EDGE_LEFT_SCALE[SEQ.BUFFER_COUNT] = 0;				// �l���u0�v�ɂ���
+	SEQ.FLAG3.BIT.EDGE_L_ERROR = 1;							// ｴｯｼﾞLｴﾗｰﾌﾗｸﾞ
+	RESULT.EDGE_LEFT_SCALE[SEQ.BUFFER_COUNT] = 0;				// 値を「0」にする
 
-	// ��f���ŏ���f�̖��[�̂Ƃ�
+	// 画素が最小画素の末端のとき
 	if(SEQ.INPUT_DBUS == LINESENSOR_X_MEASURE_MIN){
-		SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_BEFORE[1];			// DBUS�̓����ް�(1�O���ް�)
+		SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_BEFORE[1];			// DBUSの入力ﾃﾞｰﾀ(1つ前のﾃﾞｰﾀ)
 	}
 	
-	// ���������u1�v���傫���Ƃ�
+	// 分割数が「1」より大きいとき
 	if(1 < X_DIVISION_NUMBER){
 		if(SEQ.TABLE_EDGE_LEFT[0] < (SEQ.INPUT_DBUS*10)){
 			for(i=1; i<=X_DIVISION_NUMBER-1; i++){
-				// ð��ق̒l���v���l���������Ƃ�
+				// ﾃｰﾌﾞﾙの値が計測値を上回ったとき
 				if((SEQ.INPUT_DBUS*10) <= SEQ.TABLE_EDGE_LEFT[i]){
 					RESULT.EDGE_LEFT_SCALE[SEQ.BUFFER_COUNT]	= (float)(SEQ.TABLE_EDGE_DISTANCE[i] - SEQ.TABLE_EDGE_DISTANCE[i-1])
 															* ((SEQ.INPUT_DBUS*10) - SEQ.TABLE_EDGE_LEFT[i-1])
 															/ (SEQ.TABLE_EDGE_LEFT[i] - SEQ.TABLE_EDGE_LEFT[i-1])
 															+ SEQ.TABLE_EDGE_DISTANCE[i-1];
-					SEQ.FLAG3.BIT.EDGE_L_ERROR = 0;						// ����L ����擾
+					SEQ.FLAG3.BIT.EDGE_L_ERROR = 0;						// ｴｯｼﾞL 正常取得
 					break;
 				}
 			}
 		}
 	}
 	
-	SEQ.INPUT_DBUS_BEFORE[1] = SEQ.INPUT_DBUS;				// DBUS�̓����ް�(1�O���ް�)
+	SEQ.INPUT_DBUS_BEFORE[1] = SEQ.INPUT_DBUS;				// DBUSの入力ﾃﾞｰﾀ(1つ前のﾃﾞｰﾀ)
 	
-	// �v���l��ð��ّS�Ă̒l���������Ƃ�
+	// 計測値がﾃｰﾌﾞﾙ全ての値を上回ったとき
 	if((SEQ.INPUT_DBUS*10) >= SEQ.TABLE_EDGE_LEFT[X_DIVISION_NUMBER-1]){
-		RESULT.EDGE_LEFT_SCALE[SEQ.BUFFER_COUNT] = SEQ.TABLE_EDGE_DISTANCE[X_DIVISION_NUMBER-1];	// �l��ð��ق̍ő�l�ɂ���
-		SEQ.FLAG3.BIT.EDGE_L_ERROR = 1;						// ����L�װ�׸�
+		RESULT.EDGE_LEFT_SCALE[SEQ.BUFFER_COUNT] = SEQ.TABLE_EDGE_DISTANCE[X_DIVISION_NUMBER-1];	// 値をﾃｰﾌﾞﾙの最大値にする
+		SEQ.FLAG3.BIT.EDGE_L_ERROR = 1;						// ｴｯｼﾞLｴﾗｰﾌﾗｸﾞ
 	}
 	
 	COM0.NO121 = RESULT.EDGE_LEFT_SCALE[SEQ.BUFFER_COUNT] * 10;
 }
 
-// �E���ތ��o���ʂ̐ݒ�A���W�ϊ�
+// 右ｴｯｼﾞ検出結果の設定、座標変換
 void set_result_edge_right(void)
 {
 	_UWORD i;
 	union UFloatLong Variable;
 	
-	// �E�G�b�W�i4095��f�ڂ��ő�j
+	// 右エッジ（4095画素目が最大）
 
-	// ���������_���ް��ɕϊ����l��\������
+	// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 	Variable.lLong = SEQ.INPUT_DBUS_LONG;
 	SEQ.INPUT_DBUS = Variable.fFloat;
 	RESULT.EDGE_RIGHT_PIXEL[SEQ.BUFFER_COUNT] = SEQ.INPUT_DBUS;
-	// �G�b�W(�ő�)
+	// エッジ(最大)
 	if(RESULT.EDGE_RIGHT_PIXEL[0] < RESULT.EDGE_RIGHT_PIXEL[SEQ.BUFFER_COUNT]){
 		RESULT.EDGE_RIGHT_PIXEL[0] = RESULT.EDGE_RIGHT_PIXEL[SEQ.BUFFER_COUNT];
 	}
 	COM0.NO102 = SEQ.INPUT_DBUS * 10;
 	
-	SEQ.FLAG3.BIT.EDGE_R_ERROR = 1;							// ����R�װ�׸�
+	SEQ.FLAG3.BIT.EDGE_R_ERROR = 1;							// ｴｯｼﾞRｴﾗｰﾌﾗｸﾞ
 	RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT] = 0;
 	
-	if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){				// �v��������X�����̂Ƃ�
-		// ��f���ő��f�̖��[�̂Ƃ�(�ŏ���f�̖��[)
+	if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){				// 計測方向がX方向のとき
+		// 画素が最大画素の末端のとき(最小画素の末端)
 		if(SEQ.INPUT_DBUS == LINESENSOR_X_MEASURE_MAX){
-			SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_BEFORE[2];			// DBUS�̓����ް�(1�O���ް�)
+			SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_BEFORE[2];			// DBUSの入力ﾃﾞｰﾀ(1つ前のﾃﾞｰﾀ)
 		}
 		
-		// ���������u1�v���傫���Ƃ�
+		// 分割数が「1」より大きいとき
 		if(1 < X_DIVISION_NUMBER){
 			if(SEQ.TABLE_EDGE_RIGHT[0] < (SEQ.INPUT_DBUS*10)){
 				for(i=1; i<=X_DIVISION_NUMBER-1; i++){
-					// ð��ق̒l���v���l���������Ƃ�
+					// ﾃｰﾌﾞﾙの値が計測値を上回ったとき
 					if((SEQ.INPUT_DBUS*10) <= SEQ.TABLE_EDGE_RIGHT[i]){
 						RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT]	= (float)(SEQ.TABLE_EDGE_DISTANCE[i] - SEQ.TABLE_EDGE_DISTANCE[i-1])
 																* ((SEQ.INPUT_DBUS*10) - SEQ.TABLE_EDGE_RIGHT[i-1])
 																/ (SEQ.TABLE_EDGE_RIGHT[i] - SEQ.TABLE_EDGE_RIGHT[i-1])
 																+ SEQ.TABLE_EDGE_DISTANCE[i-1];
-						SEQ.FLAG3.BIT.EDGE_R_ERROR = 0;						// ����R ����擾
+						SEQ.FLAG3.BIT.EDGE_R_ERROR = 0;						// ｴｯｼﾞR 正常取得
 						break;
 					}
 				}
 			}
 		}
 		
-		SEQ.INPUT_DBUS_BEFORE[2] = SEQ.INPUT_DBUS;				// DBUS�̓����ް�(1�O���ް�)
+		SEQ.INPUT_DBUS_BEFORE[2] = SEQ.INPUT_DBUS;				// DBUSの入力ﾃﾞｰﾀ(1つ前のﾃﾞｰﾀ)
 		
-		// �v���l��ð��ّS�Ă̒l���������Ƃ�
+		// 計測値がﾃｰﾌﾞﾙ全ての値を上回ったとき
 		if((SEQ.INPUT_DBUS*10) >= SEQ.TABLE_EDGE_RIGHT[X_DIVISION_NUMBER-1]){
-			RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT] = SEQ.TABLE_EDGE_DISTANCE[X_DIVISION_NUMBER-1];	// �l��ð��ق̍ő�l�ɂ���
-			SEQ.FLAG3.BIT.EDGE_R_ERROR = 1;						// ����R�װ�׸�
+			RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT] = SEQ.TABLE_EDGE_DISTANCE[X_DIVISION_NUMBER-1];	// 値をﾃｰﾌﾞﾙの最大値にする
+			SEQ.FLAG3.BIT.EDGE_R_ERROR = 1;						// ｴｯｼﾞRｴﾗｰﾌﾗｸﾞ
 		}
 	
-	}else{														// �v��������Z�����̂Ƃ�
-		// ��f���ő��f�̖��[�̂Ƃ�(�ŏ���f�̖��[)
+	}else{														// 計測方向がZ方向のとき
+		// 画素が最大画素の末端のとき(最小画素の末端)
 		if(SEQ.INPUT_DBUS == LINESENSOR_Z_MEASURE_MAX){
-			SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_BEFORE[2];			// DBUS�̓����ް�(1�O���ް�)
+			SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_BEFORE[2];			// DBUSの入力ﾃﾞｰﾀ(1つ前のﾃﾞｰﾀ)
 		}
 		
-		// ���������u1�v���傫���Ƃ�
+		// 分割数が「1」より大きいとき
 		if(1 < Z_DIVISION_NUMBER){
 			if(SEQ.Z_TABLE_EDGE_RIGHT[0] < (SEQ.INPUT_DBUS*10)){
 				for(i=1; i<=Z_DIVISION_NUMBER-1; i++){
-					// ð��ق̒l���v���l���������Ƃ�
+					// ﾃｰﾌﾞﾙの値が計測値を上回ったとき
 					if((SEQ.INPUT_DBUS*10) <= SEQ.Z_TABLE_EDGE_RIGHT[i]){
 						RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT]	= (float)(SEQ.Z_TABLE_EDGE_DISTANCE[i] - SEQ.Z_TABLE_EDGE_DISTANCE[i-1])
 																* ((SEQ.INPUT_DBUS*10) - SEQ.Z_TABLE_EDGE_RIGHT[i-1])
 																/ (SEQ.Z_TABLE_EDGE_RIGHT[i] - SEQ.Z_TABLE_EDGE_RIGHT[i-1])
 																+ SEQ.Z_TABLE_EDGE_DISTANCE[i-1];
-						SEQ.FLAG3.BIT.EDGE_R_ERROR = 0;						// ����R ����擾
+						SEQ.FLAG3.BIT.EDGE_R_ERROR = 0;						// ｴｯｼﾞR 正常取得
 						break;
 					}
 				}
 			}
 		}
 		
-		SEQ.INPUT_DBUS_BEFORE[2] = SEQ.INPUT_DBUS;				// DBUS�̓����ް�(1�O���ް�)
+		SEQ.INPUT_DBUS_BEFORE[2] = SEQ.INPUT_DBUS;				// DBUSの入力ﾃﾞｰﾀ(1つ前のﾃﾞｰﾀ)
 		
-		// �v���l��ð��ّS�Ă̒l���������Ƃ�
+		// 計測値がﾃｰﾌﾞﾙ全ての値を上回ったとき
 		if((SEQ.INPUT_DBUS*10) >= SEQ.Z_TABLE_EDGE_RIGHT[Z_DIVISION_NUMBER-1]){
-			RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT] = SEQ.Z_TABLE_EDGE_DISTANCE[Z_DIVISION_NUMBER-1];	// �l��ð��ق̍ő�l�ɂ���
-			SEQ.FLAG3.BIT.EDGE_R_ERROR = 1;						// ����R�װ�׸�
+			RESULT.EDGE_RIGHT_SCALE[SEQ.BUFFER_COUNT] = SEQ.Z_TABLE_EDGE_DISTANCE[Z_DIVISION_NUMBER-1];	// 値をﾃｰﾌﾞﾙの最大値にする
+			SEQ.FLAG3.BIT.EDGE_R_ERROR = 1;						// ｴｯｼﾞRｴﾗｰﾌﾗｸﾞ
 		}
 	}
 	
@@ -1287,34 +1287,34 @@ void set_result_edge_right(void)
 }
 
 //************************************************************/
-//		�œ_���ʂ̐ݒ�
-//			FPGA���擾�����X����ݒ肷��
+//		焦点結果の設定
+//			FPGAより取得した傾きを設定する
 //************************************************************/
-// �����ޏœ_���ʂ̐ݒ�
+// 左ｴｯｼﾞ焦点結果の設定
 void set_result_focus_left(void)
 {
 	union UFloatLong Variable;
 	float threshold;
 	
-	// ���������_���ް��ɕϊ����l��\������
+	// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 	Variable.lLong = SEQ.INPUT_DBUS_LONG;
 	SEQ.INPUT_DBUS = Variable.fFloat;
 	
-	// �œ_���̌��ʎ擾
+	// 焦点左の結果取得
 	RESULT.FOCUS_LEFT[SEQ.BUFFER_COUNT] = 99.99999;
-	if(SEQ.FLAG3.BIT.EDGE_L_ERROR == 0){								// ����L�װ�׸�
+	if(SEQ.FLAG3.BIT.EDGE_L_ERROR == 0){								// ｴｯｼﾞLｴﾗｰﾌﾗｸﾞ
 		if((0 < SEQ.INPUT_DBUS) && (SEQ.INPUT_DBUS < 99.99)){
-			RESULT.FOCUS_LEFT[SEQ.BUFFER_COUNT] = SEQ.INPUT_DBUS;	// �œ_ ��
+			RESULT.FOCUS_LEFT[SEQ.BUFFER_COUNT] = SEQ.INPUT_DBUS;	// 焦点 左
 		}
 	}
 	
 	if(SEQ.CHANGE_FPGA == 6){
-		// FOCUS LED�̓_������
-		// �œ_���ŏ���LR�_���������l�̂Ƃ�LED��_��
-		LED.FOCUS.BIT.L = 0;											// �œ_L
+		// FOCUS LEDの点灯制御
+		// 焦点左最小≦LR点灯しきい値のときLEDを点灯
+		LED.FOCUS.BIT.L = 0;											// 焦点L
 		threshold = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_LEFT);
 		if(RESULT.FOCUS_LEFT[SEQ.BUFFER_COUNT]*10.0 <= threshold){
-			LED.FOCUS.BIT.L = 1;										// �œ_L
+			LED.FOCUS.BIT.L = 1;										// 焦点L
 		}
 	}
 	
@@ -1322,36 +1322,36 @@ void set_result_focus_left(void)
 	COM0.NO103 = SEQ.INPUT_DBUS_LONG;
 }
 
-// �E���ޏœ_���ʂ̐ݒ�
+// 右ｴｯｼﾞ焦点結果の設定
 void set_result_focus_right(void)
 {
 	union UFloatLong Variable;
 	float threshold;
 	
-	// ���������_���ް��ɕϊ����l��\������
+	// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 	Variable.lLong = SEQ.INPUT_DBUS_LONG;
 	SEQ.INPUT_DBUS = Variable.fFloat;
 	
-	// �œ_�E�̌��ʎ擾
+	// 焦点右の結果取得
 	RESULT.FOCUS_RIGHT[SEQ.BUFFER_COUNT] = 99.99999;
-	if(SEQ.FLAG3.BIT.EDGE_R_ERROR == 0){								// ����R�װ�׸�
+	if(SEQ.FLAG3.BIT.EDGE_R_ERROR == 0){								// ｴｯｼﾞRｴﾗｰﾌﾗｸﾞ
 		if((0 < SEQ.INPUT_DBUS) && (SEQ.INPUT_DBUS < 99.99)){
-			RESULT.FOCUS_RIGHT[SEQ.BUFFER_COUNT] = SEQ.INPUT_DBUS;	// �œ_ �E
+			RESULT.FOCUS_RIGHT[SEQ.BUFFER_COUNT] = SEQ.INPUT_DBUS;	// 焦点 右
 		}
 	}
 	
 	if(SEQ.CHANGE_FPGA == 6){
-		// FOCUS LED�̓_������
-		// �œ_�E�ŏ���LR�_���������l�̂Ƃ�LED���o��
-		LED.FOCUS.BIT.R = 0;											// �œ_R
-		LED.FOCUS.BIT.Z = 0;											// �œ_Z
+		// FOCUS LEDの点灯制御
+		// 焦点右最小≦LR点灯しきい値のときLEDを出力
+		LED.FOCUS.BIT.R = 0;											// 焦点R
+		LED.FOCUS.BIT.Z = 0;											// 焦点Z
 		threshold = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_RIGHT);
 		if(RESULT.FOCUS_RIGHT[SEQ.BUFFER_COUNT]*10.0 <= threshold){
-			// �v��������X�����̂Ƃ�
+			// 計測方向がX方向のとき
 			if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
-				LED.FOCUS.BIT.R = 1;									// �œ_R
+				LED.FOCUS.BIT.R = 1;									// 焦点R
 			}else{
-				LED.FOCUS.BIT.Z = 1;									// �œ_Z
+				LED.FOCUS.BIT.Z = 1;									// 焦点Z
 			}
 		}
 	}
@@ -1361,24 +1361,24 @@ void set_result_focus_right(void)
 }
 
 //************************************************************/
-//		SKIP���ʂ̐ݒ�
-//			FPGA���擾����SKIP���ʂ�ݒ肷��
+//		SKIP結果の設定
+//			FPGAより取得したSKIP結果を設定する
 //************************************************************/
 void set_result_skip(void)
 {
-	SEQ.FOCUSING_HDI = SEQ.INPUT_DBUS_LONG;			// �œ_���킹
+	SEQ.FOCUSING_HDI = SEQ.INPUT_DBUS_LONG;			// 焦点合わせ
 	
 	if(IN.FLAG.BIT.HARDWARE_TYPE == CNC_EDITION){
 		if(SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION){
-			LED.Z_FOCUSING	= SEQ.FOCUSING_HDI & 0x0000000F;		//  4�ޯĕ���Ͻ�
+			LED.Z_FOCUSING	= SEQ.FOCUSING_HDI & 0x0000000F;		//  4ﾋﾞｯﾄ分のﾏｽｸ
 		}else{
-			LED.FOCUSING	= SEQ.FOCUSING_HDI & 0x000001FF;		//  9�ޯĕ���Ͻ�
+			LED.FOCUSING	= SEQ.FOCUSING_HDI & 0x000001FF;		//  9ﾋﾞｯﾄ分のﾏｽｸ
 		}
 	}else{
-			LED.FOCUSING	= SEQ.FOCUSING_HDI & 0x000007FF;		// 11�ޯĕ���Ͻ�
+			LED.FOCUSING	= SEQ.FOCUSING_HDI & 0x000007FF;		// 11ﾋﾞｯﾄ分のﾏｽｸ
 	}
 	
-	// SKIP���o�����݂���ꍇ�A�r�b�g��ON
+	// SKIP検出が存在する場合、ビットをON
 	if(LED.FOCUSING){
 		COM0.NO310.BIT.LED = 1;
 	}else if(LED.Z_FOCUSING){
@@ -1387,7 +1387,7 @@ void set_result_skip(void)
 		COM0.NO310.BIT.LED = 0;
 	}
 	
-	// SKIP���ʂ�FOCUS����
+	// SKIP結果とFOCUS結果
 	if((IN.FLAG.BIT.HARDWARE_TYPE == CNC_EDITION)&&(SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION)){
 		COM0.NO332 = LED.Z_FOCUSING | (LED.FOCUS.BIT.Z << 15);
 	}else{
@@ -1396,7 +1396,7 @@ void set_result_skip(void)
 }
 
 //************************************************************/
-//				���ʏo��
+//				結果出力
 //************************************************************/
 void result_output(void)
 {
@@ -1411,45 +1411,45 @@ void result_output(void)
 	if(i >= 1){
 
 		//----------
-		// �ȉ��̏��������͕ύX���Ȃ����ƁI�I
-		//   �P�D���o�׸ސݒ�
-		//   �Q�DOK�׸ސݒ�
-		//   �R�D���ʂ̎Z�o
+		// 以下の処理順序は変更しないこと！！
+		//   １．検出ﾌﾗｸﾞ設定
+		//   ２．OKﾌﾗｸﾞ設定
+		//   ３．結果の算出
 		//----------
 
-		// �׸ސݒ�
+		// ﾌﾗｸﾞ設定
 		set_scan_flag( i );
 
-		// ���o���ʐݒ�
+		// 検出結果設定
 		set_result( i );
 
-		// �U���ޯ̧�o��
+		// 振れﾊﾞｯﾌｧ出力
 		if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){
 
-			// ���������擾
+			// 走査方向取得
 			scan_mode = get_scan_mode( SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE );
 
 			if(scan_mode == TOOL_LEFT){
 				if(SEQ.FLAG4.BIT.EDGE_R_SCAN == 1){
-					// �v��������X�����̂Ƃ�
+					// 計測方向がX方向のとき
 					if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
-						// �E�G�b�W�̍ő�擾(�v���X���ő�)
+						// 右エッジの最大取得(プラスが最大)
 						if(RESULT.TIR[0] < RESULT.GREATER_D_DIFF_MAX[0]){
 							RESULT.TIR[0] = RESULT.GREATER_D_DIFF_MAX[0];
 						}
 
-						// �E�G�b�W�̍ŏ��擾(�}�C�i�X���ő�)
+						// 右エッジの最小取得(マイナスが最大)
 						if(RESULT.TIR[6] > RESULT.GREATER_D_DIFF_MIN[0]){
 							RESULT.TIR[6] = RESULT.GREATER_D_DIFF_MIN[0];
 						}
 					}else{
-						// �E�G�b�W�̍ő�擾(�}�C�i�X���ő�)
-						// ��Z�������͕��������]����
+						// 右エッジの最大取得(マイナスが最大)
+						// ※Z走査時は符号が反転する
 						if(RESULT.TIR[0] > RESULT.GREATER_D_DIFF_MAX[0]){
 							RESULT.TIR[0] = RESULT.GREATER_D_DIFF_MAX[0];
 						}
 
-						// �E�G�b�W�̍ŏ��擾(�v���X���ő�)
+						// 右エッジの最小取得(プラスが最大)
 						if(RESULT.TIR[6] < RESULT.GREATER_D_DIFF_MIN[0]){
 							RESULT.TIR[6] = RESULT.GREATER_D_DIFF_MIN[0];
 						}
@@ -1459,15 +1459,15 @@ void result_output(void)
 						RESULT.TIR[5] = RESULT.EDGE_RIGHT_PIXEL[0];
 					}
 
-					// �U��v���J�n�̐ݒ�
+					// 振れ計測開始の設定
 					if(RESULT.TIR[2] < RESULT.EDGE_RIGHT_PIXEL[0]){
-						// ���o���ʂ���
+						// 検出結果あり
 						result_flag = 1;
 					}
 				}
 			}else{
 				if(SEQ.FLAG4.BIT.EDGE_L_SCAN == 1){
-					// ���G�b�W�̍ő�擾(�}�C�i�X�������ő�)
+					// 左エッジの最大取得(マイナス方向が最大)
 					if(RESULT.TIR[0] > RESULT.GREATER_D_DIFF_RIGHT_MIN[0]){
 						RESULT.TIR[0] = RESULT.GREATER_D_DIFF_RIGHT_MIN[0];
 					}
@@ -1476,12 +1476,12 @@ void result_output(void)
 						RESULT.TIR[5] = RESULT.EDGE_LEFT_PIXEL[0];
 					}
 					
-					// �U��v���J�n�̐ݒ�
+					// 振れ計測開始の設定
 					if(RESULT.TIR[2] > RESULT.EDGE_LEFT_PIXEL[i]){
 						result_flag = 1;
 					}
 
-					// �E�G�b�W�̍ŏ��擾(�v���X�������ő�)
+					// 右エッジの最小取得(プラス方向が最大)
 					if(RESULT.TIR[6] < RESULT.GREATER_D_DIFF_RIGHT_MAX[0]){
 						RESULT.TIR[6] = RESULT.GREATER_D_DIFF_RIGHT_MAX[0];
 					}
@@ -1489,10 +1489,10 @@ void result_output(void)
 			}
 
 			if(result_flag == 1){
-				// SWING_RISE�J�E���^
+				// SWING_RISEカウンタ
 				switch(SEQ.FLAG3.BIT.SWING_RISE){
 					case 0:	SEQ.FLAG3.BIT.SWING_RISE++;
-						SEQ.MEMORY_TIME = 0;					// �L������(ms)
+						SEQ.MEMORY_TIME = 0;					// 記憶時間(ms)
 						break;
 					case 1:	SEQ.FLAG3.BIT.SWING_RISE++;	break;
 					default:
@@ -1503,8 +1503,8 @@ void result_output(void)
 			if(SEQ.FLAG3.BIT.SWING_RISE){
 				if(SEQ.FLAG3.BIT.SWING_RESET == 0){
 					if(SEQ.MEMORY_TIME >= (SEQ.TRIGGER_TIME_PERIOD/2)){
-						SEQ.MEMORY_TIME = 0;					// �L������(ms)
-						SEQ.FLAG3.BIT.SWING_RESET = 1;			// �U�궳��ؾ���׸�
+						SEQ.MEMORY_TIME = 0;					// 記憶時間(ms)
+						SEQ.FLAG3.BIT.SWING_RESET = 1;			// 振れｶｳﾝﾄﾘｾｯﾄﾌﾗｸﾞ
 						max_min_reset();
 // deb 2015.07.29 K.Uemura start	
 #ifdef	DEBUG_EACHSCAN
@@ -1513,7 +1513,7 @@ DEBUG_STR.DEBUG_FLAG = 1;
 // deb 2015.07.29 K.Uemura end
 
 // deb 2015.08.27 K.Uemura start	
-if(COM0.NO310.BIT.DIR == 1){	//	���I�t�Z�b�g
+if(COM0.NO310.BIT.DIR == 1){	//	左オフセット
 	COM0.NO140 = COM0.NO122;
 }else{
 	COM0.NO140 = COM0.NO121;
@@ -1523,91 +1523,91 @@ if(COM0.NO310.BIT.DIR == 1){	//	���I�t�Z�b�g
 					}
 				}
 			}else{
-				SEQ.MEMORY_TIME = 0;		// �L������(ms)
+				SEQ.MEMORY_TIME = 0;		// 記憶時間(ms)
 			}
 		}
 		
-		// �׸ސݒ�
+		// ﾌﾗｸﾞ設定
 		set_ok_flag( i );
 
 		//----------
-		// OK�^NG���Đ�
+		// OK／NGｶｳﾝﾄ数
 		//----------
-		SEQ.TOTAL_COUNT++;					// �v������
+		SEQ.TOTAL_COUNT++;					// 計測総数
 		
-		if(SEQ.FLAG2.BIT.OK == 1){			// OK�׸ނ��
-			SEQ.OK_COUNT++;					// OK���Đ�
-			SEQ.NG_COUNT = 0;				// �A��NG���Đ�
+		if(SEQ.FLAG2.BIT.OK == 1){			// OKﾌﾗｸﾞをｾｯﾄ
+			SEQ.OK_COUNT++;					// OKｶｳﾝﾄ数
+			SEQ.NG_COUNT = 0;				// 連続NGｶｳﾝﾄ数
 		}else{
-			SEQ.NG_COUNT++;					// �A��NG���Đ�
+			SEQ.NG_COUNT++;					// 連続NGｶｳﾝﾄ数
 		}
 		
 		// ADD 150720
-		// �I����������
-		if(COM0.NO300.BIT.EXE){										// ���s���ޯĂ�ON�̂Ƃ�
-			// �H��a(����)�E�H��a(4�ȉ�)�E�H��a(4����@����)�E�H��a(4����@�E��)�E�U�ꑪ��E���̧�فE�œ_���킹�E���S�ʒu�ݒ�̂Ƃ�
+		// 終了条件判定
+		if(COM0.NO300.BIT.EXE){										// 実行のﾋﾞｯﾄがONのとき
+			// 工具径(自動)・工具径(4以下)・工具径(4より上　左側)・工具径(4より上　右側)・振れ測定・ﾌﾟﾛﾌｧｲﾙ・焦点合わせ・中心位置設定のとき
 			if((COM0.NO311 >= 10)&&(COM0.NO311 <= 111)&&(COM0.NO311 != 70)){
 				if(SEQ.SELECT.BIT.MEASURE != MODE_RUNOUT){
-					// ��ѱ�Ď���(�I������)(ms)����ѱ�Ď��Ծ��(�I������)(s)�ȏ�ɂȂ����Ƃ�
+					// ﾀｲﾑｱｳﾄ時間(終了条件)(ms)がﾀｲﾑｱｳﾄ時間ｾｯﾄ(終了条件)(s)以上になったとき
 					if(SEQ.END_TIMEOUT_PERIOD_SET > 0){
 						if(SEQ.END_TIMEOUT_PERIOD >= SEQ.END_TIMEOUT_PERIOD_SET*1000U){
-							SEQ.FLAG.BIT.MEASUREMENT = 0;							// �v�����~����
-							COM0.NO312 = ERR_END_TIMEOUT_PERIOD;					// 5010	��ѱ�Đݒ莞�Ԃɓ��B
+							SEQ.FLAG.BIT.MEASUREMENT = 0;							// 計測を停止する
+							COM0.NO312 = ERR_END_TIMEOUT_PERIOD;					// 5010	ﾀｲﾑｱｳﾄ設定時間に到達
 						}
 					}
 					
 					if(SEQ.OK_COUNT_SET > 0){
 // chg 2017.01.06 K.Uemura start	H10601	
-						// OK���Đ�(�I������)��OK���Đ����(�I������)�ȏ�ɂȂ����Ƃ� ���� WAIT�J�E���g�����B��
+						// OKｶｳﾝﾄ数(終了条件)がOKｶｳﾝﾄ数ｾｯﾄ(終了条件)以上になったとき かつ WAITカウント数到達時
 						if((SEQ.OK_COUNT >= SEQ.OK_COUNT_SET)&&(SEQ.WAIT_COUNT_SET < SEQ.TOTAL_COUNT)){
-//						// OK���Đ�(�I������)��OK���Đ����(�I������)�ȏ�ɂȂ����Ƃ�
+//						// OKｶｳﾝﾄ数(終了条件)がOKｶｳﾝﾄ数ｾｯﾄ(終了条件)以上になったとき
 //						if(SEQ.OK_COUNT >= SEQ.OK_COUNT_SET){
 // chg 2017.01.06 K.Uemura end
 // add 2016.01.21 K.Uemura start	G12102
-							//FIN���o�͂���鏈���́AREADY OFF���m�̃n���h�V�F�[�N�҂�
+							//FINが出力される処理は、READY OFF検知のハンドシェーク待ち
 							if(((10 <= COM0.NO311)&&(COM0.NO311 < 30)) || 
 							   ((COM0.NO311 == 50)&&(COM0.NO311 == 51))){
 								SEQ.FLAG4.BIT.OKCOUNT_FLAG = 1;
 							}
 // add 2016.01.21 K.Uemura end
-							SEQ.FLAG.BIT.MEASUREMENT = 0;							// �v�����~����
-							COM0.NO312 = 0;											// 0 �װ�Ȃ�
+							SEQ.FLAG.BIT.MEASUREMENT = 0;							// 計測を停止する
+							COM0.NO312 = 0;											// 0 ｴﾗｰなし
 						}
 					}
 				}
 				
-				// �A��NG���Đ�(�I������)���A��NG���Đ����(�I������)��100�{�ȏ�ɂȂ����Ƃ�
+				// 連続NGｶｳﾝﾄ数(終了条件)が連続NGｶｳﾝﾄ数ｾｯﾄ(終了条件)の100倍以上になったとき
 				if(SEQ.NG_COUNT_SET > 0){
 					if(SEQ.NG_COUNT >= SEQ.NG_COUNT_SET*100U){
-						SEQ.FLAG.BIT.MEASUREMENT = 0;							// �v�����~����
-						COM0.NO312 = ERR_NG_COUNT;								// 5011	�A��NG���Đ��ɓ��B
+						SEQ.FLAG.BIT.MEASUREMENT = 0;							// 計測を停止する
+						COM0.NO312 = ERR_NG_COUNT;								// 5011	連続NGｶｳﾝﾄ数に到達
 					}
 				}
 			}
 			
 			//
 // add 2016.02.18 K.Uemura start	G21804
-			// ���|�m�F�̂Ƃ�
+			// 清掃確認のとき
 // chg 2016.06.22 K.Uemura start	G62202
 			else if((COM0.NO311 == 152) || (COM0.NO311 == 153)){
 //			else if(COM0.NO311 == 152){
 // chg 2016.06.22 K.Uemura end
-				// ���|��ٽ����(���v)������񐔂ɂȂ����Ƃ�
+				// 清掃ﾊﾟﾙｽｶｳﾝﾄ(合計)が既定回数になったとき
 				if(SEQ.CLEANING_COUNT_TOTAL >= 200){
-					// ���v���畽�ς��Z�o(���|��ٽ����(����)�Ŋ���)
+					// 合計から平均を算出(清掃ﾊﾟﾙｽｶｳﾝﾄ(正常)で割る)
 // chg 2016.07.22 K.Uemura start	G72201
-//					SEQ.AVE_AVE = (short)(SEQ.AVE_TOTAL / SEQ.CLEANING_COUNT_PASS);	// ���ϒl
-//					SEQ.MIN_AVE = (short)(SEQ.MIN_TOTAL / SEQ.CLEANING_COUNT_PASS);	// �ŏ��l
-//					SEQ.MAX_AVE = (short)(SEQ.MAX_TOTAL / SEQ.CLEANING_COUNT_PASS);	// �ő�l
+//					SEQ.AVE_AVE = (short)(SEQ.AVE_TOTAL / SEQ.CLEANING_COUNT_PASS);	// 平均値
+//					SEQ.MIN_AVE = (short)(SEQ.MIN_TOTAL / SEQ.CLEANING_COUNT_PASS);	// 最小値
+//					SEQ.MAX_AVE = (short)(SEQ.MAX_TOTAL / SEQ.CLEANING_COUNT_PASS);	// 最大値
 
-					// �؂�グ
-					temp[0] = ((float)SEQ.AVE_TOTAL / SEQ.CLEANING_COUNT_PASS);	// ���ϒl
-					temp[1] = ((float)SEQ.MIN_TOTAL / SEQ.CLEANING_COUNT_PASS);	// �ŏ��l
-					temp[2] = ((float)SEQ.MAX_TOTAL / SEQ.CLEANING_COUNT_PASS);	// �ő�l
+					// 切り上げ
+					temp[0] = ((float)SEQ.AVE_TOTAL / SEQ.CLEANING_COUNT_PASS);	// 平均値
+					temp[1] = ((float)SEQ.MIN_TOTAL / SEQ.CLEANING_COUNT_PASS);	// 最小値
+					temp[2] = ((float)SEQ.MAX_TOTAL / SEQ.CLEANING_COUNT_PASS);	// 最大値
 
-					SEQ.AVE_AVE = (short)(ceil(temp[0]));	// ���ϒl
-					SEQ.MIN_AVE = (short)(ceil(temp[1]));	// �ŏ��l
-					SEQ.MAX_AVE = (short)(ceil(temp[2]));	// �ő�l
+					SEQ.AVE_AVE = (short)(ceil(temp[0]));	// 平均値
+					SEQ.MIN_AVE = (short)(ceil(temp[1]));	// 最小値
+					SEQ.MAX_AVE = (short)(ceil(temp[2]));	// 最大値
 // chg 2016.07.22 K.Uemura end
 					
 					if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
@@ -1622,34 +1622,34 @@ if(COM0.NO310.BIT.DIR == 1){	//	���I�t�Z�b�g
 					
 					if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
 						cleaning_count = 0;
-						SEQ.BUFFER_NO_OLD = BUFFER_NUMBER+1;					// �ޯ̧���ް��
-						SEQ.BUFFER_NO_NEW = cleaning_count+11;					// �ޯ̧���ް�V
+						SEQ.BUFFER_NO_OLD = BUFFER_NUMBER+1;					// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ旧
+						SEQ.BUFFER_NO_NEW = cleaning_count+11;					// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ新
 					}else{
 						cleaning_count = 12;
-						SEQ.BUFFER_NO_OLD = cleaning_count-1;					// �ޯ̧���ް��
-						SEQ.BUFFER_NO_NEW = cleaning_count+11;					// �ޯ̧���ް�V
+						SEQ.BUFFER_NO_OLD = cleaning_count-1;					// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ旧
+						SEQ.BUFFER_NO_NEW = cleaning_count+11;					// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ新
 					}
 					
-					COM0.NO3000[cleaning_count]   = SEQ.AVE_AVE;				// ���ϒl(����)
-					COM0.NO3000[cleaning_count+1] = SEQ.AVE_MIN;				// ���ϒl(�ŏ�)
-					COM0.NO3000[cleaning_count+2] = SEQ.AVE_MAX;				// ���ϒl(�ő�)
-					COM0.NO3000[cleaning_count+3] = SEQ.AVE_RATE;				// ���ϒl(��)
+					COM0.NO3000[cleaning_count]   = SEQ.AVE_AVE;				// 平均値(平均)
+					COM0.NO3000[cleaning_count+1] = SEQ.AVE_MIN;				// 平均値(最小)
+					COM0.NO3000[cleaning_count+2] = SEQ.AVE_MAX;				// 平均値(最大)
+					COM0.NO3000[cleaning_count+3] = SEQ.AVE_RATE;				// 平均値(率)
 					
-					COM0.NO3000[cleaning_count+4] = SEQ.MIN_AVE;				// �ŏ��l(����)
-					COM0.NO3000[cleaning_count+5] = SEQ.MIN_MIN;				// �ŏ��l(�ŏ�)
-					COM0.NO3000[cleaning_count+6] = SEQ.MIN_MAX;				// �ŏ��l(�ő�)
-					COM0.NO3000[cleaning_count+7] = SEQ.MIN_RATE;				// �ŏ��l(��)
+					COM0.NO3000[cleaning_count+4] = SEQ.MIN_AVE;				// 最小値(平均)
+					COM0.NO3000[cleaning_count+5] = SEQ.MIN_MIN;				// 最小値(最小)
+					COM0.NO3000[cleaning_count+6] = SEQ.MIN_MAX;				// 最小値(最大)
+					COM0.NO3000[cleaning_count+7] = SEQ.MIN_RATE;				// 最小値(率)
 					
-					COM0.NO3000[cleaning_count+8] = SEQ.MAX_AVE;				// �ő�l(����)
-					COM0.NO3000[cleaning_count+9] = SEQ.MAX_MIN;				// �ő�l(�ŏ�)
-					COM0.NO3000[cleaning_count+10] = SEQ.MAX_MAX;				// �ő�l(�ő�)
-					COM0.NO3000[cleaning_count+11] = SEQ.MAX_RATE;				// �ő�l(��)
+					COM0.NO3000[cleaning_count+8] = SEQ.MAX_AVE;				// 最大値(平均)
+					COM0.NO3000[cleaning_count+9] = SEQ.MAX_MIN;				// 最大値(最小)
+					COM0.NO3000[cleaning_count+10] = SEQ.MAX_MAX;				// 最大値(最大)
+					COM0.NO3000[cleaning_count+11] = SEQ.MAX_RATE;				// 最大値(率)
 					
-					SEQ.CLEANING_COUNT_TOTAL = SEQ.CLEANING_COUNT_PASS = 0;		// ���|��ٽ����(���v�E����)
-					SEQ.CLEANING_CYCLE++;										// ���|����UP
+					SEQ.CLEANING_COUNT_TOTAL = SEQ.CLEANING_COUNT_PASS = 0;		// 清掃ﾊﾟﾙｽｶｳﾝﾄ(合計・正常)
+					SEQ.CLEANING_CYCLE++;										// 清掃ｶｳﾝﾄUP
 					
-					SEQ.FLAG.BIT.MEASUREMENT = 0;								// �v�����~����
-					COM0.NO312 = 0;												// 0 �װ�Ȃ�
+					SEQ.FLAG.BIT.MEASUREMENT = 0;								// 計測を停止する
+					COM0.NO312 = 0;												// 0 ｴﾗｰなし
 // add 2016.07.26 K.Uemura start	G72601
 					if(COM0.NO301 == 153){
 						if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
@@ -1673,7 +1673,7 @@ if(COM0.NO310.BIT.DIR == 1){	//	���I�t�Z�b�g
 
 
 //************************************************************/
-//				�ő�l�E�ŏ��lؾ��
+//				最大値・最小値ﾘｾｯﾄ
 //************************************************************/
 void max_min_reset(void)
 {
@@ -1684,45 +1684,45 @@ void max_min_reset(void)
 	min_data = INITIAL_MIN;	// 
 	
 	RESULT.WORK_EDGE_DIFF[0]			= min_data;				// d
-	RESULT.WORK_CENTER[0]				= 0;					// d���S
+	RESULT.WORK_CENTER[0]				= 0;					// d中心
 	
-	RESULT.SMALL_D_MAX[0]				= min_data;				// d �ő�
+	RESULT.SMALL_D_MAX[0]				= min_data;				// d 最大
 
-	RESULT.LARGE_D_MIN[0]				= max_data;				// D �ŏ�
-	RESULT.LARGE_D_MAX[0]				= min_data;				// D �ő�
-	RESULT.LARGE_D_DIFF[0]				= min_data;				// D �ő�ŏ��̍�
+	RESULT.LARGE_D_MIN[0]				= max_data;				// D 最小
+	RESULT.LARGE_D_MAX[0]				= min_data;				// D 最大
+	RESULT.LARGE_D_DIFF[0]				= min_data;				// D 最大最小の差
 	
-	RESULT.SWING_MIN[0]					= max_data;				// �U�� �ŏ�
-	RESULT.SWING_MAX[0]					= min_data;				// �U�� �ő�
-	RESULT.SWING_DIFF[0]				= min_data;				// �U�� �ő�ŏ��̍�
+	RESULT.SWING_MIN[0]					= max_data;				// 振れ 最小
+	RESULT.SWING_MAX[0]					= min_data;				// 振れ 最大
+	RESULT.SWING_DIFF[0]				= min_data;				// 振れ 最大最小の差
 	
-	RESULT.DELTA_X_DIFF[0]				= 0;					// ��X ��
-	RESULT.DELTA_X_DIFF_MIN[0]			= max_data;				// ��X �� �ŏ�
-	RESULT.DELTA_X_DIFF_MAX[0]			= min_data;				// ��X �� �ő�
+	RESULT.DELTA_X_DIFF[0]				= 0;					// ΔX 差
+	RESULT.DELTA_X_DIFF_MIN[0]			= max_data;				// ΔX 差 最小
+	RESULT.DELTA_X_DIFF_MAX[0]			= min_data;				// ΔX 差 最大
 	
-	RESULT.GREATER_D_DIFF_MIN[0]		= max_data;				// D>4 �ŏ�
-	RESULT.GREATER_D_DIFF_MAX[0]		= min_data;				// D>4 �ő�
+	RESULT.GREATER_D_DIFF_MIN[0]		= max_data;				// D>4 最小
+	RESULT.GREATER_D_DIFF_MAX[0]		= min_data;				// D>4 最大
 	
-	// �v��������Z�����̂Ƃ�
+	// 計測方向がZ方向のとき
 	if(SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION){
-		RESULT.GREATER_D_DIFF_MIN[0]	= min_data;				// D>4 �ŏ�
-		RESULT.GREATER_D_DIFF_MAX[0]	= max_data;				// D>4 �ő�
+		RESULT.GREATER_D_DIFF_MIN[0]	= min_data;				// D>4 最小
+		RESULT.GREATER_D_DIFF_MAX[0]	= max_data;				// D>4 最大
 	}
 	
-	RESULT.GREATER_D_DIFF_RIGHT_MIN[0]	= max_data;				// D>4 �ŏ�(�E��)
-	RESULT.GREATER_D_DIFF_RIGHT_MAX[0]	= min_data;				// D>4 �ő�(�E��)
+	RESULT.GREATER_D_DIFF_RIGHT_MIN[0]	= max_data;				// D>4 最小(右側)
+	RESULT.GREATER_D_DIFF_RIGHT_MAX[0]	= min_data;				// D>4 最大(右側)
 	
-	RESULT.EDGE_LEFT_PIXEL[0]			= max_data;				// �G�b�W ���ŏ�
-	RESULT.EDGE_RIGHT_PIXEL[0]			= min_data;				// �G�b�W �E�ŏ�
+	RESULT.EDGE_LEFT_PIXEL[0]			= max_data;				// エッジ 左最小
+	RESULT.EDGE_RIGHT_PIXEL[0]			= min_data;				// エッジ 右最小
 
-	RESULT.FOCUS_LEFT_MIN[0]			= max_data;				// �œ_ ���ŏ�
-	RESULT.FOCUS_RIGHT_MIN[0]			= max_data;				// �œ_ �E�ŏ�
+	RESULT.FOCUS_LEFT_MIN[0]			= max_data;				// 焦点 左最小
+	RESULT.FOCUS_RIGHT_MIN[0]			= max_data;				// 焦点 右最小
 
-	SEQ.FLAG4.BIT.EDGE_L_POLLING = 0;					// �߰�ݸފԌ��o�׸�
+	SEQ.FLAG4.BIT.EDGE_L_POLLING = 0;					// ﾎﾟｰﾘﾝｸﾞ間検出ﾌﾗｸﾞ
 	SEQ.FLAG4.BIT.EDGE_R_POLLING = 0;
 	SEQ.FLAG4.BIT.EDGE_LR_POLLING = 0;
 
-	SEQ.FLAG4.BIT.EDGE_L_SCAN = 0;						// �v���J�n�`���o�׸�
+	SEQ.FLAG4.BIT.EDGE_L_SCAN = 0;						// 計測開始～検出ﾌﾗｸﾞ
 	SEQ.FLAG4.BIT.EDGE_R_SCAN = 0;
 	SEQ.FLAG4.BIT.EDGE_LR_SCAN = 0;
 
@@ -1731,24 +1731,24 @@ void max_min_reset(void)
 	SEQ.PEAKHOLD_DATA1[1] = 99999;
 	SEQ.PEAKHOLD_DATA2[1] = 99999;
 
-															//         �G�b�W�ʒu
-															// ��������������������������
-															// ��������������������������
-															//     ������      ������
-															//    �@    �A    �B    �C
-	RESULT.LEFT_L[0]					= max_data;		// �@���� ��
-	RESULT.LEFT_R[0]					= min_data;		// �A���� �E
-	RESULT.RIGHT_L[0]					= max_data;		// �B�E�� ��
-	RESULT.RIGHT_R[0]					= min_data;		// �C�E�� �E
+															//         エッジ位置
+															// ┏━━━━━━━━━━━┓
+															// ┗━━━━━━━━━━━┛
+															//     ■■■      ■■■
+															//    ①    ②    ③    ④
+	RESULT.LEFT_L[0]					= max_data;		// ①左側 左
+	RESULT.LEFT_R[0]					= min_data;		// ②左側 右
+	RESULT.RIGHT_L[0]					= max_data;		// ③右側 左
+	RESULT.RIGHT_R[0]					= min_data;		// ④右側 右
 
-	// ���������擾
+	// 走査方向取得
 	scan_mode = get_scan_mode( SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE );
 
 	if(scan_mode == TOOL_LEFT){
 		RESULT.TIR[0] = INITIAL_MIN;
 		RESULT.TIR[6] = INITIAL_MAX;
 
-		// �v��������Z�����̂Ƃ�
+		// 計測方向がZ方向のとき
 		if(SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION){
 			RESULT.TIR[0] = INITIAL_MAX;
 			RESULT.TIR[6] = INITIAL_MIN;
@@ -1760,7 +1760,7 @@ void max_min_reset(void)
 }
 
 //************************************************************/
-//				�ő�l�E�ŏ��lؾ��(�U��n��0)
+//				最大値・最小値ﾘｾｯﾄ(振れ刃数0)
 //************************************************************/
 void swing_no_tooth_reset(void)
 {
@@ -1769,8 +1769,8 @@ void swing_no_tooth_reset(void)
 	max_data = INITIAL_MAX;	//
 	min_data = INITIAL_MIN;	// 
 	
-	RESULT.SWING_MIN[1]					= max_data;				// �U�� �ŏ�
-	RESULT.SWING_MAX[1]					= min_data;				// �U�� �ő�
+	RESULT.SWING_MIN[1]					= max_data;				// 振れ 最小
+	RESULT.SWING_MAX[1]					= min_data;				// 振れ 最大
 }
 
 void output_error(unsigned long line)
@@ -1779,26 +1779,26 @@ void output_error(unsigned long line)
 }
 
 //************************************************************/
-//		���s���ԃ^�C�}�̎擾
+//		実行時間タイマの取得
 //************************************************************/
 _UWORD get_execute_timer(void)
 {
 	_UWORD execute_time;
 
-	// ����ݸގ��Ԃ̐ݒ�
-	// ��]�����u0�v�̂Ƃ�    �FDLPM115
-	// ��]�����u0�v�ȊO�̂Ƃ��F��]���Ɉˑ�
-	//                           1��]�ɗv���鎞�Ԃ�1�b�ȓ��̎���1�b(��:100ms��1�b)
-	//                           1�b�ȏ�̂Ƃ��͎��ۂ̎���+DLPM800��ݒ�
+	// ﾁｭｰﾆﾝｸﾞ時間の設定
+	// 回転数が「0」のとき    ：DLPM115
+	// 回転数が「0」以外のとき：回転数に依存
+	//                           1回転に要する時間が1秒以内の時は1秒(例:100ms→1秒)
+	//                           1秒以上のときは実際の時間+DLPM800を設定
 	execute_time = SEQ.TUNING_SECONDS;
 
 	if(SEQ.SPINDLE_SPEED != 0){
 		execute_time = 60000 / SEQ.SPINDLE_SPEED;
 		if(execute_time < 1000){
-			execute_time = 10;				// 1�b[10�{�l]
+			execute_time = 10;				// 1秒[10倍値]
 		}else{
 			execute_time /= POLLING_CYCLE;	// 
-			execute_time += 1;				// �J��グ
+			execute_time += 1;				// 繰り上げ
 		}
 	}
 
@@ -1806,7 +1806,7 @@ _UWORD get_execute_timer(void)
 }
 
 //************************************************************/
-//				����Ӱ�ނ̎擾
+//				動作ﾓｰﾄﾞの取得
 //************************************************************/
 _UBYTE get_execute_mode( _UBYTE measure, _UBYTE mode )
 {
@@ -1814,24 +1814,24 @@ _UBYTE get_execute_mode( _UBYTE measure, _UBYTE mode )
 
 	switch(measure){
 		case 7:		retMode = MODE_ORIGIN;			break;	// ORIGIN
-		case 8:		retMode = MODE_ORIGIN_EDGE;		break;	// ORIGIN(���ލl��)
-		case 0:		retMode = MODE_D4_LOW;			break;	// d��4
-		case 1:		retMode = MODE_D4_LEFT;			break;	// d��4 ��(�E����)
-		case 11:	retMode = MODE_D4_RIGHT;		break;	// d��4 �E(������)
-		case 2:		retMode = MODE_RUNOUT;			break;	// �U��
-		case 3:		retMode = MODE_FOCUS;			break;	// �œ_���킹
-		case 4:		retMode = MODE_CENTER;			break;	// ���S�ʒu�ݒ�
-		case 5:		retMode = MODE_PROFILE;			break;	// ���̧��
+		case 8:		retMode = MODE_ORIGIN_EDGE;		break;	// ORIGIN(ｴｯｼﾞ考慮)
+		case 0:		retMode = MODE_D4_LOW;			break;	// d≦4
+		case 1:		retMode = MODE_D4_LEFT;			break;	// d＞4 左(右ｴｯｼﾞ)
+		case 11:	retMode = MODE_D4_RIGHT;		break;	// d＞4 右(左ｴｯｼﾞ)
+		case 2:		retMode = MODE_RUNOUT;			break;	// 振れ
+		case 3:		retMode = MODE_FOCUS;			break;	// 焦点合わせ
+		case 4:		retMode = MODE_CENTER;			break;	// 中心位置設定
+		case 5:		retMode = MODE_PROFILE;			break;	// ﾌﾟﾛﾌｧｲﾙ
 		
-		case 6:		retMode = MODE_GROWTH;			break;	// �L�ё���
+		case 6:		retMode = MODE_GROWTH;			break;	// 伸び測定
 		
-		case MODE_D4_AUTO:		//	����
+		case MODE_D4_AUTO:		//	自動
 			switch(mode){
 				case MODE_D4_AUTO_LEFT:
-					retMode = MODE_D4_LEFT;			// d��4 ��(�E����)
+					retMode = MODE_D4_LEFT;			// d＞4 左(右ｴｯｼﾞ)
 					break;
 				case MODE_D4_AUTO_RIGHT:
-					retMode = MODE_D4_RIGHT;		// d��4 �E(������)
+					retMode = MODE_D4_RIGHT;		// d＞4 右(左ｴｯｼﾞ)
 					break;
 			}
 			break;
@@ -1848,18 +1848,18 @@ _UBYTE get_execute_mode( _UBYTE measure, _UBYTE mode )
 }
 
 //************************************************************/
-//				����Ӱ�ނ̎擾(�E���ށ^�����ށ^�����ށ^���Ȃ�)
-//					�E����  �F1 EDGE_LEFT
-//					������  �F2 EDGE_RIGHT
-//					������  �F3 EDGE_AND
-//					���Ȃ��F0 EDGE_OR
+//				動作ﾓｰﾄﾞの取得(右ｴｯｼﾞ／左ｴｯｼﾞ／両ｴｯｼﾞ／問わない)
+//					右ｴｯｼﾞ  ：1 EDGE_LEFT
+//					左ｴｯｼﾞ  ：2 EDGE_RIGHT
+//					両ｴｯｼﾞ  ：3 EDGE_AND
+//					問わない：0 EDGE_OR
 //************************************************************/
 _UBYTE get_execute_mode_edge( _UBYTE measure, _UBYTE mode )
 {
 	short retMode = ARGUMENT_ERROR;
 	short execute_mode = ARGUMENT_ERROR;
 
-	// ����Ӱ�ގ擾
+	// 動作ﾓｰﾄﾞ取得
 
 	execute_mode = get_execute_mode( measure, mode );
 
@@ -1870,33 +1870,33 @@ _UBYTE get_execute_mode_edge( _UBYTE measure, _UBYTE mode )
 			retMode = EDGE_OR;
 			break;
 
-		case MODE_D4_LOW:		//	d��4
-		case MODE_CENTER:		//	���S�ʒu�ݒ�
+		case MODE_D4_LOW:		//	d≦4
+		case MODE_CENTER:		//	中心位置設定
 			retMode = EDGE_AND;
 			break;
 
-		case MODE_D4_LEFT:		//	���̾��
-		case MODE_GROWTH:		// �L�ё���
+		case MODE_D4_LEFT:		//	左ｵﾌｾｯﾄ
+		case MODE_GROWTH:		// 伸び測定
 			retMode = EDGE_RIGHT;
 			break;
 
-		case MODE_D4_RIGHT:		//	�E�̾��
+		case MODE_D4_RIGHT:		//	右ｵﾌｾｯﾄ
 			retMode = EDGE_LEFT;
 			break;
 
-		case MODE_D4_AUTO:		//	����
+		case MODE_D4_AUTO:		//	自動
 			switch(mode){
-				case MODE_D4_AUTO_LEFT:		retMode = EDGE_RIGHT;	break;		// d��4 ��(�E����)
-				case MODE_D4_AUTO_RIGHT:	retMode = EDGE_LEFT;	break;		// d��4 �E(������)
+				case MODE_D4_AUTO_LEFT:		retMode = EDGE_RIGHT;	break;		// d＞4 左(右ｴｯｼﾞ)
+				case MODE_D4_AUTO_RIGHT:	retMode = EDGE_LEFT;	break;		// d＞4 右(左ｴｯｼﾞ)
 			}
 			break;
 
-		case MODE_RUNOUT:		//	�U��
-		case MODE_PROFILE:		//	�v���t�@�C��
+		case MODE_RUNOUT:		//	振れ
+		case MODE_PROFILE:		//	プロファイル
 			switch(mode){
-				case MODE_D4_AUTO_LOW:		retMode = EDGE_AND;		break;		// d��4
-				case MODE_D4_AUTO_LEFT:		retMode = EDGE_RIGHT;	break;		// d��4 ��(�E����)
-				case MODE_D4_AUTO_RIGHT:	retMode = EDGE_LEFT;	break;		// d��4 �E(������)
+				case MODE_D4_AUTO_LOW:		retMode = EDGE_AND;		break;		// d≦4
+				case MODE_D4_AUTO_LEFT:		retMode = EDGE_RIGHT;	break;		// d＞4 左(右ｴｯｼﾞ)
+				case MODE_D4_AUTO_RIGHT:	retMode = EDGE_LEFT;	break;		// d＞4 右(左ｴｯｼﾞ)
 			}
 			break;
 
@@ -1909,8 +1909,8 @@ _UBYTE get_execute_mode_edge( _UBYTE measure, _UBYTE mode )
 }
 
 //************************************************************/
-//				����Ӱ�ނ̎擾
-//					���G�b�W���o�̏ꍇ�́A���I�t�Z�b�g��D��
+//				動作ﾓｰﾄﾞの取得
+//					両エッジ検出の場合は、左オフセットを優先
 //************************************************************/
 _UBYTE get_scan_mode( _UBYTE measure, _UBYTE mode )
 {
@@ -1920,8 +1920,8 @@ _UBYTE get_scan_mode( _UBYTE measure, _UBYTE mode )
 		case MODE_RUNOUT:
 		case MODE_PROFILE:
 			switch(mode){
-				case MODE_D4_AUTO_LOW:		// 1:�H��a(d��4)
-				case MODE_D4_AUTO_LEFT:		// 2:�H��a(d��4 ����)
+				case MODE_D4_AUTO_LOW:		// 1:工具径(d≦4)
+				case MODE_D4_AUTO_LEFT:		// 2:工具径(d＞4 左側)
 					retMode = TOOL_LEFT;
 					break;
 				default:
@@ -1942,13 +1942,13 @@ _UBYTE get_scan_mode( _UBYTE measure, _UBYTE mode )
 }
 
 //************************************************************/
-//				����ݸ�Ӱ�ނ̎擾
+//				ﾁｭｰﾆﾝｸﾞﾓｰﾄﾞの取得
 //************************************************************/
 _UBYTE get_tuning_mode( _UBYTE measure )
 {
 	_UBYTE retMode = TUNING_NO;
 
-	// ���LӰ�ނ́A����ݸޏ��������{�����
+	// 下記ﾓｰﾄﾞは、ﾁｭｰﾆﾝｸﾞ処理が実施される
 	switch(measure){
 		case MODE_D4_AUTO:
 		case MODE_D4_LOW:
@@ -1956,12 +1956,12 @@ _UBYTE get_tuning_mode( _UBYTE measure )
 		case MODE_D4_RIGHT:
 		case MODE_RUNOUT:
 		case MODE_PROFILE:
-		case MODE_GROWTH:		// �L�ё���
+		case MODE_GROWTH:		// 伸び測定
 			retMode = TUNING_YES;
 			break;
 	}
 
-	// �v��������Z�����̂Ƃ��H�����ł�����ݸނ��s��Ȃ�
+	// 計測方向がZ方向のとき工具長測定ではﾁｭｰﾆﾝｸﾞを行わない
 	if(SEQ.MEASUREMENT_DIRECTION == Z_DIRECTION){
 		switch(measure){
 			case MODE_D4_LEFT:
@@ -1974,15 +1974,15 @@ _UBYTE get_tuning_mode( _UBYTE measure )
 }
 
 //************************************************************/
-//				�X���������l�̎擾
-//				���擾�l��10�{�l(99.9 �� 999)
-//					�v���e��
-//					  �`���[�j���O�Ȃ��FMANUAL_GRADIENT
-//					  �`���[�j���O����
-//					    ����          �FSEQ.TUNING_FOCUS_LEFT_MIN * 10.0
-//					    �E��          �FSEQ.TUNING_FOCUS_RIGHT_MIN * 10.0
-//					�œ_���킹        �FFOCUSING_GRADIENT
-//					ORIGIN(���ލl��)  �FORIGIN_GRADIENT
+//				傾きしきい値の取得
+//				※取得値は10倍値(99.9 → 999)
+//					計測各種
+//					  チューニングなし：MANUAL_GRADIENT
+//					  チューニングあり
+//					    左側          ：SEQ.TUNING_FOCUS_LEFT_MIN * 10.0
+//					    右側          ：SEQ.TUNING_FOCUS_RIGHT_MIN * 10.0
+//					焦点合わせ        ：FOCUSING_GRADIENT
+//					ORIGIN(ｴｯｼﾞ考慮)  ：ORIGIN_GRADIENT
 //************************************************************/
 float get_threshold( _UBYTE measure, _UBYTE mode )
 {
@@ -1990,10 +1990,10 @@ float get_threshold( _UBYTE measure, _UBYTE mode )
 	_UBYTE tuning;
 
 	if(SEQ.CHANGE_FPGA == 5){
-		// �`���[�j���O��(�X�Ή�f�ő�)
-		threshold = 999;							// 99.9���w��
+		// チューニング中(傾斜画素最大)
+		threshold = 999;							// 99.9を指定
 	}else{
-		// �蓮�X�Ή�f
+		// 手動傾斜画素
 		threshold = SEQ.MANUAL_GRADIENT;			// SEQ.ALL_DATA[70] [90]
 
 // chg 2016.12.06 K.Uemura start	GC0602
@@ -2006,19 +2006,19 @@ float get_threshold( _UBYTE measure, _UBYTE mode )
 		}
 // chg 2016.12.06 K.Uemura end
 
-		if(measure == MODE_FOCUS){					// �œ_���킹
+		if(measure == MODE_FOCUS){					// 焦点合わせ
 			threshold = SEQ.FOCUSING_GRADIENT;		// SEQ.ALL_DATA[71] [91]
 		}else
-		if(measure == MODE_ORIGIN_EDGE){			// ORIGIN(���ލl��)
+		if(measure == MODE_ORIGIN_EDGE){			// ORIGIN(ｴｯｼﾞ考慮)
 			threshold = SEQ.ORIGIN_THRESHOLD;		// SEQ.ALL_DATA[72] [92]
 		}else{
-			// ����ݸނ̑��݂��Ȃ�Ӱ�ނ̏ꍇ����̫�Ēl
+			// ﾁｭｰﾆﾝｸﾞの存在しないﾓｰﾄﾞの場合はﾃﾞﾌｫﾙﾄ値
 			tuning = get_tuning_mode(measure);
 
 			if((SEQ.TUNING_ENABLE == 1) && (tuning == TUNING_YES)){
 				switch(mode){
-					case EDGE_LEFT:		threshold = SEQ.TUNING_FOCUS_LEFT_MIN*10.0;		break;	// ����ݸ� ��
-					case EDGE_RIGHT:	threshold = SEQ.TUNING_FOCUS_RIGHT_MIN*10.0;	break;	// ����ݸ� �E
+					case EDGE_LEFT:		threshold = SEQ.TUNING_FOCUS_LEFT_MIN*10.0;		break;	// ﾁｭｰﾆﾝｸﾞ 左
+					case EDGE_RIGHT:	threshold = SEQ.TUNING_FOCUS_RIGHT_MIN*10.0;	break;	// ﾁｭｰﾆﾝｸﾞ 右
 				}
 			}
 		}
@@ -2028,7 +2028,7 @@ float get_threshold( _UBYTE measure, _UBYTE mode )
 }
 
 //************************************************************/
-//				�����׸ނ̐ݒ�
+//				動作ﾌﾗｸﾞの設定
 //************************************************************/
 short set_scan_flag( _UWORD i )
 {
@@ -2042,15 +2042,15 @@ short set_scan_flag( _UWORD i )
 	
 	edge_flag_L = edge_flag_R = 0;
 
-	threshold[0] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_LEFT);				// ��
-	threshold[1] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_RIGHT);				// �E
+	threshold[0] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_LEFT);				// 左
+	threshold[1] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_RIGHT);				// 右
 
 	execute_mode = get_execute_mode(SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE);
 
 	//----------
-	// �œ_�������l�Ƃ̔�r
+	// 焦点しきい値との比較
 	if(execute_mode == MODE_FOCUS){
-		// �œ_���l��������Ƃ�(99.9�ȉ�)�͌��ʂ���Ƃ���
+		// 焦点数値が得られるとき(99.9以下)は結果ありとする
 		if(RESULT.FOCUS_LEFT[i] <= 99.99){
 			edge_flag_L = 1;
 		}
@@ -2058,22 +2058,22 @@ short set_scan_flag( _UWORD i )
 			edge_flag_R = 1;
 		}
 	}else{
-		if((RESULT.FOCUS_LEFT[i]*10.0) <= threshold[0]){	// �œ_ ��
+		if((RESULT.FOCUS_LEFT[i]*10.0) <= threshold[0]){	// 焦点 左
 			edge_flag_L = 1;
 		}
 
-		if((RESULT.FOCUS_RIGHT[i]*10.0) <= threshold[1]){	// �œ_ �E
+		if((RESULT.FOCUS_RIGHT[i]*10.0) <= threshold[1]){	// 焦点 右
 			edge_flag_R = 1;
 		}
 	}
 
 	//----------
-	// ���ޖ����o�����׸ނ�OFF
+	// ｴｯｼﾞ未検出時はﾌﾗｸﾞをOFF
 	if(RESULT.EDGE_LEFT_PIXEL[i] <= LINESENSOR_X_MEASURE_MIN){
 		edge_flag_L = 0;
 	}
 
-	if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){				// �v��������X�����̂Ƃ�
+	if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){				// 計測方向がX方向のとき
 		if(RESULT.EDGE_RIGHT_PIXEL[i] >= LINESENSOR_X_MEASURE_MAX){
 			edge_flag_R = 0;
 		}
@@ -2084,28 +2084,28 @@ short set_scan_flag( _UWORD i )
 	}
 	
 	//----------
-	// ���ZTBL�ŕϊ��o���Ȃ���
+	// 換算TBLで変換出来ない時
 	execute_mode_edge = get_execute_mode_edge(SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE);
 
-	// ���ލ�
+	// ｴｯｼﾞ左
 	if(RESULT.EDGE_LEFT_SCALE[i] == SEQ.TABLE_EDGE_DISTANCE[0]){
-		// �������ނ��K�v�ȓ���Ӱ��
+		// 左側ｴｯｼﾞが必要な動作ﾓｰﾄﾞ
 		if((execute_mode_edge == EDGE_LEFT) || (execute_mode_edge == EDGE_AND)){
 			edge_flag_L = 0;
 		}
 	}
 
-	// ���މE
-	if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){				// �v��������X�����̂Ƃ�
+	// ｴｯｼﾞ右
+	if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){				// 計測方向がX方向のとき
 		if(RESULT.EDGE_RIGHT_SCALE[i] == SEQ.TABLE_EDGE_DISTANCE[X_DIVISION_NUMBER-1]){
-			// �E�����ނ��K�v�ȓ���Ӱ��
+			// 右側ｴｯｼﾞが必要な動作ﾓｰﾄﾞ
 			if((execute_mode_edge == EDGE_RIGHT) || (execute_mode_edge == EDGE_AND)){
 				edge_flag_R = 0;
 			}
 		}
 	}else{
 		if(RESULT.EDGE_RIGHT_SCALE[i] == SEQ.Z_TABLE_EDGE_DISTANCE[Z_DIVISION_NUMBER-1]){
-			// �E�����ނ��K�v�ȓ���Ӱ��
+			// 右側ｴｯｼﾞが必要な動作ﾓｰﾄﾞ
 			if((execute_mode_edge == EDGE_RIGHT) || (execute_mode_edge == EDGE_AND)){
 				edge_flag_R = 0;
 			}
@@ -2113,36 +2113,36 @@ short set_scan_flag( _UWORD i )
 	}
 	
 	//----------
-	// ����ݸޏ����Ƃ̔�r
-	if(SEQ.CHANGE_FPGA != 5){		//	����ݸގ��s���͔���s�\
+	// ﾁｭｰﾆﾝｸﾞ条件との比較
+	if(SEQ.CHANGE_FPGA != 5){		//	ﾁｭｰﾆﾝｸﾞ実行中は判定不可能
 
 // chg 2015.06.30 K.Uemura start	
-		// ����ݸނ̑��݂��Ȃ�Ӱ�ނ̏ꍇ����̫�Ēl
+		// ﾁｭｰﾆﾝｸﾞの存在しないﾓｰﾄﾞの場合はﾃﾞﾌｫﾙﾄ値
 		tuning = get_tuning_mode(SEQ.SELECT.BIT.MEASURE);
 
 		if((SEQ.TUNING_ENABLE == 1) && (tuning == TUNING_YES)){
 //		if(SEQ.TUNING_ENABLE == 1){
 // chg 2015.06.30 K.Uemura end
-			//�v��Ӱ��
+			//計測ﾓｰﾄﾞ
 			if(execute_mode == MODE_D4_RIGHT){
-				// �����ނ̔�r
-				if(SEQ.TUNING_EDGE_LEFT_MIN_LOWER < RESULT.EDGE_LEFT_SCALE[i])			// 4095��f�ɋ߂Â���
+				// 左ｴｯｼﾞの比較
+				if(SEQ.TUNING_EDGE_LEFT_MIN_LOWER < RESULT.EDGE_LEFT_SCALE[i])			// 4095画素に近づく側
 				{
 					edge_flag_L = 0;
 				}
 			}
 
 			if(execute_mode == MODE_D4_LEFT){
-				// �E���ނ̔�r
-				if(RESULT.EDGE_RIGHT_SCALE[i] < SEQ.TUNING_EDGE_RIGHT_MAX_LOWER)			// 0��f�ɋ߂Â���
+				// 右ｴｯｼﾞの比較
+				if(RESULT.EDGE_RIGHT_SCALE[i] < SEQ.TUNING_EDGE_RIGHT_MAX_LOWER)			// 0画素に近づく側
 				{
 					edge_flag_R = 0;
 				}
 			}
 
 			if(execute_mode == MODE_D4_LOW){
-				// �H��a�Ƃ̔�r
-				// �����ނ����o�ł���ꍇ�ŁA�ׂ��Ȃ�ꍇ�Ɏ擾���Ȃ�
+				// 工具径との比較
+				// 両ｴｯｼﾞが検出できる場合で、細くなる場合に取得しない
 				if((edge_flag_L == 1) && (edge_flag_R == 1)){
 					work = RESULT.EDGE_RIGHT_SCALE[i] - RESULT.EDGE_LEFT_SCALE[i];
 					if(work < SEQ.TUNING_EDGE_SMALL_D_LOWER){
@@ -2155,8 +2155,8 @@ short set_scan_flag( _UWORD i )
 	}
 
 	//----------
-	// ���茋�ʂ̎Z�o(�߰�ݸފԁ^����ؾ�Ċ�)
-	//   �߰�ݸފԂɌ��ʂ���������׸�ON(1:���ʂ���)
+	// 測定結果の算出(ﾎﾟｰﾘﾝｸﾞ間／周期ﾘｾｯﾄ間)
+	//   ﾎﾟｰﾘﾝｸﾞ間に結果が得られるとﾌﾗｸﾞON(1:結果あり)
 	//----------
 	SEQ.FLAG4.BIT.EDGE_L = edge_flag_L;
 	SEQ.FLAG4.BIT.EDGE_R = edge_flag_R;
@@ -2183,8 +2183,8 @@ short set_scan_flag( _UWORD i )
 }
 
 //************************************************************/
-//				OK�׸ނ̐ݒ�
-//				�����炩���ߌ��o�׸ނ̐ݒ肪�������Ă��邱��
+//				OKﾌﾗｸﾞの設定
+//				※あらかじめ検出ﾌﾗｸﾞの設定が完了していること
 //************************************************************/
 short set_ok_flag( _UWORD i )
 {
@@ -2192,44 +2192,44 @@ short set_ok_flag( _UWORD i )
 	_UBYTE	execute_mode;
 	float	threshold[2];
 
-	// OK�ENG����
-	SEQ.FLAG2.BIT.OK = 0;					// OK�׸ނ�ؾ��
+	// OK・NG判定
+	SEQ.FLAG2.BIT.OK = 0;					// OKﾌﾗｸﾞをﾘｾｯﾄ
 
-	threshold[0] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_LEFT);				// ��
-	threshold[1] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_RIGHT);				// �E
+	threshold[0] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_LEFT);				// 左
+	threshold[1] = get_threshold(SEQ.SELECT.BIT.MEASURE, EDGE_RIGHT);				// 右
 
-	if((RESULT.FOCUS_LEFT[i]*10.0) <= threshold[0]){	// �œ_ ��
+	if((RESULT.FOCUS_LEFT[i]*10.0) <= threshold[0]){	// 焦点 左
 		SEQ.FLAG2.BIT.OK = 1;
 	}
 
-	if((RESULT.FOCUS_RIGHT[i]*10.0) <= threshold[1]){	// �œ_ �E
+	if((RESULT.FOCUS_RIGHT[i]*10.0) <= threshold[1]){	// 焦点 右
 		SEQ.FLAG2.BIT.OK = 1;
 	}
 
 	execute_mode = get_execute_mode(SEQ.SELECT.BIT.MEASURE, SEQ.FLAG2.BIT.AUTO_MODE);
 
 	if(execute_mode == MODE_CENTER){
-		// �����ނ����o����Ȃ���NG
+		// 両ｴｯｼﾞが検出されないとNG
 		if((SEQ.FLAG4.BIT.EDGE_L == 0) || (SEQ.FLAG4.BIT.EDGE_R == 0)){
 			SEQ.FLAG2.BIT.OK = 0;
 		}
 	}else if(execute_mode == MODE_D4_LEFT){
 		if(SEQ.FLAG4.BIT.EDGE_R == 0){
-			// �E���ނ������Ƃ�NG
+			// 右ｴｯｼﾞが無いときNG
 			SEQ.FLAG2.BIT.OK = 0;
 		}
 	}else if(execute_mode == MODE_D4_RIGHT){
 		if(SEQ.FLAG4.BIT.EDGE_L == 0){
-			// �����ނ������Ƃ�NG
+			// 左ｴｯｼﾞが無いときNG
 			SEQ.FLAG2.BIT.OK = 0;
 		}
 	}else if(execute_mode == MODE_D4_LOW){
-		// ���E���ނ�1������o����Ȃ�����NG
+		// 左右ｴｯｼﾞが1回も検出されない時はNG
 		if(SEQ.FLAG4.BIT.EDGE_LR_SCAN == 0){
 			SEQ.FLAG2.BIT.OK = 0;
 		}
 	}else if(execute_mode == MODE_ORIGIN){
-		// SKIP�o�͂�1�_�ł����݂���ꍇ���ı���
+		// SKIP出力が1点でも存在する場合ｶｳﾝﾄｱｯﾌﾟ
 		if(SEQ.FOCUSING_HDI >> 11){
 			SEQ.FLAG2.BIT.OK = 1;
 		}
@@ -2243,7 +2243,7 @@ short set_ok_flag( _UWORD i )
 }
 
 //************************************************************/
-//				���o���ʂ̐ݒ�
+//				検出結果の設定
 //************************************************************/
 short set_result( _UWORD i )
 {
@@ -2254,64 +2254,64 @@ short set_result( _UWORD i )
 	}
 
 	//----------
-	// ���茋�ʂ̎Z�o
+	// 測定結果の算出
 	//----------
 	if(SEQ.FLAG4.BIT.EDGE_L == 1){
-		// �����ʂ���
+		// 左結果あり
 		//-----
 #ifdef	OUTPUT232C
 #ifdef	__DEBUG
-		// �G�b�W(��)�ő���擾
+		// エッジ(左)最大を取得
 		DEBUG_STR.DEBUG[21] = max(RESULT.EDGE_LEFT_PIXEL[i]*10., DEBUG_STR.DEBUG[21]);
 		DEBUG_STR.DEBUG[23] = min(RESULT.EDGE_LEFT_PIXEL[i]*10., DEBUG_STR.DEBUG[23]);
-		// �œ_(��)�ő���擾
+		// 焦点(左)最大を取得
 		DEBUG_STR.DEBUG[31] = max(RESULT.FOCUS_LEFT[i]*100., DEBUG_STR.DEBUG[31]);
 		DEBUG_STR.DEBUG[33] = min(RESULT.FOCUS_LEFT[i]*100., DEBUG_STR.DEBUG[33]);
 #endif
 #endif
-		// �œ_ ��(�ŏ�)
+		// 焦点 左(最小)
 		RESULT.FOCUS_LEFT_MIN[i] = RESULT.FOCUS_LEFT[i];
 		if(RESULT.FOCUS_LEFT[i] < RESULT.FOCUS_LEFT_MIN[0]){
 			RESULT.FOCUS_LEFT_MIN[0] = RESULT.FOCUS_LEFT[i];
 		}
 		
-		// D(�ŏ�)
+		// D(最小)
 		if(RESULT.EDGE_LEFT_SCALE[i] < RESULT.LARGE_D_MIN[0]){
 			RESULT.LARGE_D_MIN[0] = RESULT.EDGE_LEFT_SCALE[i];
-			COM0.NO115 = RESULT.LARGE_D_MIN[0] * 10.;	// ���G�b�W�ő�
+			COM0.NO115 = RESULT.LARGE_D_MIN[0] * 10.;	// 左エッジ最大
 		}
 		
-		// D>4 ��-����
+		// D>4 左-中央
 		RESULT.GREATER_D_DIFF_RIGHT[i] = RESULT.EDGE_LEFT_SCALE[i] - DL_X_CENTER;
 
-		// D>4 �ŏ�(�E��)
+		// D>4 最小(右側)
 		if(RESULT.GREATER_D_DIFF_RIGHT[i] < RESULT.GREATER_D_DIFF_RIGHT_MIN[0]){
 			RESULT.GREATER_D_DIFF_RIGHT_MIN[0] = RESULT.GREATER_D_DIFF_RIGHT[i];
 		}
 
-		// D>4 �ő�(�E��)
+		// D>4 最大(右側)
 		if(RESULT.GREATER_D_DIFF_RIGHT[i] > RESULT.GREATER_D_DIFF_RIGHT_MAX[0]){
 			RESULT.GREATER_D_DIFF_RIGHT_MAX[0] = RESULT.GREATER_D_DIFF_RIGHT[i];
 		}
 	}
 
 	if(SEQ.FLAG4.BIT.EDGE_R == 1){
-		// �E���ʂ���
+		// 右結果あり
 		//-----
 #ifdef	OUTPUT232C
 #ifdef	__DEBUG
-		// �G�b�W(�E)�ő���擾
+		// エッジ(右)最大を取得
 		DEBUG_STR.DEBUG[22] = max(RESULT.EDGE_RIGHT_PIXEL[i]*10., DEBUG_STR.DEBUG[22]);
 		DEBUG_STR.DEBUG[24] = min(RESULT.EDGE_RIGHT_PIXEL[i]*10., DEBUG_STR.DEBUG[24]);
-		// �œ_(�E)�ő���擾
+		// 焦点(右)最大を取得
 		DEBUG_STR.DEBUG[32] = max(RESULT.FOCUS_RIGHT[i]*100., DEBUG_STR.DEBUG[32]);
 		DEBUG_STR.DEBUG[34] = min(RESULT.FOCUS_RIGHT[i]*100., DEBUG_STR.DEBUG[34]);
 #endif
 #endif
 
-		// �v��������X�����̂Ƃ�
+		// 計測方向がX方向のとき
 		if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION){
-			// �œ_ �E(�ŏ�)
+			// 焦点 右(最小)
 			RESULT.FOCUS_RIGHT_MIN[i] = RESULT.FOCUS_RIGHT[i];
 			if(RESULT.FOCUS_RIGHT[i] < RESULT.FOCUS_RIGHT_MIN[0]){
 				if(RESULT.FOCUS_RIGHT[i]<0){
@@ -2321,32 +2321,32 @@ short set_result( _UWORD i )
 				RESULT.FOCUS_RIGHT_MIN[0] = RESULT.FOCUS_RIGHT[i];
 			}
 			
-			// D(�ő�)
+			// D(最大)
 			if(LINESENSOR_X_MEASURE_MAX <= RESULT.EDGE_RIGHT_SCALE[i]){
 				ret = RESULT.EDGE_RIGHT_SCALE[i];
 				ret = ARGUMENT_ERROR;
 			}
 			if(RESULT.EDGE_RIGHT_SCALE[i] > RESULT.LARGE_D_MAX[0]){
 				RESULT.LARGE_D_MAX[0] = RESULT.EDGE_RIGHT_SCALE[i];
-				COM0.NO116 = RESULT.LARGE_D_MAX[0] * 10.;	// �E�G�b�W�ő�
+				COM0.NO116 = RESULT.LARGE_D_MAX[0] * 10.;	// 右エッジ最大
 			}
 
-			// D>4 �E-����
+			// D>4 右-中央
 			RESULT.GREATER_D_DIFF[i] = RESULT.EDGE_RIGHT_SCALE[i] - DL_X_CENTER;
 
-			// D>4 �ŏ�
+			// D>4 最小
 			if(RESULT.GREATER_D_DIFF[i] < RESULT.GREATER_D_DIFF_MIN[0]){
 				RESULT.GREATER_D_DIFF_MIN[0] = RESULT.GREATER_D_DIFF[i];
 			}
 
-			// D>4 �ő�
+			// D>4 最大
 			if(RESULT.GREATER_D_DIFF[i] > RESULT.GREATER_D_DIFF_MAX[0]){
 				RESULT.GREATER_D_DIFF_MAX[0] = RESULT.GREATER_D_DIFF[i];
 			}
 		
-		// �v��������Z�����̂Ƃ�
+		// 計測方向がZ方向のとき
 		}else{
-			// �œ_ �E(�ŏ�)
+			// 焦点 右(最小)
 			RESULT.FOCUS_RIGHT_MIN[i] = RESULT.FOCUS_RIGHT[i];
 			if(RESULT.FOCUS_RIGHT[i] < RESULT.FOCUS_RIGHT_MIN[0]){
 				if(RESULT.FOCUS_RIGHT[i]<0){
@@ -2356,25 +2356,25 @@ short set_result( _UWORD i )
 				RESULT.FOCUS_RIGHT_MIN[0] = RESULT.FOCUS_RIGHT[i];
 			}
 			
-			// D(�ő�)
+			// D(最大)
 			if(LINESENSOR_Z_MEASURE_MAX <= RESULT.EDGE_RIGHT_SCALE[i]){
 				ret = RESULT.EDGE_RIGHT_SCALE[i];
 				ret = ARGUMENT_ERROR;
 			}
 			if(RESULT.EDGE_RIGHT_SCALE[i] > RESULT.LARGE_D_MAX[0]){
 				RESULT.LARGE_D_MAX[0] = RESULT.EDGE_RIGHT_SCALE[i];
-				COM0.NO116 = RESULT.LARGE_D_MAX[0] * 10.;	// �E�G�b�W�ő�
+				COM0.NO116 = RESULT.LARGE_D_MAX[0] * 10.;	// 右エッジ最大
 			}
 
-			// D>4 �E-����
+			// D>4 右-中央
 			RESULT.GREATER_D_DIFF[i] = DL_Z_CENTER - RESULT.EDGE_RIGHT_SCALE[i];
 			
-			// D>4 �ŏ�
+			// D>4 最小
 			if(RESULT.GREATER_D_DIFF[i] > RESULT.GREATER_D_DIFF_MIN[0]){
 				RESULT.GREATER_D_DIFF_MIN[0] = RESULT.GREATER_D_DIFF[i];
 			}
 
-			// D>4 �ő�
+			// D>4 最大
 			if(RESULT.GREATER_D_DIFF[i] < RESULT.GREATER_D_DIFF_MAX[0]){
 				RESULT.GREATER_D_DIFF_MAX[0] = RESULT.GREATER_D_DIFF[i];
 			}
@@ -2382,70 +2382,70 @@ short set_result( _UWORD i )
 	}
 
 	if((SEQ.FLAG4.BIT.EDGE_L_SCAN == 1) && (SEQ.FLAG4.BIT.EDGE_R_SCAN == 1)){
-		// ���E ���ʂ���(�������o)
-		// ���В[���ł�OK
+		// 左右 結果あり(両方検出)
+		// ※片端ずつでもOK
 
 		// D
 		RESULT.LARGE_D_DIFF[0] = RESULT.LARGE_D_MAX[0] - RESULT.LARGE_D_MIN[0];
 
-		// ��X
+		// ΔX
 		RESULT.DELTA_X_DIFF[0] = (RESULT.LARGE_D_MAX[0] + RESULT.LARGE_D_MIN[0]) / 2.0 - DL_X_CENTER;
 
-		// ��X �ŏ�
+		// ΔX 最小
 		if(RESULT.DELTA_X_DIFF[i] < RESULT.DELTA_X_DIFF_MIN[0]){
 			RESULT.DELTA_X_DIFF_MIN[0] = RESULT.DELTA_X_DIFF[i];
 		}
 
-		// ��X �ő�
+		// ΔX 最大
 		if(RESULT.DELTA_X_DIFF[i] > RESULT.DELTA_X_DIFF_MAX[0]){
 			RESULT.DELTA_X_DIFF_MAX[0] = RESULT.DELTA_X_DIFF[i];
 		}
 	}
 
 	if((SEQ.FLAG4.BIT.EDGE_L == 1) && (SEQ.FLAG4.BIT.EDGE_R == 1)){
-		// ���E ���ʂ���(�������o)
-		RESULT.WORK_EDGE_DIFF[i] = RESULT.EDGE_RIGHT_SCALE[i] - RESULT.EDGE_LEFT_SCALE[i];		// WORK ���ލ��E�̍�
-		RESULT.WORK_CENTER[i] = (RESULT.EDGE_RIGHT_SCALE[i] + RESULT.EDGE_LEFT_SCALE[i]) / 2.0;	// WORK ����
+		// 左右 結果あり(同時検出)
+		RESULT.WORK_EDGE_DIFF[i] = RESULT.EDGE_RIGHT_SCALE[i] - RESULT.EDGE_LEFT_SCALE[i];		// WORK ｴｯｼﾞ左右の差
+		RESULT.WORK_CENTER[i] = (RESULT.EDGE_RIGHT_SCALE[i] + RESULT.EDGE_LEFT_SCALE[i]) / 2.0;	// WORK 中央
 
 		RESULT.SMALL_D_MAX[i] = RESULT.WORK_EDGE_DIFF[i];
 #ifdef	OUTPUT232C
 #ifdef	__DEBUG
-		// �H��a�ő���擾
+		// 工具径最大を取得
 		DEBUG_STR.DEBUG[10] = max(RESULT.WORK_EDGE_DIFF[i]*10., DEBUG_STR.DEBUG[10]);
 //		if(DEBUG_STR.DEBUG[10] < 10000){
 //			DEBUG_STR.DEBUG[11] = DEBUG_STR.DEBUG[10];
 //		}
 #endif
 #endif
-		// d(�ő�)
+		// d(最大)
 		if(RESULT.WORK_EDGE_DIFF[i] > RESULT.SMALL_D_MAX[0]){
 			RESULT.SMALL_D_MAX[0] = RESULT.WORK_EDGE_DIFF[i];
 		}
 
-		// d���S(�ŏ�)
+		// d中心(最小)
 		if(RESULT.WORK_CENTER[i] < RESULT.SWING_MIN[0]){
 			RESULT.SWING_MIN[0] = RESULT.WORK_CENTER[i];
-			COM0.NO117 = RESULT.WORK_EDGE_DIFF[i] * 10.;		// ���ő�H��a(d)
-			COM0.NO119 = RESULT.SWING_MIN[0] * 10.;				// �H��S���ő�
+			COM0.NO117 = RESULT.WORK_EDGE_DIFF[i] * 10.;		// 左最大工具径(d)
+			COM0.NO119 = RESULT.SWING_MIN[0] * 10.;				// 工具中心左最大
 		}
 
-		// d���S(�ő�)
+		// d中心(最大)
 		if(RESULT.WORK_CENTER[i] > RESULT.SWING_MAX[0]){
 			RESULT.SWING_MAX[0] = RESULT.WORK_CENTER[i];
-			COM0.NO118 = RESULT.WORK_EDGE_DIFF[i] * 10.;		// �E�ő�H��a(d)
-			COM0.NO120 = RESULT.SWING_MAX[0] * 10.;				// �H��S�E�ő�
+			COM0.NO118 = RESULT.WORK_EDGE_DIFF[i] * 10.;		// 右最大工具径(d)
+			COM0.NO120 = RESULT.SWING_MAX[0] * 10.;				// 工具中心右最大
 		}
 		
 		// ADD 150727
-		if(SEQ.FLUTES == 0){										// �n�����u0�v�̂Ƃ�
-			// �U��n��0(�ŏ�)
+		if(SEQ.FLUTES == 0){										// 刃数が「0」のとき
+			// 振れ刃数0(最小)
 			if(RESULT.SWING_MIN[1] > RESULT.SWING_MIN[0])	RESULT.SWING_MIN[1] = RESULT.SWING_MIN[0];
-			// �U��n��0(�ő�)
+			// 振れ刃数0(最大)
 			if(RESULT.SWING_MAX[1] < RESULT.SWING_MAX[0])	RESULT.SWING_MAX[1] = RESULT.SWING_MAX[0];
 		}
 		//
 		
-		// �U��
+		// 振れ
 		RESULT.SWING_DIFF[0] = RESULT.SWING_MAX[0] - RESULT.SWING_MIN[0];
 	}
 
@@ -2453,7 +2453,7 @@ short set_result( _UWORD i )
 }
 
 //************************************************************/
-//				7�Z�OLED�̐ݒ�
+//				7セグLEDの設定
 //************************************************************/
 short set_7seg_led_upper( long temp, _UBYTE measure )
 {
@@ -2471,50 +2471,50 @@ short set_7seg_led_upper( long temp, _UBYTE measure )
 // chg 2016.06.22 K.Uemura end
 			LED.SEG_BUF[1] = ' ';
 			LED.SEG_BUF[2] = ' ';
-			LED.SEG_BUF[3] = ((COM0.NO314 / 100) % 10 + 0x30);		// �S�̈�
+			LED.SEG_BUF[3] = ((COM0.NO314 / 100) % 10 + 0x30);		// 百の位
 			if(LED.SEG_BUF[3] == '0'){
-				LED.SEG_BUF[3] = ' ';	// ��
+				LED.SEG_BUF[3] = ' ';	// 空白
 			}
-			LED.SEG_BUF[4] = ((COM0.NO314 / 10) % 10 + 0x30);		// �\�̈�
-			LED.SEG_BUF[5] = ((COM0.NO314 / 1) % 10 + 0x30);		// ��̈�
+			LED.SEG_BUF[4] = ((COM0.NO314 / 10) % 10 + 0x30);		// 十の位
+			LED.SEG_BUF[5] = ((COM0.NO314 / 1) % 10 + 0x30);		// 一の位
 		}else{
 // add 2016.02.18 K.Uemura end
-			LED.SEG_BUF[1] = ' ';	// ����
-			// -1�̕\�����A�w-0.000�x�ɂȂ邽�߁A-10�ȉ��̂Ƃ��ɕ�����\��
+			LED.SEG_BUF[1] = ' ';	// 符号
+			// -1の表示が、『-0.000』になるため、-10以下のときに符号を表示
 			if(temp <= -10){
 				LED.SEG_BUF[1] = '-';
 				temp *= -1;
 			}
 			
-			LED.SEG_BUF[2] = ((temp / 10000) % 10 + 0x30);		// ��̈�
-			LED.SEG_BUF[2] |= 0x80;								// �����_
-			LED.SEG_BUF[3] = ((temp / 1000) % 10 + 0x30);		// ��������
-			LED.SEG_BUF[4] = ((temp / 100) % 10 + 0x30);		// ��������
-			LED.SEG_BUF[5] = ((temp / 10) % 10 + 0x30);			// ������O��
+			LED.SEG_BUF[2] = ((temp / 10000) % 10 + 0x30);		// 一の位
+			LED.SEG_BUF[2] |= 0x80;								// 小数点
+			LED.SEG_BUF[3] = ((temp / 1000) % 10 + 0x30);		// 小数第一位
+			LED.SEG_BUF[4] = ((temp / 100) % 10 + 0x30);		// 小数第二位
+			LED.SEG_BUF[5] = ((temp / 10) % 10 + 0x30);			// 小数第三位
 		}
 	}else{
-		// 3���ȏ�̂Ƃ��́u99.99�v�̕\�����s��
+		// 3桁以上のときは「99.99」の表示を行う
 		if(temp >= 999999){
 			temp = 999999;
 		}
 
-		LED.SEG_BUF[1] = ' ';	// ����
+		LED.SEG_BUF[1] = ' ';	// 符号
 		
-		LED.SEG_BUF[2] = ((temp / 10000) % 10 + 0x30);		// �\�̈�
+		LED.SEG_BUF[2] = ((temp / 10000) % 10 + 0x30);		// 十の位
 		if(LED.SEG_BUF[2] == '0'){
-			LED.SEG_BUF[2] = ' ';	// ��
+			LED.SEG_BUF[2] = ' ';	// 空白
 		}
-		LED.SEG_BUF[3] = ((temp / 1000) % 10 + 0x30);		// ��̈�
-		LED.SEG_BUF[3] |= 0x80;								// �����_
-		LED.SEG_BUF[4] = ((temp / 100) % 10 + 0x30);		// ��������
-		LED.SEG_BUF[5] = ((temp / 10) % 10 + 0x30);			// ��������
+		LED.SEG_BUF[3] = ((temp / 1000) % 10 + 0x30);		// 一の位
+		LED.SEG_BUF[3] |= 0x80;								// 小数点
+		LED.SEG_BUF[4] = ((temp / 100) % 10 + 0x30);		// 小数第一位
+		LED.SEG_BUF[5] = ((temp / 10) % 10 + 0x30);			// 小数第二位
 	}
 
 	return( ret );
 }
 
 //************************************************************/
-//				7�Z�OLED�̐ݒ�
+//				7セグLEDの設定
 //************************************************************/
 short set_7seg_led_lower( long temp, _UBYTE measure )
 {
@@ -2532,50 +2532,50 @@ short set_7seg_led_lower( long temp, _UBYTE measure )
 // chg 2016.06.22 K.Uemura end
 			LED.SEG_BUF[6] = ' ';
 			LED.SEG_BUF[7] = ' ';
-			LED.SEG_BUF[8] = ((COM0.NO316 / 100) % 10 + 0x30);		// �S�̈�
+			LED.SEG_BUF[8] = ((COM0.NO316 / 100) % 10 + 0x30);		// 百の位
 			if(LED.SEG_BUF[8] == '0'){
-				LED.SEG_BUF[8] = ' ';	// ��
+				LED.SEG_BUF[8] = ' ';	// 空白
 			}
-			LED.SEG_BUF[9] = ((COM0.NO316 / 10) % 10 + 0x30);		// �\�̈�
-			LED.SEG_BUF[10] = ((COM0.NO316 / 1) % 10 + 0x30);		// ��̈�
+			LED.SEG_BUF[9] = ((COM0.NO316 / 10) % 10 + 0x30);		// 十の位
+			LED.SEG_BUF[10] = ((COM0.NO316 / 1) % 10 + 0x30);		// 一の位
 		}else{
 // add 2016.02.18 K.Uemura end
 			LED.SEG_BUF[6] = ' ';
-			// -1�̕\�����A�w-0.000�x�ɂȂ邽�߁A-10�ȉ��̂Ƃ��ɕ�����\��
+			// -1の表示が、『-0.000』になるため、-10以下のときに符号を表示
 			if(temp <= -10){
 				LED.SEG_BUF[6] = '-';
 				temp *= -1;
 			}
 			
-			LED.SEG_BUF[7] = ((temp / 10000) % 10 + 0x30);		// ��̈�
-			LED.SEG_BUF[7] |= 0x80;								// �����_
-			LED.SEG_BUF[8] = ((temp / 1000) % 10 + 0x30);		// ��������
-			LED.SEG_BUF[9] = ((temp / 100) % 10 + 0x30);		// ��������
-			LED.SEG_BUF[10] = ((temp / 10) % 10 + 0x30);		// ������O��
+			LED.SEG_BUF[7] = ((temp / 10000) % 10 + 0x30);		// 一の位
+			LED.SEG_BUF[7] |= 0x80;								// 小数点
+			LED.SEG_BUF[8] = ((temp / 1000) % 10 + 0x30);		// 小数第一位
+			LED.SEG_BUF[9] = ((temp / 100) % 10 + 0x30);		// 小数第二位
+			LED.SEG_BUF[10] = ((temp / 10) % 10 + 0x30);		// 小数第三位
 		}
 	}else{
-		// 3���ȏ�̂Ƃ��́u99.99�v�̕\�����s��
+		// 3桁以上のときは「99.99」の表示を行う
 		if(temp >= 999999){
 			temp = 999999;
 		}
 		
-		LED.SEG_BUF[6] = ' ';	// ����
+		LED.SEG_BUF[6] = ' ';	// 符号
 		
-		LED.SEG_BUF[7] = ((temp / 10000) % 10 + 0x30);		// �\�̈�
+		LED.SEG_BUF[7] = ((temp / 10000) % 10 + 0x30);		// 十の位
 		if(LED.SEG_BUF[7] == '0'){
-			LED.SEG_BUF[7] = ' ';	// ��
+			LED.SEG_BUF[7] = ' ';	// 空白
 		}
-		LED.SEG_BUF[8] = ((temp / 1000) % 10 + 0x30);		// ��̈�
-		LED.SEG_BUF[8] |= 0x80;								// �����_
-		LED.SEG_BUF[9] = ((temp / 100) % 10 + 0x30);		// ��������
-		LED.SEG_BUF[10] = ((temp / 10) % 10 + 0x30);		// ��������
+		LED.SEG_BUF[8] = ((temp / 1000) % 10 + 0x30);		// 一の位
+		LED.SEG_BUF[8] |= 0x80;								// 小数点
+		LED.SEG_BUF[9] = ((temp / 100) % 10 + 0x30);		// 小数第一位
+		LED.SEG_BUF[10] = ((temp / 10) % 10 + 0x30);		// 小数第二位
 	}
 
 	return( ret );
 }
 
 //************************************************************/
-//				7��ޕ\��(-----)(��i)
+//				7ｾｸﾞ表示(-----)(上段)
 //************************************************************/
 void set_7seg_upper_no_data(void)
 {
@@ -2587,7 +2587,7 @@ void set_7seg_upper_no_data(void)
 }
 
 //************************************************************/
-//				7��ޕ\��(-----)(���i)
+//				7ｾｸﾞ表示(-----)(下段)
 //************************************************************/
 void set_7seg_lower_no_data(void)
 {

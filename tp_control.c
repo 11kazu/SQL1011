@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: tp_control.c
 ******************************************************************************/
 #include <stdint.h>
@@ -8,9 +8,9 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void state_number_set(void);					// ��Ԕԍ����(No.311)
-void state_number_control(void);				// ��Ԕԍ�����(No.311)
-void clear_result(void);						// ���ʸر
+void state_number_set(void);					// 状態番号ｾｯﾄ(No.311)
+void state_number_control(void);				// 状態番号制御(No.311)
+void clear_result(void);						// 結果ｸﾘｱ
 // add 2015.07.22 K.Uemura start	
 short check_hardware_error(void);
 // add 2015.07.22 K.Uemura end
@@ -25,41 +25,41 @@ short get_cover_status_initilized(void);
 void argument_number_set(void);
 // add 2016.03.21 K.Uemura end
 
-void tp_control(void);							// ������ق���̐���
+void tp_control(void);							// ﾀｯﾁﾊﾟﾈﾙからの制御
 
 //************************************************************/
-//				��Ԕԍ����(No.311)
+//				状態番号ｾｯﾄ(No.311)
 //************************************************************/
 void state_number_set(void)
 {
-	COM0.NO311 = 9999;					// �Y���Ȃ�
+	COM0.NO311 = 9999;					// 該当なし
 	
-	SEQ.SELECT.BIT.MEASURE = 19;		// �Y���Ȃ�
+	SEQ.SELECT.BIT.MEASURE = 19;		// 該当なし
 	
 // add 2016.02.18 K.Uemura start	G21804
-	SEQ.FLAG6.BIT.ADD_DATA = 0;			// �ǉ��ް��׸�(���ρE�ŏ��E�ő�) ADD 160226
+	SEQ.FLAG6.BIT.ADD_DATA = 0;			// 追加ﾃﾞｰﾀﾌﾗｸﾞ(平均・最小・最大) ADD 160226
 // add 2016.02.18 K.Uemura end
 
 // chg 2016.03.21 K.Uemura start	G32101
 #if	0
 //// add 2015.10.07 K.Uemura start	
-//	if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){					// �ʐM����̏ꍇ
-//		SEQ.SPINDLE_SPEED = ((COM0.NO303 << 16) | COM0.NO304);		// ��]��
-//		SEQ.FLUTES = COM0.NO305;									// �n��
-//		SEQ.RADIUS = COM0.NO306;									// �H��a
+//	if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){					// 通信操作の場合
+//		SEQ.SPINDLE_SPEED = ((COM0.NO303 << 16) | COM0.NO304);		// 回転数
+//		SEQ.FLUTES = COM0.NO305;									// 刃数
+//		SEQ.RADIUS = COM0.NO306;									// 工具径
 //// add 2016.03.10 K.Uemura start	G31002
-//		SEQ.EXTEND_CYCLE = COM0.NO307;								// ����
+//		SEQ.EXTEND_CYCLE = COM0.NO307;								// 引数
 //// add 2016.03.10 K.Uemura end
 //	}
 //// add 2015.10.07 K.Uemura end
 #endif
 // chg 2016.03.21 K.Uemura end
 
-	// 311 ��Ԕԍ��̐ݒ�
+	// 311 状態番号の設定
 	switch(COM0.NO301){
-		// ����Ӱ��
-		case 0:		// TOP(�N�����̉��)
-			COM0.NO311 = 0;									// �������Ă��Ȃ�
+		// 動作ﾓｰﾄﾞ
+		case 0:		// TOP(起動時の画面)
+			COM0.NO311 = 0;									// 何もしていない
 			break;
 			
 		// ORIGIN
@@ -70,69 +70,69 @@ void state_number_set(void)
 			break;
 			
 // add 2016.02.18 K.Uemura start	G21804
-		// ���|�m�F
-		case 152:	// ���|�m�F ���|���ُo��(�A��)
+		// 清掃確認
+		case 152:	// 清掃確認 清掃ﾚﾍﾞﾙ出力(連続)
 // add 2016.06.22 K.Uemura start	G62202
-		case 153:	// ���|�m�F ���|���ُo��(1��)
+		case 153:	// 清掃確認 清掃ﾚﾍﾞﾙ出力(1回)
 // add 2016.06.22 K.Uemura end
 			COM0.NO311 = COM0.NO301;
 			SEQ.SELECT.BIT.MEASURE = MODE_ORIGIN;			// 7:ORIGIN
-			SEQ.FLAG6.BIT.ADD_DATA = 1;						// �ǉ��ް��׸�(���ρE�ŏ��E�ő�) ADD 160226
+			SEQ.FLAG6.BIT.ADD_DATA = 1;						// 追加ﾃﾞｰﾀﾌﾗｸﾞ(平均・最小・最大) ADD 160226
 			break;
 // add 2016.02.18 K.Uemura end
 			
-		// ORIGIN(���ލl��)
-		case 2:		// ORIGIN(���ލl��)(X)
-		case 4:		// ORIGIN(���ލl��)(Z)
+		// ORIGIN(ｴｯｼﾞ考慮)
+		case 2:		// ORIGIN(ｴｯｼﾞ考慮)(X)
+		case 4:		// ORIGIN(ｴｯｼﾞ考慮)(Z)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_ORIGIN_EDGE;		// 8:ORIGIN(���ލl��)
+			SEQ.SELECT.BIT.MEASURE = MODE_ORIGIN_EDGE;		// 8:ORIGIN(ｴｯｼﾞ考慮)
 			break;
 			
-		// �H��a(d��4)(X)
-		case 10:	// �H��a(d��4)(X)
+		// 工具径(d≦4)(X)
+		case 10:	// 工具径(d≦4)(X)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_D4_LOW;			// 0:�H��a(d��4)
+			SEQ.SELECT.BIT.MEASURE = MODE_D4_LOW;			// 0:工具径(d≦4)
 			break;
 			
-		// �H��a(d��4 ����)(X)
-		case 20:	// �H��a(d��4 ����)(X)
+		// 工具径(d＞4 自動)(X)
+		case 20:	// 工具径(d＞4 自動)(X)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_D4_AUTO;			// 10:�H��a(d��4 ����)
+			SEQ.SELECT.BIT.MEASURE = MODE_D4_AUTO;			// 10:工具径(d＞4 自動)
 			break;
 			
-		// �H��a(d��4 ����)(X)
-		case 21:	// �H��a(d��4 ����)(X)
+		// 工具径(d＞4 左側)(X)
+		case 21:	// 工具径(d＞4 左側)(X)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_D4_LEFT;			// 1:�H��a(d��4 ����)
+			SEQ.SELECT.BIT.MEASURE = MODE_D4_LEFT;			// 1:工具径(d＞4 左側)
 // add 2016.09.08 K.Uemura start	G90801
 			if(RESULT_SIGN == 1){
-				SEQ.SELECT.BIT.MEASURE = MODE_D4_RIGHT;		// 11:�H��a(d��4 �E��)
+				SEQ.SELECT.BIT.MEASURE = MODE_D4_RIGHT;		// 11:工具径(d＞4 右側)
 			}
 // add 2016.09.08 K.Uemura end
 			break;
 			
-		// �H��a(d��4 �E��)(X)
-		case 22:	// �H��a(d��4 �E��)(X)
+		// 工具径(d＞4 右側)(X)
+		case 22:	// 工具径(d＞4 右側)(X)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_D4_RIGHT;			// 11:�H��a(d��4 �E��)
+			SEQ.SELECT.BIT.MEASURE = MODE_D4_RIGHT;			// 11:工具径(d＞4 右側)
 // add 2016.09.08 K.Uemura start	G90801
 			if(RESULT_SIGN == 1){
-				SEQ.SELECT.BIT.MEASURE = MODE_D4_LEFT;		// 11:�H��a(d��4 ����)
+				SEQ.SELECT.BIT.MEASURE = MODE_D4_LEFT;		// 11:工具径(d＞4 左側)
 			}
 // add 2016.09.08 K.Uemura end
 			break;
 			
-		// �H�(Z)
-		case 30:	// �H�(Z)
+		// 工具長(Z)
+		case 30:	// 工具長(Z)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_D4_LEFT;			// 1:�H��a(d��4 ����)
+			SEQ.SELECT.BIT.MEASURE = MODE_D4_LEFT;			// 1:工具径(d＞4 左側)
 			break;
 			
-		// �U�ꑪ��
-		case 50:	// �U�ꑪ��(X)
-		case 51:	// �U�ꑪ��(Z)
-			// �U��p�����[�^�̐ݒ�
-			if(SEQ.FLUTES == 0){							// �n�����u0�v�̂Ƃ�
+		// 振れ測定
+		case 50:	// 振れ測定(X)
+		case 51:	// 振れ測定(Z)
+			// 振れパラメータの設定
+			if(SEQ.FLUTES == 0){							// 刃数が「0」のとき
 				SEQ.TRIGGER_TIME_PERIOD = 60000 / SEQ.SPINDLE_SPEED;						// ms
 			}else{
 				SEQ.TRIGGER_TIME_PERIOD = (60000 / SEQ.SPINDLE_SPEED) / SEQ.FLUTES;
@@ -141,47 +141,47 @@ void state_number_set(void)
 			COM0.NO125 = SEQ.TRIGGER_TIME_PERIOD;
 			COM0.NO126 = SEQ.TRIGGER_TIME_PERIOD;
 
-			COM0.NO127 = COM0.NO303;						// ��]��[���]
-			COM0.NO128 = COM0.NO304;						// ��]��[����]
-			COM0.NO129 = COM0.NO305;						// �n��
+			COM0.NO127 = COM0.NO303;						// 回転数[上位]
+			COM0.NO128 = COM0.NO304;						// 回転数[下位]
+			COM0.NO129 = COM0.NO305;						// 刃数
 
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_RUNOUT;			// 2:�U��
+			SEQ.SELECT.BIT.MEASURE = MODE_RUNOUT;			// 2:振れ
 			break;
 			
-		// ���̧��
-		case 60:	// ���̧��(X)
-		case 61:	// ���̧��(Z)
+		// ﾌﾟﾛﾌｧｲﾙ
+		case 60:	// ﾌﾟﾛﾌｧｲﾙ(X)
+		case 61:	// ﾌﾟﾛﾌｧｲﾙ(Z)
 // add 2016.03.08 K.Uemura start	G30801
-		case 62:	// ���̧��(X ����)
-		case 63:	// ���̧��(Z �E��)
+		case 62:	// ﾌﾟﾛﾌｧｲﾙ(X 左側)
+		case 63:	// ﾌﾟﾛﾌｧｲﾙ(Z 右側)
 // add 2016.03.08 K.Uemura end
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_PROFILE;			// 5:���̧��
+			SEQ.SELECT.BIT.MEASURE = MODE_PROFILE;			// 5:ﾌﾟﾛﾌｧｲﾙ
 			break;
 			
-		// �L�ё���(Z)
-		case 70:	// �L�ё���(Z)
+		// 伸び測定(Z)
+		case 70:	// 伸び測定(Z)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_GROWTH;			// 6:�L�ё���(Z)
+			SEQ.SELECT.BIT.MEASURE = MODE_GROWTH;			// 6:伸び測定(Z)
 			break;
 			
-		// �œ_���킹
-		case 100:	// �œ_���킹(X)
-		case 101:	// �œ_���킹(Z)
+		// 焦点合わせ
+		case 100:	// 焦点合わせ(X)
+		case 101:	// 焦点合わせ(Z)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_FOCUS;			// 3:�œ_
+			SEQ.SELECT.BIT.MEASURE = MODE_FOCUS;			// 3:焦点
 			break;
 			
-		// ���S�ʒu�ݒ�
-		case 110:	// ���S�ʒu�ݒ�(X)
-		case 111:	// ���S�ʒu�ݒ�(Z)
+		// 中心位置設定
+		case 110:	// 中心位置設定(X)
+		case 111:	// 中心位置設定(Z)
 			COM0.NO311 = COM0.NO301;
-			SEQ.SELECT.BIT.MEASURE = MODE_CENTER;			// 4:���S�ʒu�ݒ�
+			SEQ.SELECT.BIT.MEASURE = MODE_CENTER;			// 4:中心位置設定
 			break;
 			
-		case 200:	// �d�������1(��ް���) ON
-		case 201:	// �d�������1(��ް���) OFF
+		case 200:	// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) ON
+		case 201:	// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) OFF
 		case 250:	// HDI0 ON
 		case 251:	// HDI0 OFF
 		case 252:	// HDI1 ON
@@ -196,35 +196,35 @@ void state_number_set(void)
 		case 261:	// HDI5 OFF
 		case 262:	// HDI0-5 ON
 		case 263:	// HDI0-5 OFF
-		case 300:	// �d�������2(���|�����) ON
-		case 301:	// �d�������2(���|�����) OFF
+		case 300:	// 電磁ﾊﾞﾙﾌﾞ2(清掃ｴｱ状態) ON
+		case 301:	// 電磁ﾊﾞﾙﾌﾞ2(清掃ｴｱ状態) OFF
 		case 505:	// 
 		case 506:	// 
 			COM0.NO311 = COM0.NO301;
 			break;
 
-		case 400:	// �ޯ̧�擾(�]��)
+		case 400:	// ﾊﾞｯﾌｧ取得(転送)
 // add 2016.03.02 K.Uemura start	G30202
-		case 401:	// �ޯ̧�擾(�]��) ���̧��X
-		case 402:	// �ޯ̧�擾(�]��) ���̧��Z
+		case 401:	// ﾊﾞｯﾌｧ取得(転送) ﾌﾟﾛﾌｧｲﾙX
+		case 402:	// ﾊﾞｯﾌｧ取得(転送) ﾌﾟﾛﾌｧｲﾙZ
 // add 2016.03.02 K.Uemura end
 // add 2016.07.01 K.Uemura start	G70101
-		case 403:	// �ޯ̧�擾(�]��) �U��X
-		case 404:	// �ޯ̧�擾(�]��) �U��Z
-		case 405:	// �ޯ̧�擾(�]��) �L��
+		case 403:	// ﾊﾞｯﾌｧ取得(転送) 振れX
+		case 404:	// ﾊﾞｯﾌｧ取得(転送) 振れZ
+		case 405:	// ﾊﾞｯﾌｧ取得(転送) 伸び
 // add 2016.07.01 K.Uemura end
-		case 600:	// ���Zð��َ����ݒ�
-		case 601:	// ���Zð��ِݒ�(TPD��RX)
-		case 602:	// ���Zð��َ擾(RX��TPD)
+		case 600:	// 換算ﾃｰﾌﾞﾙ自動設定
+		case 601:	// 換算ﾃｰﾌﾞﾙ設定(TPD→RX)
+		case 602:	// 換算ﾃｰﾌﾞﾙ取得(RX→TPD)
 
 // add 2015.09.02 K.Uemura start	
-		case 150:	// �����ݒ�
+		case 150:	// 初期設定
 // add 2015.09.02 K.Uemura end
 // add 2016.02.18 K.Uemura start	G21803
-		case 151:	// ���|�m�F LED�_��
+		case 151:	// 清掃確認 LED点灯
 // add 2016.02.18 K.Uemura end
-		case 504:	// �����ݒ�
-		case 507:	// ��������
+		case 504:	// 初期設定
+		case 507:	// 調光ﾚﾍﾞﾙ
 			COM0.NO311 = COM0.NO301;
 
 // chg 2016.07.15 K.Uemura start	G71501
@@ -233,31 +233,31 @@ void state_number_set(void)
 				if(COM0.NO302 & 0x4000){
 					COM0.NO312 = 0;
 					if(COM0.NO301 == 600){
-						// ���ڽ�ɂ������𔻒�
-						if(COM0.NO302 & 0x8000)		SEQ.MEASUREMENT_DIRECTION = Z_DIRECTION;	// �v������(Z)
-						else						SEQ.MEASUREMENT_DIRECTION = X_DIRECTION;	// �v������(X)
+						// ｱﾄﾞﾚｽにより方向を判定
+						if(COM0.NO302 & 0x8000)		SEQ.MEASUREMENT_DIRECTION = Z_DIRECTION;	// 計測方向(Z)
+						else						SEQ.MEASUREMENT_DIRECTION = X_DIRECTION;	// 計測方向(X)
 					}
 				}
 			}
 // chg 2016.07.15 K.Uemura end
 			break;
 			
-		case 700:	// �����f�l�̏o��(X)
-		case 701:	// �����f�l�̏o��(Z)
+		case 700:	// 特定画素値の出力(X)
+		case 701:	// 特定画素値の出力(Z)
 // add 2016.10.20 K.Uemura start	GA2002
-		case 710:	// �ݻ���ُo��(X)
-		case 711:	// �ݻ���ُo��(Z)
+		case 710:	// ｾﾝｻﾚﾍﾞﾙ出力(X)
+		case 711:	// ｾﾝｻﾚﾍﾞﾙ出力(Z)
 			SEQ.BUFFER_NO_OLD = SEQ.BUFFER_NO_NEW = 0;
 // add 2016.10.20 K.Uemura end
 			COM0.NO311 = COM0.NO301;
 // add 2016.03.10 K.Uemura start	G31001
 			SEQ.SELECT.BIT.MEASURE = MODE_ORIGIN;			// 7:ORIGIN
 // add 2016.03.10 K.Uemura end
-			SEQ.MEASUREMENT_DIRECTION_BEFORE = 2;			// �v������(���O)��X�EZ�ȊO�ɂ���
+			SEQ.MEASUREMENT_DIRECTION_BEFORE = 2;			// 計測方向(直前)をX・Z以外にする
 			break;
 			
 			/*
-		case 702:	// ���ϒl�E�ŏ��l�E�ő�l���ް��o�͐ݒ�
+		case 702:	// 平均値・最小値・最大値のﾃﾞｰﾀ出力設定
 			COM0.NO311 = COM0.NO301;
 			break;
 			*/
@@ -272,57 +272,57 @@ void state_number_set(void)
 // add 2016.07.01 K.Uemura end
 	}
 	
-	// �v������
+	// 計測方向
 	switch(COM0.NO301){
-		// X����
+		// X方向
 		case 1:		// ORIGIN(X)
-		case 2:		// ORIGIN(X)(���ލl��)
-		case 10:	// �H��a(d��4)
-		case 20:	// �H��a(d��4 ����)
-		case 21:	// �H��a(d��4 ����)
-		case 22:	// �H��a(d��4 �E��)
-		case 50:	// �U�ꑪ��(X)
-		case 60:	// ���̧��(X)
+		case 2:		// ORIGIN(X)(ｴｯｼﾞ考慮)
+		case 10:	// 工具径(d≦4)
+		case 20:	// 工具径(d＞4 自動)
+		case 21:	// 工具径(d＞4 左側)
+		case 22:	// 工具径(d＞4 右側)
+		case 50:	// 振れ測定(X)
+		case 60:	// ﾌﾟﾛﾌｧｲﾙ(X)
 // add 2016.03.08 K.Uemura start	G30801
-		case 62:	// ���̧��(X ����)
-		case 63:	// ���̧��(Z �E��)
+		case 62:	// ﾌﾟﾛﾌｧｲﾙ(X 左側)
+		case 63:	// ﾌﾟﾛﾌｧｲﾙ(Z 右側)
 // add 2016.03.08 K.Uemura end
-		case 100:	// �œ_���킹(X)
-		case 110:	// ���S�ʒu�ݒ�(X)
+		case 100:	// 焦点合わせ(X)
+		case 110:	// 中心位置設定(X)
 // add 2016.02.18 K.Uemura start	G21804
-		case 152:	// ���|�m�F ���|���ُo��(�A��)
+		case 152:	// 清掃確認 清掃ﾚﾍﾞﾙ出力(連続)
 // add 2016.02.18 K.Uemura end
 // add 2016.06.22 K.Uemura start	G62202
-		case 153:	// ���|�m�F ���|���ُo��(1��)
+		case 153:	// 清掃確認 清掃ﾚﾍﾞﾙ出力(1回)
 // add 2016.06.22 K.Uemura end
-		case 700:	// �����f�l�̏o��(X)
+		case 700:	// 特定画素値の出力(X)
 // add 2016.10.20 K.Uemura start	GA2002
-		case 710:	// �ݻ���ُo��
+		case 710:	// ｾﾝｻﾚﾍﾞﾙ出力
 // add 2016.10.20 K.Uemura end
-			SEQ.MEASUREMENT_DIRECTION = X_DIRECTION;	// �v������(X)
+			SEQ.MEASUREMENT_DIRECTION = X_DIRECTION;	// 計測方向(X)
 			break;
 			
 			
-		// Z����
+		// Z方向
 		case 3:		// ORIGIN(Z)
-		case 4:		// ORIGIN(Z)(���ލl��)
-		case 30:	// �H�(Z)
-		case 51:	// �U�ꑪ��(Z)
-		case 61:	// ���̧��(Z)
-		case 70:	// �L�ё���(Z)
-		case 101:	// �œ_���킹(Z)
-		case 111:	// ���S�ʒu�ݒ�(Z)
-		case 701:	// �����f�l�̏o��(Z)
+		case 4:		// ORIGIN(Z)(ｴｯｼﾞ考慮)
+		case 30:	// 工具長(Z)
+		case 51:	// 振れ測定(Z)
+		case 61:	// ﾌﾟﾛﾌｧｲﾙ(Z)
+		case 70:	// 伸び測定(Z)
+		case 101:	// 焦点合わせ(Z)
+		case 111:	// 中心位置設定(Z)
+		case 701:	// 特定画素値の出力(Z)
 // add 2016.10.20 K.Uemura start	GA2002
-		case 711:	// �ݻ���ُo��(Z)
+		case 711:	// ｾﾝｻﾚﾍﾞﾙ出力(Z)
 // add 2016.10.20 K.Uemura end
-			SEQ.MEASUREMENT_DIRECTION = Z_DIRECTION;	// �v������(Z)
+			SEQ.MEASUREMENT_DIRECTION = Z_DIRECTION;	// 計測方向(Z)
 			break;
 	}
 }
 
 //************************************************************/
-//				��Ԕԍ�����(No.311)
+//				状態番号制御(No.311)
 //************************************************************/
 void state_number_control(void)
 {
@@ -330,37 +330,37 @@ void state_number_control(void)
 	
 	SEQ.FLAG6.BIT.CLEANING = 0;
 
-	// 311 ��Ԕԍ��̐ݒ�
+	// 311 状態番号の設定
 	switch(COM0.NO301){
-		// ����Ӱ��
-		case 0:		// TOP(�N�����̉��)
+		// 動作ﾓｰﾄﾞ
+		case 0:		// TOP(起動時の画面)
 			break;
 			
 		case 1:		// ORIGIN(X)
-		case 2:		// ORIGIN(X)(���ލl��)
+		case 2:		// ORIGIN(X)(ｴｯｼﾞ考慮)
 		case 3:		// ORIGIN(Z)
-		case 4:		// ORIGIN(Z)(���ލl��)
-		case 10:	// �H��a(d��4)
-		case 20:	// �H��a(d��4 ����)
-		case 21:	// �H��a(d��4
-		case 22:	// �H��a(d��4
-		case 30:	// �H�(Z)
-		case 50:	// �U�ꑪ��(X)
-		case 51:	// �U�ꑪ��(Z)
-		case 60:	// ���̧��(X)
-		case 61:	// ���̧��(Z)
+		case 4:		// ORIGIN(Z)(ｴｯｼﾞ考慮)
+		case 10:	// 工具径(d≦4)
+		case 20:	// 工具径(d＞4 自動)
+		case 21:	// 工具径(d＞4
+		case 22:	// 工具径(d＞4
+		case 30:	// 工具長(Z)
+		case 50:	// 振れ測定(X)
+		case 51:	// 振れ測定(Z)
+		case 60:	// ﾌﾟﾛﾌｧｲﾙ(X)
+		case 61:	// ﾌﾟﾛﾌｧｲﾙ(Z)
 // add 2016.03.08 K.Uemura start	G30801
-		case 62:	// ���̧��(X ����)
-		case 63:	// ���̧��(Z �E��)
+		case 62:	// ﾌﾟﾛﾌｧｲﾙ(X 左側)
+		case 63:	// ﾌﾟﾛﾌｧｲﾙ(Z 右側)
 // add 2016.03.08 K.Uemura end
-		case 70:	// �L�ё���(Z)
-		case 100:	// �œ_���킹(X)
-		case 101:	// �œ_���킹(Z)
-		case 110:	// ���S�ʒu�ݒ�(X)
-		case 111:	// ���S�ʒu�ݒ�(Z)
-		case 600:	// ���Zð��َ����ݒ�
+		case 70:	// 伸び測定(Z)
+		case 100:	// 焦点合わせ(X)
+		case 101:	// 焦点合わせ(Z)
+		case 110:	// 中心位置設定(X)
+		case 111:	// 中心位置設定(Z)
+		case 600:	// 換算ﾃｰﾌﾞﾙ自動設定
 // add 2016.07.15 K.Uemura start	G71501
-			// �R�}���h600�̏ꍇ�A14bit��ON�łȂ���Εs��
+			// コマンド600の場合、14bitがONでなければ不可
 			if(COM0.NO301 == 600){
 				if(COM0.NO302 & 0x4000){
 				}else{
@@ -372,24 +372,24 @@ void state_number_control(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_RUNNING;
 				
-				SEQ.LAST_CBUS_NUMBER = 215;					// CBUS���ް(1���ٍŏI)	(�ʏ�)
+				SEQ.LAST_CBUS_NUMBER = 215;					// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)	(通常)
 				
-				led_measure_set();							// LED ����E�ݒ辯�
+				led_measure_set();							// LED 測定・設定ｾｯﾄ
 				
-				// �v�����������O�ƈقȂ�Ƃ����Ұ��ݒ�𑗐M
+				// 計測方向が直前と異なるときﾊﾟﾗﾒｰﾀ設定を送信
 				if(SEQ.MEASUREMENT_DIRECTION_BEFORE != SEQ.MEASUREMENT_DIRECTION){
-					SEQ.FLAG.BIT.PARAM_INITIAL = 1;			// ���Ұ��������׸�
-					SEQ.CHANGE_FPGA = 1;					// ���Ұ�
+					SEQ.FLAG.BIT.PARAM_INITIAL = 1;			// ﾊﾟﾗﾒｰﾀ初期化ﾌﾗｸﾞ
+					SEQ.CHANGE_FPGA = 1;					// ﾊﾟﾗﾒｰﾀ
 					SEQ.FPGA_SEND_STATUS = 1;
-					SEQ.POWER_COUNT = 0;					// �d�����䶳�Ă�ؾ��
+					SEQ.POWER_COUNT = 0;					// 電源制御ｶｳﾝﾄをﾘｾｯﾄ
 					
-					set_7seg_upper_no_data();				// 7��ޕ\��(-----)(��i)
-					set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+					set_7seg_upper_no_data();				// 7ｾｸﾞ表示(-----)(上段)
+					set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 					
-				// �v�����������O�Ɠ����Ƃ��v��(idle)���s��
+				// 計測方向が直前と同じとき計測(idle)を行う
 				}else{
 					SEQ.CBUS_NUMBER = 394;
-					SEQ.CHANGE_FPGA = 2;					// ����
+					SEQ.CHANGE_FPGA = 2;					// 測定
 					SEQ.FPGA_SEND_STATUS = 1;
 					
 //					OUT.SUB_STATUS = 11;
@@ -401,37 +401,37 @@ void state_number_control(void)
 			break;
 			
 // add 2016.02.18 K.Uemura start	G21804
-		case 152:	// ���|�m�F(�A��)
+		case 152:	// 清掃確認(連続)
 // add 2016.06.22 K.Uemura start	G62202
-		case 153:	// ���|�m�F(1��)
+		case 153:	// 清掃確認(1回)
 // add 2016.06.22 K.Uemura end
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_RUNNING;
 				
-				clear_result();								// ���ʸر
+				clear_result();								// 結果ｸﾘｱ
 				
 				SEQ.FLAG6.BIT.CLEANING = 1;
 				SEQ.CLEANING_CYCLE = 0;
-				SEQ.LAST_CBUS_NUMBER = 216;					// CBUS���ް(1���ٍŏI)	(���ϒl�E�ŏ��l�E�ő�l���ް���t��)
-//				SEQ.LAST_CBUS_NUMBER = 218;					// CBUS���ް(1���ٍŏI)	(���ϒl�E�ŏ��l�E�ő�l���ް���t��)
+				SEQ.LAST_CBUS_NUMBER = 216;					// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)	(平均値・最小値・最大値のﾃﾞｰﾀを付加)
+//				SEQ.LAST_CBUS_NUMBER = 218;					// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)	(平均値・最小値・最大値のﾃﾞｰﾀを付加)
 				
-				led_measure_set();							// LED ����E�ݒ辯�
+				led_measure_set();							// LED 測定・設定ｾｯﾄ
 				
-				// �v�����������O�ƈقȂ�Ƃ����Ұ��ݒ�𑗐M
+				// 計測方向が直前と異なるときﾊﾟﾗﾒｰﾀ設定を送信
 				if(SEQ.MEASUREMENT_DIRECTION_BEFORE != SEQ.MEASUREMENT_DIRECTION){
-					SEQ.FLAG.BIT.PARAM_INITIAL = 1;			// ���Ұ��������׸�
-					SEQ.CHANGE_FPGA = 1;					// ���Ұ�
+					SEQ.FLAG.BIT.PARAM_INITIAL = 1;			// ﾊﾟﾗﾒｰﾀ初期化ﾌﾗｸﾞ
+					SEQ.CHANGE_FPGA = 1;					// ﾊﾟﾗﾒｰﾀ
 					SEQ.FPGA_SEND_STATUS = 1;
-					SEQ.POWER_COUNT = 0;					// �d�����䶳�Ă�ؾ��
+					SEQ.POWER_COUNT = 0;					// 電源制御ｶｳﾝﾄをﾘｾｯﾄ
 					
-					set_7seg_upper_no_data();				// 7��ޕ\��(-----)(��i)
-					set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+					set_7seg_upper_no_data();				// 7ｾｸﾞ表示(-----)(上段)
+					set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 					
-				// �v�����������O�Ɠ����Ƃ��v��(idle)���s��
+				// 計測方向が直前と同じとき計測(idle)を行う
 				}else{
 					//SEQ.CBUS_NUMBER = 394;
 					SEQ.CBUS_NUMBER = 395;
-					SEQ.CHANGE_FPGA = 2;					// ����
+					SEQ.CHANGE_FPGA = 2;					// 測定
 					SEQ.FPGA_SEND_STATUS = 1;
 					
 //					OUT.SUB_STATUS = 11;
@@ -443,14 +443,14 @@ void state_number_control(void)
 			break;
 // add 2016.02.18 K.Uemura end
 			
-		case 700:	// �����f�l�̏o��(X)
-		case 701:	// �����f�l�̏o��(Z)
+		case 700:	// 特定画素値の出力(X)
+		case 701:	// 特定画素値の出力(Z)
 // add 2016.10.20 K.Uemura start	GA2002
-		case 710:	// MODE01 �����(X)
-		case 711:	// MODE01 �����(Z)
+		case 710:	// MODE01 ｺﾏﾝﾄﾞ(X)
+		case 711:	// MODE01 ｺﾏﾝﾄﾞ(Z)
 // add 2016.10.20 K.Uemura end
 			if((COM0.NO301 == 700) || (COM0.NO301 == 701)){
-				if(4095 < COM0.NO302){		// �\��(302)�̒l��4096�ȏ�̂Ƃ�
+				if(4095 < COM0.NO302){		// 予備(302)の値が4096以上のとき
 					break;
 				}
 			}
@@ -458,22 +458,22 @@ void state_number_control(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_RUNNING;
 				
-				led_measure_set();							// LED ����E�ݒ辯�
+				led_measure_set();							// LED 測定・設定ｾｯﾄ
 				
-				// �v�����������O�ƈقȂ�Ƃ����Ұ��ݒ�𑗐M
+				// 計測方向が直前と異なるときﾊﾟﾗﾒｰﾀ設定を送信
 				if(SEQ.MEASUREMENT_DIRECTION_BEFORE != SEQ.MEASUREMENT_DIRECTION){
-					SEQ.FLAG.BIT.PARAM_INITIAL = 1;			// ���Ұ��������׸�
-					SEQ.CHANGE_FPGA = 1;					// ���Ұ�
+					SEQ.FLAG.BIT.PARAM_INITIAL = 1;			// ﾊﾟﾗﾒｰﾀ初期化ﾌﾗｸﾞ
+					SEQ.CHANGE_FPGA = 1;					// ﾊﾟﾗﾒｰﾀ
 					SEQ.FPGA_SEND_STATUS = 1;
-					SEQ.POWER_COUNT = 0;					// �d�����䶳�Ă�ؾ��
+					SEQ.POWER_COUNT = 0;					// 電源制御ｶｳﾝﾄをﾘｾｯﾄ
 					
-					set_7seg_upper_no_data();				// 7��ޕ\��(-----)(��i)
-					set_7seg_lower_no_data();				// 7��ޕ\��(-----)(���i)
+					set_7seg_upper_no_data();				// 7ｾｸﾞ表示(-----)(上段)
+					set_7seg_lower_no_data();				// 7ｾｸﾞ表示(-----)(下段)
 					
-				// �v�����������O�Ɠ����Ƃ��v��(idle)���s��
+				// 計測方向が直前と同じとき計測(idle)を行う
 				}else{
 					SEQ.CBUS_NUMBER = 394;
-					SEQ.CHANGE_FPGA = 2;					// ����
+					SEQ.CHANGE_FPGA = 2;					// 測定
 					SEQ.FPGA_SEND_STATUS = 1;
 					
 					OUT.SUB_STATUS = 11;
@@ -482,20 +482,20 @@ void state_number_control(void)
 			break;
 			
 			/*
-		case 702:	// ���ϒl�E�ŏ��l�E�ő�l���ް��o�͐ݒ�
-			// �\��(302)�̒l	0:�ް��o�͂��Ȃ�	1:�ް��o�͂���
-			if(COM0.NO302 <= 1){		// �\��(302)�̒l��1�ȉ��̂Ƃ�
+		case 702:	// 平均値・最小値・最大値のﾃﾞｰﾀ出力設定
+			// 予備(302)の値	0:ﾃﾞｰﾀ出力しない	1:ﾃﾞｰﾀ出力する
+			if(COM0.NO302 <= 1){		// 予備(302)の値が1以下のとき
 				SEQ.CBUS_NUMBER = 387;
-				SEQ.CHANGE_FPGA = 14;					// ����
+				SEQ.CHANGE_FPGA = 14;					// 測定
 				SEQ.FPGA_SEND_STATUS = 1;
 			}
 			break;
 			*/
 			
-		// �O���@��
-		case 200:	// �d�������1(��ް OPEN)
+		// 外部機器
+		case 200:	// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ OPEN)
 			break;
-		case 201:	// �d�������1(��ް CLOSE)
+		case 201:	// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ CLOSE)
 			break;
 #if	1
 		case 250:	break;	// HDI0 ON
@@ -510,48 +510,48 @@ void state_number_control(void)
 		case 259:	break;	// HDI4 OFF
 		case 260:	break;	// HDI5 ON
 		case 261:	break;	// HDI5 OFF
-		case 262:	break;	// HDI0�`5 ON
-		case 263:	break;	// HDI0�`5 OFF
+		case 262:	break;	// HDI0～5 ON
+		case 263:	break;	// HDI0～5 OFF
 #endif
-		case 300:	// �d�������2(���|������)
+		case 300:	// 電磁ﾊﾞﾙﾌﾞ2(清掃ｴｱ噴射)
 			break;
-		case 301:	// �d�������2(���|����~)
+		case 301:	// 電磁ﾊﾞﾙﾌﾞ2(清掃ｴｱ停止)
 			break;
 		
-		// ��߼��
-		case 400:	// �ޯ̧�擾(�]��)
+		// ｵﾌﾟｼｮﾝ
+		case 400:	// ﾊﾞｯﾌｧ取得(転送)
 			break;
 // add 2016.03.02 K.Uemura start	G30202
-		case 401:	// �ޯ̧�擾(�]��) ���̧��X
-		case 402:	// �ޯ̧�擾(�]��) ���̧��Z
+		case 401:	// ﾊﾞｯﾌｧ取得(転送) ﾌﾟﾛﾌｧｲﾙX
+		case 402:	// ﾊﾞｯﾌｧ取得(転送) ﾌﾟﾛﾌｧｲﾙZ
 // add 2016.07.01 K.Uemura start	G70101
-		case 403:	// �ޯ̧�擾(�]��) �U��X
-		case 404:	// �ޯ̧�擾(�]��) �U��Z
-		case 405:	// �ޯ̧�擾(�]��) �L��
+		case 403:	// ﾊﾞｯﾌｧ取得(転送) 振れX
+		case 404:	// ﾊﾞｯﾌｧ取得(転送) 振れZ
+		case 405:	// ﾊﾞｯﾌｧ取得(転送) 伸び
 // add 2016.07.01 K.Uemura end
 			break;
 // add 2016.03.02 K.Uemura end
 		
-// �i��(READY OFF���m)��ON�̂Ƃ��v�����ʂ��o�͂���
-// COM0.NO301		504		���Ұ� �� ��ׯ� �� �ܲ� �� ���Ұ��𑗐M
+// 司令(READY OFF検知)がONのとき計測結果を出力する
+// COM0.NO301		504		ﾊﾟﾗﾒｰﾀ → ﾌﾞﾗｯｸ → ﾎﾜｲﾄ → ﾊﾟﾗﾒｰﾀを送信
 
-//					505		���Ұ��ǂݏo��	TP �� RX
-//					506		���Ұ���������	RX �� TP
-//					507		LED�P�x�ݒ�
+//					505		ﾊﾟﾗﾒｰﾀ読み出し	TP → RX
+//					506		ﾊﾟﾗﾒｰﾀ書き込み	RX → TP
+//					507		LED輝度設定
 		
-// add 2015.09.02 K.Uemura start	504�R�}���h�C��
-		case 150:	// �����ݒ�		// ���Ұ��E��ׯ��E�ܲāE���Ұ��𑗐M
-			SEQ.INITIAL_COUNT = 1;						// �N�������J�n
+// add 2015.09.02 K.Uemura start	504コマンド修正
+		case 150:	// 初期設定		// ﾊﾟﾗﾒｰﾀ・ﾌﾞﾗｯｸ・ﾎﾜｲﾄ・ﾊﾟﾗﾒｰﾀを送信
+			SEQ.INITIAL_COUNT = 1;						// 起動処理開始
 			break;
 // add 2015.09.02 K.Uemura end
 // add 2016.02.18 K.Uemura start	G21803
-		case 151:	// ���|�m�F LED�_��
+		case 151:	// 清掃確認 LED点灯
 			SEQ.FLAG.BIT.MEMORY_CONTROL = 1;
 			
 			SEQ.LED_BRIGHTNESS = 500;
 			DA.DADR0 = SEQ.LED_BRIGHTNESS;
 			
-			// �l���������ݗp�ޯ̧�ɺ�߰����
+			// 値を書き込み用ﾊﾞｯﾌｧにｺﾋﾟｰする
 			for(i = 1; i<=4000; i++){
 				I2C.WR_BUF[i] = I2C.RE_BUF[i];
 			}
@@ -559,48 +559,48 @@ void state_number_control(void)
 			I2C.WR_CONT = 0;
 			
 			if(RIIC0.ICCR2.BIT.BBSY == 0){
-				RIIC0.ICCR2.BIT.ST = 1;			// �����ޯ�
+				RIIC0.ICCR2.BIT.ST = 1;			// ｽﾀｰﾄﾋﾞｯﾄ
 				I2C.SUB_STATUS = 12;
 				
-				IR(RIIC0, ICEEI0) = 0;			// ���荞�ݗv���ر(�ʐM�װ/����Ĕ���)
-				IEN(RIIC0, ICEEI0) = 1;			// ���荞�ݗv������(�ʐM�װ/����Ĕ���)
+				IR(RIIC0, ICEEI0) = 0;			// 割り込み要求ｸﾘｱ(通信ｴﾗｰ/ｲﾍﾞﾝﾄ発生)
+				IEN(RIIC0, ICEEI0) = 1;			// 割り込み要求許可(通信ｴﾗｰ/ｲﾍﾞﾝﾄ発生)
 			}
 			break;
 // add 2016.02.18 K.Uemura end
 
-		case 504:	// �����ݒ�		// ���Ұ��E��ׯ��E�ܲāE���Ұ��𑗐M
-			SEQ.FLAG.BIT.POWER = !SEQ.FLAG.BIT.POWER;	// �d��(��Ԕ��])
+		case 504:	// 初期設定		// ﾊﾟﾗﾒｰﾀ・ﾌﾞﾗｯｸ・ﾎﾜｲﾄ・ﾊﾟﾗﾒｰﾀを送信
+			SEQ.FLAG.BIT.POWER = !SEQ.FLAG.BIT.POWER;	// 電源(状態反転)
 			
 			if(SEQ.FLAG.BIT.POWER){
-				//OUT.MASTER_STATUS = OUT_DRV_MODE;		// �ʏ�Ӱ��
+				//OUT.MASTER_STATUS = OUT_DRV_MODE;		// 通常ﾓｰﾄﾞ
 				//OUT.SUB_STATUS = 1;
 				
-				SEQ.FLAG.BIT.POWER_ON = 1;				// �d��ON�׸ނ��
+				SEQ.FLAG.BIT.POWER_ON = 1;				// 電源ONﾌﾗｸﾞをｾｯﾄ
 			}else{
-				OUT.MASTER_STATUS = IDLE_MODE;		// �ҋ@Ӱ��
+				OUT.MASTER_STATUS = IDLE_MODE;		// 待機ﾓｰﾄﾞ
 				
-				SEQ.FLAG.BIT.POWER_OFF = 1;				// �d��OFF�׸ނ��
+				SEQ.FLAG.BIT.POWER_OFF = 1;				// 電源OFFﾌﾗｸﾞをｾｯﾄ
 				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;
 			}
 			break;
 			
-		case 505:	// DLPM�ޯ�����(FROM�ۑ�)	// ���Ұ��ǂݏo��	TP �� RX
-			SEQ.MEASUREMENT_DIRECTION_BEFORE = 2;			// �v������(���O)��X�EZ�ȊO�ɂ���
-			SEQ.FLAG3.BIT.PARA_READ = 1;					// ���Ұ��ǂݏo���׸�
+		case 505:	// DLPMﾊﾞｯｸｱｯﾌﾟ(FROM保存)	// ﾊﾟﾗﾒｰﾀ読み出し	TP → RX
+			SEQ.MEASUREMENT_DIRECTION_BEFORE = 2;			// 計測方向(直前)をX・Z以外にする
+			SEQ.FLAG3.BIT.PARA_READ = 1;					// ﾊﾟﾗﾒｰﾀ読み出しﾌﾗｸﾞ
 			break;
 			
-		case 506:	// DLPMؽı(FROM�Ăяo��)	// ���Ұ���������	RX �� TP
-			SEQ.FLAG3.BIT.PARA_WRITE = 1;				// ���Ұ����������׸�
+		case 506:	// DLPMﾘｽﾄｱ(FROM呼び出し)	// ﾊﾟﾗﾒｰﾀ書き込み	RX → TP
+			SEQ.FLAG3.BIT.PARA_WRITE = 1;				// ﾊﾟﾗﾒｰﾀ書き込みﾌﾗｸﾞ
 			break;
 			
-		case 507:	// ��������		// LED�P�x�ݒ�
+		case 507:	// 調光ﾚﾍﾞﾙ		// LED輝度設定
 			if(COM0.NO302 <= 1023){
 				SEQ.FLAG.BIT.MEMORY_CONTROL = 1;
 				
 				SEQ.LED_BRIGHTNESS = COM0.NO302;
 				DA.DADR0 = SEQ.LED_BRIGHTNESS;
 				
-				// �l���������ݗp�ޯ̧�ɺ�߰����
+				// 値を書き込み用ﾊﾞｯﾌｧにｺﾋﾟｰする
 				for(i = 1; i<=4000; i++){
 					I2C.WR_BUF[i] = I2C.RE_BUF[i];
 				}
@@ -614,55 +614,55 @@ void state_number_control(void)
 				I2C.WR_CONT = 0;
 				
 				if(RIIC0.ICCR2.BIT.BBSY == 0){
-					RIIC0.ICCR2.BIT.ST = 1;			// �����ޯ�
+					RIIC0.ICCR2.BIT.ST = 1;			// ｽﾀｰﾄﾋﾞｯﾄ
 					I2C.SUB_STATUS = 12;
 					
-					IR(RIIC0, ICEEI0) = 0;			// ���荞�ݗv���ر(�ʐM�װ/����Ĕ���)
-					IEN(RIIC0, ICEEI0) = 1;			// ���荞�ݗv������(�ʐM�װ/����Ĕ���)
+					IR(RIIC0, ICEEI0) = 0;			// 割り込み要求ｸﾘｱ(通信ｴﾗｰ/ｲﾍﾞﾝﾄ発生)
+					IEN(RIIC0, ICEEI0) = 1;			// 割り込み要求許可(通信ｴﾗｰ/ｲﾍﾞﾝﾄ発生)
 				}
 			}
 			break;
 			
-		case 601:	// ���Zð��ِݒ�(TPD��RX)
-			SEQ.FLAG3.BIT.PARA_READ = 2;				// ���Ұ��ǂݏo���׸�
+		case 601:	// 換算ﾃｰﾌﾞﾙ設定(TPD→RX)
+			SEQ.FLAG3.BIT.PARA_READ = 2;				// ﾊﾟﾗﾒｰﾀ読み出しﾌﾗｸﾞ
 			break;
 			
-		case 602:	// ���Zð��َ擾(RX��TPD)
-			SEQ.FLAG3.BIT.PARA_WRITE = 2;				// ���Ұ����������׸�
+		case 602:	// 換算ﾃｰﾌﾞﾙ取得(RX→TPD)
+			SEQ.FLAG3.BIT.PARA_WRITE = 2;				// ﾊﾟﾗﾒｰﾀ書き込みﾌﾗｸﾞ
 			break;
 	}
 }
 
 //************************************************************/
-//				���ʸر
+//				結果ｸﾘｱ
 //************************************************************/
 void clear_result(void)
 {
 	_UWORD i;
 	
-	//COM0.NO311 = 0;	// 311 ��Ԕԍ�
-	COM0.NO312 = 0;	// 312 �װ�ԍ�
-	// ���ʸر
-	COM0.NO313 = 0;	// 313 �v������ ���ݒl(REAL)	���
-	COM0.NO314 = 0;	// 314 �v������ ���ݒl(REAL)	����
-	COM0.NO315 = 0;	// 315 �v������ �ŏI�l(d)		���
-	COM0.NO316 = 0;	// 316 �v������ �ŏI�l(d)		����
-	COM0.NO317 = 0;	// 317 �v������ �ŏI�l(D)		���
-	COM0.NO318 = 0;	// 318 �v������ �ŏI�l(D)		����
-	COM0.NO319 = 0;	// 319 �v������ �ŏI�l(��X)		���
-	COM0.NO320 = 0;	// 320 �v������ �ŏI�l(��X)		����
-	COM0.NO321 = 0;	// 321 �v������ �ŏI�l(�U��)	���
-	COM0.NO322 = 0;	// 322 �v������ �ŏI�l(�U��)	����
+	//COM0.NO311 = 0;	// 311 状態番号
+	COM0.NO312 = 0;	// 312 ｴﾗｰ番号
+	// 結果ｸﾘｱ
+	COM0.NO313 = 0;	// 313 計測結果 現在値(REAL)	上位
+	COM0.NO314 = 0;	// 314 計測結果 現在値(REAL)	下位
+	COM0.NO315 = 0;	// 315 計測結果 最終値(d)		上位
+	COM0.NO316 = 0;	// 316 計測結果 最終値(d)		下位
+	COM0.NO317 = 0;	// 317 計測結果 最終値(D)		上位
+	COM0.NO318 = 0;	// 318 計測結果 最終値(D)		下位
+	COM0.NO319 = 0;	// 319 計測結果 最終値(ΔX)		上位
+	COM0.NO320 = 0;	// 320 計測結果 最終値(ΔX)		下位
+	COM0.NO321 = 0;	// 321 計測結果 最終値(振れ)	上位
+	COM0.NO322 = 0;	// 322 計測結果 最終値(振れ)	下位
 	
-	// 3000�����ޯ̧������ر����
+	// 3000からﾊﾞｯﾌｧ数分をｸﾘｱする
 	for(i=0; i<BUFFER_NUMBER; i++){
 		COM0.NO3000[i] = 0;
 	}
 	
-	// �ޯ̧�������̐ݒ�
-	// �ޯ̧���ް�����ޯ̧���ő�l+1�ɐݒ肵�A�ޯ̧���ް�V���ޯ̧���ő�l�ɐݒ肷��
-	SEQ.BUFFER_NO_OLD = BUFFER_NUMBER+1;	// �ޯ̧���ް��
-	SEQ.BUFFER_NO_NEW = BUFFER_NUMBER;		// �ޯ̧���ް�V
+	// ﾊﾞｯﾌｧ初期化の設定
+	// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ旧をﾊﾞｯﾌｧ数最大値+1に設定し、ﾊﾞｯﾌｧﾅﾝﾊﾞｰ新をﾊﾞｯﾌｧ数最大値に設定する
+	SEQ.BUFFER_NO_OLD = BUFFER_NUMBER+1;	// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ旧
+	SEQ.BUFFER_NO_NEW = BUFFER_NUMBER;		// ﾊﾞｯﾌｧﾅﾝﾊﾞｰ新
 }
 
 // add 2015.07.22 K.Uemura start	
@@ -670,14 +670,14 @@ short check_hardware_error(void)
 {
 	short retMode = ARGUMENT_ERROR;
 
-	// �������m�F
+	// 初期化確認
 	if(SEQ.FLAG5.BIT.INITIALIZE_FLAG == 1){
-		//�������ς�
+		//初期化済み
 		retMode = 0;
 	}
 
-	// �������������Ă��Ȃ��Ƃ�150�ԂƁA200�Ԉȏ�͗L��
-	// ����ɉe�����o��R�}���h�͎��s�����Ȃ��i200�Ԗ����̓G���[�Ƃ���j
+	// 初期化完了していなくとも150番と、200番以上は有効
+	// 動作に影響が出るコマンドは実行させない（200番未満はエラーとする）
 	if((COM0.NO301 == 150) || (200 <= COM0.NO301)){
 		retMode = 0;
 	}
@@ -691,13 +691,13 @@ short check_execute_error(void)
 {
 	short retMode = 0;
 
-	// �G���[�ԍ��m�F
+	// エラー番号確認
 	if(COM0.NO312 != 0){
 
 		retMode = ARGUMENT_ERROR;
 
 		if(100 <= COM0.NO301){
-			//�R�}���h��t��
+			//コマンド受付可
 			retMode = 0;
 		}
 	}
@@ -707,66 +707,66 @@ short check_execute_error(void)
 // add 2016.03.24 K.Uemura end
 
 //************************************************************/
-//				������ق���̐���
-//	main�֐�����1ms�^�C�}�ŌĂяo�����
+//				ﾀｯﾁﾊﾟﾈﾙからの制御
+//	main関数内の1msタイマで呼び出される
 //
-//	Case���̕���
-//	 1:EXE��ON���ꂽ��
-//	   32:ACK��OFF��Ԃ�RST��ON���ꂽ�Ƃ�(case 1����̔h��)
-//	 2:��Ԕԍ�(NO311)�̐ݒ�
-//      4:�G���[�̎�
-//	 3:�e��������
-//	   14:�v���t�@�C��
-//	    4:�������A���ZTBL
-//	    8:�o�b�t�@�]������
-//	   10:�d���o���u(�J�o�[�J��)
-//	   21:�d���o���u(���|�G�A)�A�X�L�b�v�o�͊m�F
-//	    5:�^�C���A�E�g
-//	    7:RST ON�̂Ƃ�
-//	21:500ms�o�ߌ�Acase 4��
-//	 6:EXE��OFF�AROF��OFF�̂Ƃ�case 1��
-//	 7:RST OFF�̂Ƃ� RDY��ON�AFIN��OFF�Acase 6��
-//	 8:EXE��OFF�̂Ƃ��ARDY��ON�AFIN��OFF�Acase 6��
+//	Case文の分岐
+//	 1:EXEがONされた時
+//	   32:ACKがOFF状態でRSTがONされたとき(case 1からの派生)
+//	 2:状態番号(NO311)の設定
+//      4:エラーの時
+//	 3:各処理分岐
+//	   14:プロファイル
+//	    4:初期化、換算TBL
+//	    8:バッファ転送完了
+//	   10:電磁バルブ(カバー開閉)
+//	   21:電磁バルブ(清掃エア)、スキップ出力確認
+//	    5:タイムアウト
+//	    7:RST ONのとき
+//	21:500ms経過後、case 4へ
+//	 6:EXEがOFF、ROFがOFFのときcase 1へ
+//	 7:RST OFFのとき RDYをON、FINをOFF、case 6へ
+//	 8:EXEがOFFのとき、RDYをON、FINをOFF、case 6へ
 //
 //	=============================================
-//	 1 �� 32 �� 33 �� 34 �� 1
-//	   ��  1
-//	   ��  2 ��  3 �� 14 �� 15 ��  1
-//	                           ��  7 ��  6
-//	                     ��  1
-//	                     ��  7
-//	               ��  4 ��  5 ��  6 ��  1
-//	               ��  8 ��  6
-//	               �� 10 �� 11 �� 12
-//	               �� 21 ��  4
-//	               ��  5
-//	               ��  7
-//	         ��  4
-//	13 ��  4
+//	 1 → 32 → 33 → 34 → 1
+//	   →  1
+//	   →  2 →  3 → 14 → 15 →  1
+//	                           →  7 →  6
+//	                     →  1
+//	                     →  7
+//	               →  4 →  5 →  6 →  1
+//	               →  8 →  6
+//	               → 10 → 11 → 12
+//	               → 21 →  4
+//	               →  5
+//	               →  7
+//	         →  4
+//	13 →  4
 //************************************************************/
 void tp_control(void)
 {
 	short retMode = ARGUMENT_ERROR;
 
 	switch(SEQ.TP_CONTROL_STATUS){
-		// �@���s���������Ұ�(����ԍ�)�����	(�������)
-		// �A�w��(���s)��ON						(�������)
+		// ①実行したいﾊﾟﾗﾒｰﾀ(動作番号)を入力	(ﾀｯﾁﾊﾟﾈﾙ)
+		// ②指令(実行)をON						(ﾀｯﾁﾊﾟﾈﾙ)
 		case 1:
-			if(COM0.NO300.BIT.ACK == 0){								// ACK���ޯĂ�OFF�̂Ƃ�
-				if(COM0.NO300.BIT.RST){									// ����ؾ�Ă�ON�̂Ƃ�
-					SEQ.READY_PULSE_TIME = 1;							// READY����ٽ����
-					COM0.NO310.BIT.RDY = 0;								// READY���ޯĂ�OFF�ɂ���Ԕԍ���Ă���
-					COM0.NO311 = 0;										// 0 ��Ԕԍ��Ȃ�
-					COM0.NO312 = 0;										// 0 �װ�Ȃ�
-					clear_7seg_led_error_no();							// 7�Z�OLED�̴װ���ް�ر
+			if(COM0.NO300.BIT.ACK == 0){								// ACKのﾋﾞｯﾄがOFFのとき
+				if(COM0.NO300.BIT.RST){									// 強制ﾘｾｯﾄがONのとき
+					SEQ.READY_PULSE_TIME = 1;							// READYのﾊﾟﾙｽ時間
+					COM0.NO310.BIT.RDY = 0;								// READYのﾋﾞｯﾄをOFFにし状態番号をｾｯﾄする
+					COM0.NO311 = 0;										// 0 状態番号なし
+					COM0.NO312 = 0;										// 0 ｴﾗｰなし
+					clear_7seg_led_error_no();							// 7セグLEDのｴﾗｰﾅﾝﾊﾞｰｸﾘｱ
 					SEQ.TP_CONTROL_STATUS = 32;
-				}else if(COM0.NO300.BIT.EXE){							// �i��(���s)��ON�̂Ƃ�
+				}else if(COM0.NO300.BIT.EXE){							// 司令(実行)がONのとき
 // add 2016.07.26 K.Uemura start	G72601
 					switch(COM0.NO301){
 						case 200:	// COVER Open
 							SEQ.MSEC_BUFFER[0][0] = SEQ.MSEC_COUNTER;
 							break;
-						case 153:	// ���|�m�F
+						case 153:	// 清掃確認
 							SEQ.MSEC_BUFFER[5][0] = SEQ.MSEC_COUNTER;
 							break;
 						case 300:	//AIR ON
@@ -785,112 +785,112 @@ void tp_control(void)
 							break;
 					}
 // add 2016.07.26 K.Uemura end
-					// 2000�Ԗ����̃G���[�R�[�h���͎��s���󂯕t���Ȃ�
+					// 2000番未満のエラーコード時は実行を受け付けない
 					if(check_hardware_error() == ARGUMENT_ERROR){
 						SEQ.TP_CONTROL_STATUS = 1;
 // add 2016.02.18 K.Uemura start	G21802
-						COM0.NO312 = ERR_INITIALIZE;					// 1300	���������ݒ�
-						set_7seg_led_error_no(COM0.NO312);				// 7�Z�OLED�̴װ���ް�ݒ�
+						COM0.NO312 = ERR_INITIALIZE;					// 1300	初期化未設定
+						set_7seg_led_error_no(COM0.NO312);				// 7セグLEDのｴﾗｰﾅﾝﾊﾞｰ設定
 // add 2016.02.18 K.Uemura end
 						break;
 					}
 
 // add 2016.03.24 K.Uemura start	G32401
 					if(check_execute_error() == ARGUMENT_ERROR){
-						COM0.NO312 = ERR_MEASURE_START;					// 5000	����J�n�s��
-						set_7seg_led_error_no(COM0.NO312);				// 7�Z�OLED�̴װ���ް�ݒ�
+						COM0.NO312 = ERR_MEASURE_START;					// 5000	測定開始不可
+						set_7seg_led_error_no(COM0.NO312);				// 7セグLEDのｴﾗｰﾅﾝﾊﾞｰ設定
 						break;
 					}
 // add 2016.03.24 K.Uemura end
 
 // add 2016.03.21 K.Uemura start	G32101
-					//���sbit�̓������ݸނň�����ݒ�
+					//実行bitの入力ﾀｲﾐﾝｸﾞで引数を設定
 					argument_number_set();
 // add 2016.03.21 K.Uemura end
 					SEQ.TP_CONTROL_STATUS++;
 				}
 			}
-//			COM0.NO310.BIT.DIR = 0;		// ��������(0:�����o 1:�E���� 2:������ 3:������)
+//			COM0.NO310.BIT.DIR = 0;		// 走査方向(0:未検出 1:右ｴｯｼﾞ 2:左ｴｯｼﾞ 3:両ｴｯｼﾞ)
 			break;
 			
-		// READY���߰�ݸގ��ԑ҂� 
+		// READYのﾎﾟｰﾘﾝｸﾞ時間待ち 
 		case 32:
-			if(SEQ.READY_PULSE_TIME == 0){								// ACK���ޯĂ�OFF�̂Ƃ�
-				SEQ.READY_PULSE_TIME = 1;								// READY����ٽ����
+			if(SEQ.READY_PULSE_TIME == 0){								// ACKのﾋﾞｯﾄがOFFのとき
+				SEQ.READY_PULSE_TIME = 1;								// READYのﾊﾟﾙｽ時間
 				SEQ.TP_CONTROL_STATUS++;
 			}
 			break;
 			
-		// READY�E�����𗧂��グ��
+		// READY・完了を立ち上げる
 		case 33:
-			if(SEQ.READY_PULSE_TIME == 0){								// ACK���ޯĂ�OFF�̂Ƃ�
+			if(SEQ.READY_PULSE_TIME == 0){								// ACKのﾋﾞｯﾄがOFFのとき
 				COM0.NO310.BIT.RDY = 1;
-				COM0.NO310.BIT.FIN = 1;									// ����
+				COM0.NO310.BIT.FIN = 1;									// 完了
 				SEQ.TP_CONTROL_STATUS++;
 			}
 			break;
 			
-		// ؾ�Ă�OFF�ɂȂ�Ɗ�����������
+		// ﾘｾｯﾄがOFFになると完了を下げる
 		case 34:
-			if(COM0.NO300.BIT.RST == 0){								// ����ؾ�Ă�ON�̂Ƃ�
-				COM0.NO310.BIT.FIN = 0;									// ����
+			if(COM0.NO300.BIT.RST == 0){								// 強制ﾘｾｯﾄがONのとき
+				COM0.NO310.BIT.FIN = 0;									// 完了
 				SEQ.TP_CONTROL_STATUS = 1;
 			}
 			break;
 			
-		// �B���ʸر
-		// �C�w�߂��󂯂Ƃ�READY��OFF�㓮��J�n		(�v���J�n)
-		// �D�󂯎�����w�߂̏�Ԃ��o��
+		// ③結果ｸﾘｱ
+		// ④指令を受けとりREADYをOFF後動作開始		(計測開始)
+		// ⑤受け取った指令の状態を出力
 		case 2:
-			COM0.NO310.BIT.LED = 0;		// LED�׸�
-			COM0.NO310.BIT.DIR = 0;		// ��������(0:�����o 1:�E���� 2:������ 3:������)
+			COM0.NO310.BIT.LED = 0;		// LEDﾌﾗｸﾞ
+			COM0.NO310.BIT.DIR = 0;		// 走査方向(0:未検出 1:右ｴｯｼﾞ 2:左ｴｯｼﾞ 3:両ｴｯｼﾞ)
 // add 2017.01.19 K.Uemura start	H11901	
 			SEQ.ERROR_BEFORE = COM0.NO312;
 // add 2017.01.19 K.Uemura end
-			COM0.NO312 = 0;				// 312 �װ�ԍ�
+			COM0.NO312 = 0;				// 312 ｴﾗｰ番号
 			
-			SEQ.END_TIMEOUT_PERIOD	= 0;			// ��ѱ�Ď���
-			SEQ.OK_COUNT		= 0;				// OK���Đ�
-			SEQ.NG_COUNT		= 0;				// �A��NG���Đ�
+			SEQ.END_TIMEOUT_PERIOD	= 0;			// ﾀｲﾑｱｳﾄ時間
+			SEQ.OK_COUNT		= 0;				// OKｶｳﾝﾄ数
+			SEQ.NG_COUNT		= 0;				// 連続NGｶｳﾝﾄ数
 			
-			state_number_set();											// ��Ԕԍ����(No.311)
+			state_number_set();											// 状態番号ｾｯﾄ(No.311)
 			
-			// �U��̂Ƃ�
+			// 振れのとき
 			if(SEQ.SELECT.BIT.MEASURE == MODE_RUNOUT){
 // chg 2015.09.07 K.Uemura start	
 				if((SEQ.FLUTES != 0) && (SEQ.SPINDLE_SPEED == 0)){
 //				if(SEQ.SPINDLE_SPEED == 0){
 // chg 2015.09.07 K.Uemura end
-					COM0.NO312 = ERR_ZERO_SPINDLE_SPEED;					// 6000	�u�U��v�̂Ƃ���]���u0�v
+					COM0.NO312 = ERR_ZERO_SPINDLE_SPEED;					// 6000	「振れ」のとき回転数「0」
 				}else if(999 < SEQ.SPINDLE_SPEED){
-					COM0.NO312 = ERR_OUT_OF_SPINDLE_SPEED;					// 6001	�u�U��v�̂Ƃ���]���͈͊O
+					COM0.NO312 = ERR_OUT_OF_SPINDLE_SPEED;					// 6001	「振れ」のとき回転数範囲外
 // chg 2016.11.28 K.Uemura start	GB2801
 				}else if(12 < SEQ.FLUTES){
 //				}else if(9 < SEQ.FLUTES){
 // chg 2016.11.28 K.Uemura end
-					COM0.NO312 = ERR_OUT_OF_FLUTES;							// 6002	�u�U��v�̂Ƃ��n���͈͊O
+					COM0.NO312 = ERR_OUT_OF_FLUTES;							// 6002	「振れ」のとき刃数範囲外
 				}
 
 				if(COM0.NO312 != 0){
-					SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// �v�����~����
+					SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// 計測を停止する
 					SEQ.TP_CONTROL_STATUS = 4;
 					break;
 				}
  			}
-			state_number_control();										// ��Ԕԍ�����(No.311)
+			state_number_control();										// 状態番号制御(No.311)
 
-			// �v���ȊO�̂Ƃ��͂��̎��_��READY���ޯĂ�OFF�ɂ���
-			// �����f�Ōv�����̂Ƃ�
+			// 計測以外のときはこの時点でREADYのﾋﾞｯﾄをOFFにする
+			// 特定画素で計測中のとき
 // chg 2016.10.20 K.Uemura start	GA2002
 			if((COM0.NO301 == 700)||(COM0.NO301 == 701)||(COM0.NO301 == 710)||(COM0.NO301 == 711)){
 //			if((COM0.NO301 == 700)||(COM0.NO301 == 701)){
 // chg 2016.10.20 K.Uemura end
 				if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_RUNNING){
-					COM0.NO310.BIT.RDY = 0;									// READY���ޯĂ�OFF�ɂ���Ԕԍ���Ă���
+					COM0.NO310.BIT.RDY = 0;									// READYのﾋﾞｯﾄをOFFにし状態番号をｾｯﾄする
 				}
 			}else{
 				if(COM0.NO301 > 111){
-					COM0.NO310.BIT.RDY = 0;									// READY���ޯĂ�OFF�ɂ���Ԕԍ���Ă���
+					COM0.NO310.BIT.RDY = 0;									// READYのﾋﾞｯﾄをOFFにし状態番号をｾｯﾄする
 // add 2016.07.26 K.Uemura start	G72601
 					if(COM0.NO301 == 200){
 						SEQ.MSEC_BUFFER[0][1] = SEQ.MSEC_COUNTER;
@@ -903,70 +903,70 @@ void tp_control(void)
 				}
 			}
 			
-			// ���̧�ق̂Ƃ�
+			// ﾌﾟﾛﾌｧｲﾙのとき
 			if(SEQ.SELECT.BIT.MEASURE == MODE_PROFILE){
 // chg 2016.03.02 K.Uemura start	G30202
 				if((COM0.NO311 != 400) && (COM0.NO311 != 401) && (COM0.NO311 != 402)){
 //				if(COM0.NO311 != 400){
 // chg 2016.03.02 K.Uemura end
-					clear_result();											// ���ʸر
-					SEQ.PROFILE_BUFFER_COUNT = 0;							// ���̧���ޯ̧�i�[�p����
+					clear_result();											// 結果ｸﾘｱ
+					SEQ.PROFILE_BUFFER_COUNT = 0;							// ﾌﾟﾛﾌｧｲﾙﾊﾞｯﾌｧ格納用ｶｳﾝﾄ
 				}
 			}
 			
-			SEQ.BUFFER_OUTPUT = 0;										// �ޯ̧�o�͏��
+			SEQ.BUFFER_OUTPUT = 0;										// ﾊﾞｯﾌｧ出力状態
 			SEQ.TP_CONTROL_STATUS++;
 			break;
 			
-		// �EREADY��OFF���Ă��邱�Ƃ��m�F�����READYOFF���m��ON	(�������)
-		// �F�v������(���ݒl)�̏o��
-		// �G�v������(�ŏI�l)�̏o��
+		// ⑥READYがOFFしていることを確認するとREADYOFF検知をON	(ﾀｯﾁﾊﾟﾈﾙ)
+		// ⑦計測結果(現在値)の出力
+		// ⑧計測結果(最終値)の出力
 		case 3:
-			if(COM0.NO300.BIT.EXE){										// ���s���ޯĂ�ON�̂Ƃ�
-				// �H��a(����)�E�H��a(4�ȉ�)�E�H��a(4����@����)�E�H��a(4����@�E��)�E�U�ꑪ��E���̧�فE�œ_���킹�E���S�ʒu�ݒ�̂Ƃ�
-				// ���L�ё��菜��
-				// �܂��́A���|�m�F(1��)�̂Ƃ�
+			if(COM0.NO300.BIT.EXE){										// 実行のﾋﾞｯﾄがONのとき
+				// 工具径(自動)・工具径(4以下)・工具径(4より上　左側)・工具径(4より上　右側)・振れ測定・ﾌﾟﾛﾌｧｲﾙ・焦点合わせ・中心位置設定のとき
+				// ※伸び測定除く
+				// または、清掃確認(1回)のとき
 // chg 2016.06.22 K.Uemura start	G62202
 				if(((COM0.NO311 >= 10)&&(COM0.NO311 <= 111)&&(COM0.NO311 != 70))||(COM0.NO311 == 153)){
 //				if((COM0.NO311 >= 10)&&(COM0.NO311 <= 111)&&(COM0.NO311 != 70)){
 // chg 2016.06.22 K.Uemura end
-					// �I�������ɂČv�����I�������Ƃ�
-					if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){				// �v�����~����
-						if(SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION == 0){			// HDI���������׸ނ��u0�v�̂Ƃ�
-							if(SEQ.SELECT.BIT.MEASURE == MODE_PROFILE)	SEQ.TP_CONTROL_STATUS = 14;		// ���̧�ق̂Ƃ�
+					// 終了条件にて計測を終了したとき
+					if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){				// 計測を停止する
+						if(SEQ.FLAG6.BIT.HDI_CHECK_COMPLETION == 0){			// HDIﾁｪｯｸ完了ﾌﾗｸﾞが「0」のとき
+							if(SEQ.SELECT.BIT.MEASURE == MODE_PROFILE)	SEQ.TP_CONTROL_STATUS = 14;		// ﾌﾟﾛﾌｧｲﾙのとき
 							else										SEQ.TP_CONTROL_STATUS = 4;
 						}
 					}
 				}
 				//
 				
-				// �ޯ̧�擾�i�]���j�̂Ƃ�
+				// ﾊﾞｯﾌｧ取得（転送）のとき
 				if((400 <= COM0.NO311) && (COM0.NO311 <= 405)){
 					if(SEQ.FLAG.BIT.BUFFER_TRANSFER == 0){
 						if(SEQ.BUFFER_OUTPUT == 1){
 							if(COM0.NO299 == 0){
-								SEQ.BUFFER_OUTPUT = 0;					// �ޯ̧�o�͏��
+								SEQ.BUFFER_OUTPUT = 0;					// ﾊﾞｯﾌｧ出力状態
 								COM0.NO310.BIT.RDY = 1;
-								COM0.NO310.BIT.FIN = 1;					// ����
+								COM0.NO310.BIT.FIN = 1;					// 完了
 								SEQ.TP_CONTROL_STATUS = 8;
 							}
 						}
 					}
 				}
 
-				// �d������ނ̂Ƃ�
+				// 電磁ﾊﾞﾙﾌﾞのとき
 				if((COM0.NO301 == 200) || (COM0.NO301 == 201)){
 					SEQ.TP_CONTROL_STATUS = 10;
 				}
 
 				if((250 <= COM0.NO301)&&(COM0.NO301 <= 301)){
 					if(COM0.NO301 == 300){
-						COM0.NO310.BIT.PUR = 1;		// �d�������2(���|�����) ON
+						COM0.NO310.BIT.PUR = 1;		// 電磁ﾊﾞﾙﾌﾞ2(清掃ｴｱ状態) ON
 // add 2016.07.26 K.Uemura start	G72601
 						SEQ.MSEC_BUFFER[20][2] = SEQ.MSEC_COUNTER;
 // add 2016.07.26 K.Uemura end
 					}else if(COM0.NO301 == 301){
-						COM0.NO310.BIT.PUR = 0;		// �d�������2(���|�����) OFF
+						COM0.NO310.BIT.PUR = 0;		// 電磁ﾊﾞﾙﾌﾞ2(清掃ｴｱ状態) OFF
 					}
 					else if((250 <= COM0.NO301)&&(COM0.NO301 <= 263)){
 						switch(COM0.NO301){
@@ -997,76 +997,76 @@ void tp_control(void)
 						}
 					}
 					
-					SEQ.FIN_COUNT = 0;										// �����ҋ@����
+					SEQ.FIN_COUNT = 0;										// 完了待機ｶｳﾝﾀ
 					SEQ.TP_CONTROL_STATUS = 21;
 				}
 
-				// �������̂Ƃ�
+				// 初期化のとき
 				if(COM0.NO311 == 150){
 					SEQ.TP_CONTROL_STATUS = 4;
 				}
 
-				if(COM0.NO300.BIT.ROF){										// READY OFF���m
+				if(COM0.NO300.BIT.ROF){										// READY OFF検知
 					SEQ.COM_TIMEOUT_PERIOD = 0;
-					// �ޯ̧�擾�i�]���j�̂Ƃ�
+					// ﾊﾞｯﾌｧ取得（転送）のとき
 					if((400 <= COM0.NO311) && (COM0.NO311 <= 405)){
 						if(SEQ.BUFFER_OUTPUT == 0){
-							if(COM0.NO310.BIT.FIN == 0){					// ����
-								SEQ.BUFFER_OUTPUT = 1;						// �ޯ̧�o�͏��
-								SEQ.FLAG.BIT.BUFFER_TRANSFER = 1;			// �ޯ̧�]���׸�
+							if(COM0.NO310.BIT.FIN == 0){					// 完了
+								SEQ.BUFFER_OUTPUT = 1;						// ﾊﾞｯﾌｧ出力状態
+								SEQ.FLAG.BIT.BUFFER_TRANSFER = 1;			// ﾊﾞｯﾌｧ転送ﾌﾗｸﾞ
 							}
 						}
 					}
 				}else{
-					// ��ѱ�Ď���(�ʐM�ݒ�)(ms)����ѱ�Ď��Ծ��(�ʐM�ݒ�)(ms)�ȏ�ɂȂ����Ƃ�
+					// ﾀｲﾑｱｳﾄ時間(通信設定)(ms)がﾀｲﾑｱｳﾄ時間ｾｯﾄ(通信設定)(ms)以上になったとき
 					if(SEQ.COM_TIMEOUT_PERIOD >= COM_TIMEOUT_PERIOD_SET){
-						SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;					// �v�����~����
+						SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;					// 計測を停止する
 						SEQ.TP_CONTROL_STATUS = 5;
-						COM0.NO312 = ERR_TP_TIMEOUT;					// 3003	������ْʐM����ѱ��
+						COM0.NO312 = ERR_TP_TIMEOUT;					// 3003	ﾀｯﾁﾊﾟﾈﾙ通信のﾀｲﾑｱｳﾄ
 					}
 				}
 				
-				if(COM0.NO300.BIT.RST){									// ����ؾ�Ă�ON�̂Ƃ�
+				if(COM0.NO300.BIT.RST){									// 強制ﾘｾｯﾄがONのとき
 
-					// �ޯ̧�擾�i�]���j�̂Ƃ�
+					// ﾊﾞｯﾌｧ取得（転送）のとき
 					if((400 <= COM0.NO311) && (COM0.NO311 <= 405)){
 						if(SEQ.BUFFER_OUTPUT == 1){
-							SEQ.BUFFER_OUTPUT = 0;						// �ޯ̧�o�͏��
-							SEQ.FLAG.BIT.BUFFER_TRANSFER = 1;			// �ޯ̧�]���׸�
+							SEQ.BUFFER_OUTPUT = 0;						// ﾊﾞｯﾌｧ出力状態
+							SEQ.FLAG.BIT.BUFFER_TRANSFER = 1;			// ﾊﾞｯﾌｧ転送ﾌﾗｸﾞ
 						}
 					}
-					COM0.NO311 = 0;										// �������Ă��Ȃ�
-					COM0.NO312 = 0;										// 0 �װ�Ȃ�
+					COM0.NO311 = 0;										// 何もしていない
+					COM0.NO312 = 0;										// 0 ｴﾗｰなし
 					
-					SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;						// �v�����~����
+					SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;						// 計測を停止する
 					SEQ.TP_CONTROL_STATUS = 7;
 				}
 				
-				if(COM0.NO311 == 600){									// ���Zð��َ����ݒ�̂Ƃ�
-					if(COM0.NO310.BIT.RDY == 0){						// READY���ޯĂ�OFF�̂Ƃ�
+				if(COM0.NO311 == 600){									// 換算ﾃｰﾌﾞﾙ自動設定のとき
+					if(COM0.NO310.BIT.RDY == 0){						// READYのﾋﾞｯﾄがOFFのとき
 						SEQ.TP_CONTROL_STATUS = 4;
 					}
 				}
 				
-			}else{														// ���s���ޯĂ�OFF�̂Ƃ�
+			}else{														// 実行のﾋﾞｯﾄがOFFのとき
 				if((400 <= COM0.NO311) && (COM0.NO311 <= 405)){
 					if(SEQ.BUFFER_OUTPUT == 1){
-						SEQ.BUFFER_OUTPUT = 0;							// �ޯ̧�o�͏��
-						SEQ.FLAG.BIT.BUFFER_TRANSFER = 1;				// �ޯ̧�]���׸�
+						SEQ.BUFFER_OUTPUT = 0;							// ﾊﾞｯﾌｧ出力状態
+						SEQ.FLAG.BIT.BUFFER_TRANSFER = 1;				// ﾊﾞｯﾌｧ転送ﾌﾗｸﾞ
 					}
 				}
-				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// �v�����~����
+				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// 計測を停止する
 				SEQ.TP_CONTROL_STATUS = 5;
 			}
 			
-			// ���̧�قő�����~���Ă���Ƃ�
+			// ﾌﾟﾛﾌｧｲﾙで測定を停止しているとき
 			if(SEQ.SELECT.BIT.MEASURE == MODE_PROFILE){
 				if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 // chg 2016.03.02 K.Uemura start	G30202
 					if((COM0.NO311 != 400) && (COM0.NO311 != 401) && (COM0.NO311 != 402)){
 //					if(COM0.NO311 != 400){
 // chg 2016.03.02 K.Uemura end
-						SEQ.TP_CONTROL_STATUS = 14;		// ���̧�ق̂Ƃ�
+						SEQ.TP_CONTROL_STATUS = 14;		// ﾌﾟﾛﾌｧｲﾙのとき
 					}
 				}
 				
@@ -1075,19 +1075,19 @@ void tp_control(void)
 					if((COM0.NO311 != 400) && (COM0.NO311 != 401) && (COM0.NO311 != 402)){
 //					if(COM0.NO311 != 400){
 // chg 2016.03.02 K.Uemura end
-						SEQ.TP_CONTROL_STATUS = 14;		// ���̧�ق̂Ƃ�
+						SEQ.TP_CONTROL_STATUS = 14;		// ﾌﾟﾛﾌｧｲﾙのとき
 					}
 				}
 			}
 			
 			break;
 			
-		// �d������ނ̂Ƃ�
+		// 電磁ﾊﾞﾙﾌﾞのとき
 		case 21:
-			SEQ.FIN_COUNT++;											// �����ҋ@����
-			if(SEQ.FIN_COUNT >= 500){									// READY���ޯĂ�ON�̂Ƃ�
-				SEQ.FIN_COUNT = 0;										// �����ҋ@����
-				COM0.NO310.BIT.RDY = 1;									// READY���ޯĂ�ON�ɂ�FIN��Ă���
+			SEQ.FIN_COUNT++;											// 完了待機ｶｳﾝﾀ
+			if(SEQ.FIN_COUNT >= 500){									// READYのﾋﾞｯﾄがONのとき
+				SEQ.FIN_COUNT = 0;										// 完了待機ｶｳﾝﾀ
+				COM0.NO310.BIT.RDY = 1;									// READYのﾋﾞｯﾄをONにしFINをｾｯﾄする
 // add 2016.07.26 K.Uemura start	G72601
 				if(COM0.NO301 == 200){
 					SEQ.MSEC_BUFFER[0][4] = SEQ.MSEC_COUNTER;
@@ -1099,11 +1099,11 @@ void tp_control(void)
 			}
 			break;
 			
-		// �H�����M���̏o��		(�v���I��)
-		// READY�E�������ޯĂ�ON�ɂ���
+		// ⑨完了信号の出力		(計測終了)
+		// READY・完了のﾋﾞｯﾄをONにする
 		case 4:
-			if(COM0.NO310.BIT.RDY == 1){								// READY���ޯĂ�ON�̂Ƃ�
-				COM0.NO310.BIT.FIN = 1;									// ����
+			if(COM0.NO310.BIT.RDY == 1){								// READYのﾋﾞｯﾄがONのとき
+				COM0.NO310.BIT.FIN = 1;									// 完了
 // add 2016.07.26 K.Uemura start	G72601
 				if(COM0.NO301 == 200){
 					SEQ.MSEC_BUFFER[0][5] = SEQ.MSEC_COUNTER;
@@ -1115,138 +1115,138 @@ void tp_control(void)
 			}
 // chg 2017.03.30 K.Uemura start	
 			if(COM0.NO300.BIT.EXE == 0){
-				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// �v�����~����
+				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// 計測を停止する
 				SEQ.TP_CONTROL_STATUS = 5;
 			}
 // chg 2017.03.30 K.Uemura end
 			break;
 			
-		// ���̧�ق̂Ƃ�
-		// �HACK�M����ON���m�F��ASTROBE�M����OFF
-		// STROBE�M����OFF�ɂ���
+		// ﾌﾟﾛﾌｧｲﾙのとき
+		// ⑨ACK信号のONを確認後、STROBE信号をOFF
+		// STROBE信号をOFFにする
 		case 14:
-			if(COM0.NO300.BIT.ACK == 1){								// ACK���ޯĂ�ON�̂Ƃ�
-				COM0.NO310.BIT.STR = 0;									// STROBE�M����OFF
+			if(COM0.NO300.BIT.ACK == 1){								// ACKのﾋﾞｯﾄがONのとき
+				COM0.NO310.BIT.STR = 0;									// STROBE信号をOFF
 				SEQ.TP_CONTROL_STATUS++;
 			}
 			
-			if(COM0.NO300.BIT.EXE == 0){								// ���s
-				if(COM0.NO300.BIT.ROF == 0){							// READY OFF���m
-					COM0.NO310.BIT.STR = 0;								// STROBE�M����OFF
+			if(COM0.NO300.BIT.EXE == 0){								// 実行
+				if(COM0.NO300.BIT.ROF == 0){							// READY OFF検知
+					COM0.NO310.BIT.STR = 0;								// STROBE信号をOFF
 					COM0.NO310.BIT.RDY = 1;
 					SEQ.TP_CONTROL_STATUS = 1;
 				}
 			}
 			
-			if(COM0.NO300.BIT.RST){										// ����ؾ�Ă�ON�̂Ƃ�
-				COM0.NO311 = 0;											// �������Ă��Ȃ�
-				COM0.NO312 = 0;											// 0 �װ�Ȃ�
+			if(COM0.NO300.BIT.RST){										// 強制ﾘｾｯﾄがONのとき
+				COM0.NO311 = 0;											// 何もしていない
+				COM0.NO312 = 0;											// 0 ｴﾗｰなし
 				
-				COM0.NO310.BIT.FIN = 1;									// ����
+				COM0.NO310.BIT.FIN = 1;									// 完了
 				COM0.NO310.BIT.RDY = 1;
 				
-				COM0.NO310.BIT.STR = 0;									// STROBE�M����OFF
+				COM0.NO310.BIT.STR = 0;									// STROBE信号をOFF
 				
-				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// �v�����~����
+				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// 計測を停止する
 				SEQ.TP_CONTROL_STATUS = 7;
 			}
 			break;
 			
-		// ���̧�ق̂Ƃ�
-		// ACK�M����OFF�̂Ƃ�
+		// ﾌﾟﾛﾌｧｲﾙのとき
+		// ACK信号がOFFのとき
 		case 15:
 // chg 2016.11.11 K.Uemura start	GB1001
 #if	1
-			if(COM0.NO300.BIT.ACK == 0){								// ACK���ޯĂ�OFF�̂Ƃ�
-				SEQ.FLAG6.BIT.PROFILE_PROCESSING = 1;					// ���̧�ُ����׸�
+			if(COM0.NO300.BIT.ACK == 0){								// ACKのﾋﾞｯﾄがOFFのとき
+				SEQ.FLAG6.BIT.PROFILE_PROCESSING = 1;					// ﾌﾟﾛﾌｧｲﾙ処理ﾌﾗｸﾞ
 			}
 
-			if(COM0.NO300.BIT.EXE == 0){								// ���s
+			if(COM0.NO300.BIT.EXE == 0){								// 実行
 				SEQ.TP_CONTROL_STATUS = 1;
 			}
 #else
-			if(COM0.NO300.BIT.ACK == 0){								// ACK���ޯĂ�OFF�̂Ƃ�
-				SEQ.FLAG6.BIT.PROFILE_PROCESSING = 1;					// ���̧�ُ����׸�
+			if(COM0.NO300.BIT.ACK == 0){								// ACKのﾋﾞｯﾄがOFFのとき
+				SEQ.FLAG6.BIT.PROFILE_PROCESSING = 1;					// ﾌﾟﾛﾌｧｲﾙ処理ﾌﾗｸﾞ
 			}else{
-				if(COM0.NO300.BIT.EXE == 0){// ���s
+				if(COM0.NO300.BIT.EXE == 0){// 実行
 					SEQ.TP_CONTROL_STATUS = 1;
 				}
 			}
 #endif
 // chg 2016.11.11 K.Uemura end
 			
-			if(COM0.NO300.BIT.RST){										// ����ؾ�Ă�ON�̂Ƃ�
-				COM0.NO311 = 0;											// �������Ă��Ȃ�
-				COM0.NO312 = 0;											// 0 �װ�Ȃ�
+			if(COM0.NO300.BIT.RST){										// 強制ﾘｾｯﾄがONのとき
+				COM0.NO311 = 0;											// 何もしていない
+				COM0.NO312 = 0;											// 0 ｴﾗｰなし
 				
-				COM0.NO310.BIT.STR = 0;									// STROBE�M����OFF
+				COM0.NO310.BIT.STR = 0;									// STROBE信号をOFF
 				
-				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// �v�����~����
+				SEQ.FLAG.BIT.MEASUREMENT = MEASURE_STOP;							// 計測を停止する
 				SEQ.TP_CONTROL_STATUS = 7;
 			}
 			break;
 			
-		// �I�����M����ON���m�F����Ǝw�߂�OFF
-		// �i��(���s)��OFF�̂Ƃ��������ޯĂ�OFF�ɂ���
+		// ⑩完了信号のONを確認すると指令をOFF
+		// 司令(実行)がOFFのとき完了のﾋﾞｯﾄをOFFにする
 		case 5:
-			if(COM0.NO300.BIT.RST){										// ����ؾ�Ă�ON�̂Ƃ�
-				COM0.NO312 = 0;											// 0 �װ�Ȃ�
-				clear_7seg_led_error_no();								// 7�Z�OLED�̴װ���ް�ر
+			if(COM0.NO300.BIT.RST){										// 強制ﾘｾｯﾄがONのとき
+				COM0.NO312 = 0;											// 0 ｴﾗｰなし
+				clear_7seg_led_error_no();								// 7セグLEDのｴﾗｰﾅﾝﾊﾞｰｸﾘｱ
 			}
 			
 			if(COM0.NO312 != 0){
-				set_7seg_led_error_no(COM0.NO312);						// 7�Z�OLED�̴װ���ް�ݒ�
+				set_7seg_led_error_no(COM0.NO312);						// 7セグLEDのｴﾗｰﾅﾝﾊﾞｰ設定
 			}
 			
-			if(COM0.NO300.BIT.EXE == 0){								// ���s
-				if(COM0.NO300.BIT.ROF == 0){							// READY OFF���m
+			if(COM0.NO300.BIT.EXE == 0){								// 実行
+				if(COM0.NO300.BIT.ROF == 0){							// READY OFF検知
 // add 2017.01.19 K.Uemura start	H11901	
 					if((COM0.NO311 == 506) && (SEQ.ERROR_BEFORE != 0)){
-						COM0.NO312 = SEQ.ERROR_BEFORE;					// �װ�ԍ�(�O��)
+						COM0.NO312 = SEQ.ERROR_BEFORE;					// ｴﾗｰ番号(前回)
 					}
 // add 2017.01.19 K.Uemura end
-					COM0.NO310.BIT.FIN = 0;								// ����
+					COM0.NO310.BIT.FIN = 0;								// 完了
 					SEQ.TP_CONTROL_STATUS++;
 				}
 			}
 			break;
 			
-		// �J�w�߂�OFF���m�F��READY��ON�E�����M����OFF
-		// �K���͂����w�߂�OFF
-		// �i��(���s�EREADY OFF���m)������OFF�̂Ƃ����ݽ���ŏ��ɖ߂�
+		// ⑪指令のOFFを確認後READYをON・完了信号をOFF
+		// ⑫入力した指令のOFF
+		// 司令(実行・READY OFF検知)が共にOFFのときｼｰｹﾝｽを最初に戻す
 		case 6:
-			if(COM0.NO300.BIT.RST){										// ����ؾ�Ă�ON�̂Ƃ�
-				COM0.NO312 = 0;											// 0 �װ�Ȃ�
+			if(COM0.NO300.BIT.RST){										// 強制ﾘｾｯﾄがONのとき
+				COM0.NO312 = 0;											// 0 ｴﾗｰなし
 			}
 			
-			SEQ.PROFILE_BUFFER_COUNT = 0;								// ���̧���ޯ̧�i�[�p����
+			SEQ.PROFILE_BUFFER_COUNT = 0;								// ﾌﾟﾛﾌｧｲﾙﾊﾞｯﾌｧ格納用ｶｳﾝﾄ
 			
-			if(COM0.NO300.BIT.EXE == 0){								// ���s���ޯĂ�ON�̂Ƃ�
-				if(COM0.NO300.BIT.ROF == 0){							// READY OFF���m�̂Ƃ�
+			if(COM0.NO300.BIT.EXE == 0){								// 実行のﾋﾞｯﾄがONのとき
+				if(COM0.NO300.BIT.ROF == 0){							// READY OFF検知のとき
 					SEQ.TP_CONTROL_STATUS = 1;
 				}
 			}
 			break;
 			
-		// ����ؾ�Ď�����ؾ�Ă�OFF�̂Ƃ�READY��ON�A�����M����OFF
+		// 強制ﾘｾｯﾄ時強制ﾘｾｯﾄがOFFのときREADYをON、完了信号をOFF
 		case 7:
-			if(COM0.NO300.BIT.RST == 0){								// ����ؾ�Ă�OFF�̂Ƃ�
+			if(COM0.NO300.BIT.RST == 0){								// 強制ﾘｾｯﾄがOFFのとき
 				COM0.NO310.BIT.RDY = 1;
-				COM0.NO310.BIT.FIN = 0;									// ����
+				COM0.NO310.BIT.FIN = 0;									// 完了
 				SEQ.TP_CONTROL_STATUS = 6;
 			}
 			break;
 			
 		case 8:
-			if(COM0.NO300.BIT.EXE == 0){								// ���s���ޯĂ�OFF�̂Ƃ�
+			if(COM0.NO300.BIT.EXE == 0){								// 実行のﾋﾞｯﾄがOFFのとき
 				COM0.NO310.BIT.RDY = 1;
-				COM0.NO310.BIT.FIN = 0;									// ����
+				COM0.NO310.BIT.FIN = 0;									// 完了
 				SEQ.TP_CONTROL_STATUS = 6;
 			}
 			break;
 
 // add 2015.12.22 K.Uemura start	FB2201
-		//��ް�J�w�߂̎�t���A�ݻ��Ԃ��Ď�����
+		//ｶﾊﾞｰ開閉指令の受付時、ｾﾝｻ状態を監視する
 		case 10:
 			SEQ.TP_CONTROL_STATUS = 21;
 			SEQ.FLAG5.BIT.MOVE_COVER = 0;
@@ -1256,38 +1256,38 @@ void tp_control(void)
 // chg 2016.03.21 K.Uemura end
 
 			if(COVER_CONTROL == 1){
-				// �R���g���[���{�b�N�X�ŃJ�o�[�J����
+				// コントロールボックスでカバー開閉制御
 
-				if(retMode == COVER_STATUS_MOVED){				// ��ް�ݻ��������
+				if(retMode == COVER_STATUS_MOVED){				// ｶﾊﾞｰｾﾝｻ反応無し
 					COM0.NO312 = ERR_COVER_MOVED;
-				}else if(retMode == COVER_STATUS_BREAK){		// ��ް�ݻClose�^Open���
+				}else if(retMode == COVER_STATUS_BREAK){		// ｶﾊﾞｰｾﾝｻClose／Open状態
 					COM0.NO312 = ERR_COVER_BROKEN;
-				}else if(retMode == COVER_STATUS_CLOSE){		// ��ް�ݻClose���
+				}else if(retMode == COVER_STATUS_CLOSE){		// ｶﾊﾞｰｾﾝｻClose状態
 					if(COM0.NO301 == 200){
-						//��ްOpen�w��
+						//ｶﾊﾞｰOpen指令
 						SEQ.FLAG5.BIT.MOVE_COVER = 1;
 						SEQ.TP_CONTROL_STATUS = 11;
-						COM0.NO310.BIT.COV = 1;					// �d�������1(��ް���) ON(�J Open)
+						COM0.NO310.BIT.COV = 1;					// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) ON(開 Open)
 // add 2016.07.26 K.Uemura start	G72601
 						SEQ.MSEC_BUFFER[0][2] = SEQ.MSEC_COUNTER;
 // add 2016.07.26 K.Uemura end
 					}else{
-						//��ްClose�w��
-						if(COM0.NO310.BIT.COV == 1){			// �d�������1(��ް���) ON(�J Open)
+						//ｶﾊﾞｰClose指令
+						if(COM0.NO310.BIT.COV == 1){			// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) ON(開 Open)
 							COM0.NO312 = ERR_COVER_CLOSE;
 						}
 					}
-				}else if(retMode == COVER_STATUS_OPEN){			// ��ް�ݻOpen���
+				}else if(retMode == COVER_STATUS_OPEN){			// ｶﾊﾞｰｾﾝｻOpen状態
 					if(COM0.NO301 == 200){
-						//��ްOpen�w��
-						if(COM0.NO310.BIT.COV == 0){			// �d�������1(��ް���) OFF(�� Close)
+						//ｶﾊﾞｰOpen指令
+						if(COM0.NO310.BIT.COV == 0){			// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) OFF(閉 Close)
 							COM0.NO312 = ERR_COVER_OPEN;
 						}
 					}else{
-						//��ްClose�w��
+						//ｶﾊﾞｰClose指令
 						SEQ.FLAG5.BIT.MOVE_COVER = 1;
 						SEQ.TP_CONTROL_STATUS = 11;
-						COM0.NO310.BIT.COV = 0;					// �d�������1(��ް���) OFF(�� Close)
+						COM0.NO310.BIT.COV = 0;					// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) OFF(閉 Close)
 					}
 				}
 			}else{
@@ -1296,29 +1296,29 @@ void tp_control(void)
 			break;
 
 		case 11:
-			SEQ.COVER_COUNT = 1;							// ��ް�����J�n
+			SEQ.COVER_COUNT = 1;							// ｶﾊﾞｰ処理開始
 			SEQ.TP_CONTROL_STATUS = 12;
 			break;
 
 		case 12:
-			// �R���g���[���{�b�N�X�ŃJ�o�[���䂵�Ȃ�
-			// �J�o�[���䂷��ꍇ�́Acover_process�֐��ŃV�[�P���Xup
+			// コントロールボックスでカバー制御しない
+			// カバー制御する場合は、cover_process関数でシーケンスup
 			if(COVER_CONTROL == 0){
 				SEQ.TP_CONTROL_STATUS = 13;
 			}
 			break;
 
 		case 13:
-			//�G���[�������A�d���ُo�͂�߂�
+			//エラー発生時、電磁弁出力を戻す
 			if(COM0.NO312 != 0){
 				if(COM0.NO301 == 200){
-					COM0.NO310.BIT.COV = 0;		// �d�������1(��ް���) OFF
+					COM0.NO310.BIT.COV = 0;		// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) OFF
 				}else{
-					COM0.NO310.BIT.COV = 1;		// �d�������1(��ް���) ON
+					COM0.NO310.BIT.COV = 1;		// 電磁ﾊﾞﾙﾌﾞ1(ｶﾊﾞｰ状態) ON
 				}
 			}
 
-			COM0.NO310.BIT.RDY = 1;									// READY���ޯĂ�OFF�ɂ���Ԕԍ���Ă���
+			COM0.NO310.BIT.RDY = 1;									// READYのﾋﾞｯﾄをOFFにし状態番号をｾｯﾄする
 // add 2016.07.26 K.Uemura start	G72601
 			if(COM0.NO301 == 200){
 				SEQ.MSEC_BUFFER[0][4] = SEQ.MSEC_COUNTER;
@@ -1334,21 +1334,21 @@ void tp_control(void)
 }
 
 // add 2015.12.22 K.Uemura start	FB2201
-// �J�o�[���
-//��������������������������
-//��Close �� Open �� ��� ��
-//��������������������������
-//��  0   ��  0   ���ړ�����
-//��  0   ��  1   �� Open ��
-//��  1   ��  0   ��Close ��
-//��  1   ��  1   �� �̏� ��
-//��������������������������
+// カバー状態
+//┌───┬───┬───┐
+//│Close │ Open │ 状態 │
+//├───┼───┼───┤
+//│  0   │  0   │移動中│
+//│  0   │  1   │ Open │
+//│  1   │  0   │Close │
+//│  1   │  1   │ 故障 │
+//└───┴───┴───┘
 short get_cover_status(void)
 {
 	short retMode = ARGUMENT_ERROR;
 
 	if((COM0.NO310.BIT.CSC == 0) && (COM0.NO310.BIT.CSO == 0)){
-		retMode = COVER_STATUS_MOVED;								//�ړ���
+		retMode = COVER_STATUS_MOVED;								//移動中
 	}else
 	if((COM0.NO310.BIT.CSC == 0) && (COM0.NO310.BIT.CSO == 1)){
 		retMode = COVER_STATUS_OPEN;								//Open
@@ -1357,7 +1357,7 @@ short get_cover_status(void)
 		retMode = COVER_STATUS_CLOSE;								//Close
 	}else
 	if((COM0.NO310.BIT.CSC == 1) && (COM0.NO310.BIT.CSO == 1)){
-		retMode = COVER_STATUS_BREAK;								//�̏�
+		retMode = COVER_STATUS_BREAK;								//故障
 	}
 
 	return( retMode );
@@ -1365,21 +1365,21 @@ short get_cover_status(void)
 // add 2015.12.22 K.Uemura end
 
 // add 2016.03.21 K.Uemura start	G32101
-// �J�o�[���
-//��������������������������
-//��Close �� Open �� ��� ��
-//��������������������������
-//��  0   ��  0   ���ړ�����
-//��  0   ��  1   �� Open ��
-//��  1   ��  0   ��Close ��
-//��  1   ��  1   �� �̏� ��
-//��������������������������
+// カバー状態
+//┌───┬───┬───┐
+//│Close │ Open │ 状態 │
+//├───┼───┼───┤
+//│  0   │  0   │移動中│
+//│  0   │  1   │ Open │
+//│  1   │  0   │Close │
+//│  1   │  1   │ 故障 │
+//└───┴───┴───┘
 short get_cover_status_initilized(void)
 {
 	short retMode = ARGUMENT_ERROR;
 
 	if((SEQ.COVER_CLOSE_SENSOR == 0) && (SEQ.COVER_OPEN_SENSOR == 0)){
-		retMode = COVER_STATUS_MOVED;								//�ړ���
+		retMode = COVER_STATUS_MOVED;								//移動中
 	}else
 	if((SEQ.COVER_CLOSE_SENSOR == 0) && (SEQ.COVER_OPEN_SENSOR == 1)){
 		retMode = COVER_STATUS_OPEN;								//Open
@@ -1388,7 +1388,7 @@ short get_cover_status_initilized(void)
 		retMode = COVER_STATUS_CLOSE;								//Close
 	}else
 	if((SEQ.COVER_CLOSE_SENSOR == 1) && (SEQ.COVER_OPEN_SENSOR == 1)){
-		retMode = COVER_STATUS_BREAK;								//�̏�
+		retMode = COVER_STATUS_BREAK;								//故障
 	}
 	return( retMode );
 }
@@ -1397,19 +1397,19 @@ short get_cover_status_initilized(void)
 // add 2016.03.21 K.Uemura start	G32101
 void argument_number_set(void)
 {
-	if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){					// �ʐM����̏ꍇ
-		SEQ.END_CONDITION = COM0.NO300.BIT.ECD;						// 300.11  �I������
+	if(SEQ.FLAG.BIT.PORTABLE == OPERATION_AUTO){					// 通信操作の場合
+		SEQ.END_CONDITION = COM0.NO300.BIT.ECD;						// 300.11  終了条件
 // add 2016.12.06 K.Uemura start	GC0602
-		SEQ.FLAG6.BIT.ROUGH_SCAN = COM0.NO300.BIT.RSN;				// 300.13  �e����bit
+		SEQ.FLAG6.BIT.ROUGH_SCAN = COM0.NO300.BIT.RSN;				// 300.13  粗測定bit
 // add 2016.12.06 K.Uemura end
 
-		SEQ.SPINDLE_SPEED = ((COM0.NO303 << 16) | COM0.NO304);		// 303&304 ��]��
-		SEQ.FLUTES = COM0.NO305;									// 305     �n��
-		SEQ.RADIUS = COM0.NO306;									// 306     �H��a
-		SEQ.EXTEND_CYCLE = COM0.NO307;								// 307     ����
+		SEQ.SPINDLE_SPEED = ((COM0.NO303 << 16) | COM0.NO304);		// 303&304 回転数
+		SEQ.FLUTES = COM0.NO305;									// 305     刃数
+		SEQ.RADIUS = COM0.NO306;									// 306     工具径
+		SEQ.EXTEND_CYCLE = COM0.NO307;								// 307     引数
 
-		SEQ.COVER_OPEN_SENSOR = COM0.NO310.BIT.CSO;					// 310.12  ��ް�ݻOpen
-		SEQ.COVER_CLOSE_SENSOR = COM0.NO310.BIT.CSC;				// 310.13  ��ް�ݻClose
+		SEQ.COVER_OPEN_SENSOR = COM0.NO310.BIT.CSO;					// 310.12  ｶﾊﾞｰｾﾝｻOpen
+		SEQ.COVER_CLOSE_SENSOR = COM0.NO310.BIT.CSC;				// 310.13  ｶﾊﾞｰｾﾝｻClose
 	}
 }
 // add 2016.03.21 K.Uemura end

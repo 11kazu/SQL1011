@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: fpga_debug.c
 ******************************************************************************/
 #include <machine.h>
@@ -11,74 +11,74 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void send_to_fpga_debug(void);				// FPGA�ւ��ް����M�֐�(���ޯ�ޏo��)
+void send_to_fpga_debug(void);				// FPGAへのﾃﾞｰﾀ送信関数(ﾃﾞﾊﾞｯｸﾞ出力)
 
 //************************************************************/
-//				FPGA�ւ��ް����M�֐�(���ޯ�ޏo��)
-//	1 �� �E�E�E �� 8 �� 11 �� 14 �� 15 �� 11
-//	                                   ��  1
+//				FPGAへのﾃﾞｰﾀ送信関数(ﾃﾞﾊﾞｯｸﾞ出力)
+//	1 → ・・・ → 8 → 11 → 14 → 15 → 11
+//	                                   →  1
 //************************************************************/
-// DEBUG�p
+// DEBUG用
 void send_to_fpga_debug(void)
 {
 	union UFloatLong Variable;
 	
 	switch(SEQ.FPGA_SEND_STATUS){
-		// RX �� FPGA���ް����M
-		// C_PRIO���uH�v�ɂ���
+		// RX → FPGAにﾃﾞｰﾀ送信
+		// C_PRIOを「H」にする
 		case 1:
-			//if(F_PRIO_IN == 0){						// F_PRIO_IN���uL�v�̂Ƃ�
+			//if(F_PRIO_IN == 0){						// F_PRIO_INが「L」のとき
 				C_PRIO_OUT	= 1;						// C_PRIO
-				SEQ.FPGA_SEND_STATUS++;					// ����
+				SEQ.FPGA_SEND_STATUS++;					// 次へ
 			//}
 			break;
 			
-		// �߰Ă��o�͂ɐݒ肷��
+		// ﾎﾟｰﾄを出力に設定する
 		case 2:
-			bus_to_out();								// �޽���o�͂ɐݒ�
-			SEQ.FPGA_SEND_STATUS++;						// ����
+			bus_to_out();								// ﾊﾞｽを出力に設定
+			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
-		// ������޽�E�ް��޽��ݒ肷��
+		// ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを設定する
 		case 3:
-			send_to_cbus(SEQ.CBUS_NUMBER);				// ��������ް�o��
-			send_to_dbus_zero();						// �ް��o�͊֐�0
-			SEQ.FPGA_SEND_STATUS++;						// ����
+			send_to_cbus(SEQ.CBUS_NUMBER);				// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力
+			send_to_dbus_zero();						// ﾃﾞｰﾀ出力関数0
+			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
-		// C_ACK���uH�v�ɂ���
+		// C_ACKを「H」にする
 		case 4:
 			C_ACK_OUT	= 1;							// C_ACK
-			SEQ.FPGA_SEND_STATUS++;						// ����
+			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
-		// C_ACK���uL�v�ɂ���
+		// C_ACKを「L」にする
 		case 5:
 			C_ACK_OUT	= 0;							// C_ACK
-			SEQ.FPGA_SEND_STATUS++;						// ����
+			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
-		// ������޽�E�ް��޽���uL�v�ɂ���
+		// ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを「L」にする
 		case 6:
-			send_to_cbus_zero();						// ��������ް�o�͊֐�0
-			send_to_dbus_zero();						// �ް��o�͊֐�0
-			SEQ.FPGA_SEND_STATUS++;						// ����
+			send_to_cbus_zero();						// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力関数0
+			send_to_dbus_zero();						// ﾃﾞｰﾀ出力関数0
+			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
-		// �߰Ă���͂ɐݒ肷��
+		// ﾎﾟｰﾄを入力に設定する
 		case 7:
-			bus_to_in();								// �޽����͂ɐݒ�
-			SEQ.FPGA_SEND_STATUS++;						// ����
+			bus_to_in();								// ﾊﾞｽを入力に設定
+			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
-		// C_PRIO���uL�v�ɂ���
+		// C_PRIOを「L」にする
 		case 8:
 			C_PRIO_OUT	= 0;							// C_PRIO
 			SEQ.FPGA_SEND_STATUS = 11;
 			break;
 			
-		// FPGA �� RX���ް����M
-		// F_PRIO_IN���uH�v�ɂȂ�����C_ACK���uH�v�ɂ���
+		// FPGA → RXにﾃﾞｰﾀ送信
+		// F_PRIO_INが「H」になったらC_ACKを「H」にする
 		case 11:
 			if(C_PRIO_OUT == 1){
 				C_PRIO_OUT = 0;
@@ -89,24 +89,24 @@ void send_to_fpga_debug(void)
 			}
 			break;
 			
-		// F_PRIO_IN���uL�v�ɂȂ�����ALED�P�x�M���ԐM�̂Ƃ��l�̔�����s��
+		// F_PRIO_INが「L」になったら、LED輝度信号返信のとき値の判定を行う
 		case 14:
 			if(DEBUG_STR.DEBUG_COUNT < 4096){
-				if(DEBUG_STR.DEBUG_OUTPUT == 0){			// �޼��ْl�E��ׯ��l	// 0 ����3��
-					DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = SEQ.INPUT_DBUS_LONG;		// ���ޯ�ޏo�͗p�ް�
-				}else if(DEBUG_STR.DEBUG_OUTPUT == 1){	// �����ς��ް�				// 1 �����E����1���E�����_3��
-					// ���������_���ް��ɕϊ����l��\������
+				if(DEBUG_STR.DEBUG_OUTPUT == 0){			// ﾃﾞｼﾞﾀﾙ値・ﾌﾞﾗｯｸ値	// 0 整数3桁
+					DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = SEQ.INPUT_DBUS_LONG;		// ﾃﾞﾊﾞｯｸﾞ出力用ﾃﾞｰﾀ
+				}else if(DEBUG_STR.DEBUG_OUTPUT == 1){	// 処理済みﾃﾞｰﾀ				// 1 符号・整数1桁・小数点3桁
+					// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 					Variable.lLong = SEQ.INPUT_DBUS_LONG;
 					SEQ.INPUT_DBUS = Variable.fFloat;
-					DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = SEQ.INPUT_DBUS * 1000;	// ���ޯ�ޏo�͗p�ް�(�����킹�̂���1000�{���Ă���)
-				}else if(DEBUG_STR.DEBUG_OUTPUT == 2){	// �ܲĒl					// 2 ����3���E�����_3��
-					// ���������_���ް��ɕϊ����l��\������
+					DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = SEQ.INPUT_DBUS * 1000;	// ﾃﾞﾊﾞｯｸﾞ出力用ﾃﾞｰﾀ(桁合わせのため1000倍している)
+				}else if(DEBUG_STR.DEBUG_OUTPUT == 2){	// ﾎﾜｲﾄ値					// 2 整数3桁・小数点3桁
+					// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
 					Variable.lLong = SEQ.INPUT_DBUS_LONG;
 					SEQ.INPUT_DBUS = Variable.fFloat;
-					DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = SEQ.INPUT_DBUS * 1000;	// ���ޯ�ޏo�͗p�ް�(�����킹�̂���1000�{���Ă���)
+					DEBUG_STR.DEBUG[DEBUG_STR.DEBUG_COUNT] = SEQ.INPUT_DBUS * 1000;	// ﾃﾞﾊﾞｯｸﾞ出力用ﾃﾞｰﾀ(桁合わせのため1000倍している)
 				}
 			}
-			DEBUG_STR.DEBUG_COUNT++;							// ���ޯ�ޏo�͗p����
+			DEBUG_STR.DEBUG_COUNT++;							// ﾃﾞﾊﾞｯｸﾞ出力用ｶｳﾝﾀ
 			
 			C_ACK_OUT	= 1;							// C_ACK
 			C_ACK_OUT	= 0;							// C_ACK
@@ -120,13 +120,13 @@ void send_to_fpga_debug(void)
 			}else{
 				SEQ.CHANGE_FPGA = 0;
 				SEQ.FPGA_SEND_STATUS = 1;
-				COM2.SUB_STATUS++;							// ����
+				COM2.SUB_STATUS++;							// 次へ
 
 // add 2016.10.20 K.Uemura start	GA2002
-				// 4096��f���ް����A256�_���ް��ɏk������i1/16�j
+				// 4096画素のﾃﾞｰﾀを、256点のﾃﾞｰﾀに縮小する（1/16）
 				convert_data_4096_to_256( &DEBUG_STR.DEBUG[0], 0, &COM0.NO3000[0] );
 
-				// TPD�]��
+				// TPD転送
 				SEQ.BUFFER_NO_NEW = 512;
 // add 2016.10.20 K.Uemura end
 			}

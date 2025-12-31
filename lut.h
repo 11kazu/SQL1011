@@ -1,5 +1,5 @@
-
-//ADCOV.V_BATT�F387(6.506)�`577(9.503)�͈̔͂�d���ϊ�����i���ϒl�j
+﻿
+//ADCOV.V_BATT：387(6.506)～577(9.503)の範囲を電圧変換する（平均値）
 #define	LUT_VOLTAGE_MIN	387
 #define	LUT_VOLTAGE_MAX	577
 
@@ -27,7 +27,7 @@ short	LUT_VOLTAGE[191] = {
 };
 
 /*
-//ADCOV.V_BATT�F350(5.922)�`600(9.866)�͈̔͂�d���ϊ�����i���ϒl�j
+//ADCOV.V_BATT：350(5.922)～600(9.866)の範囲を電圧変換する（平均値）
 #define	LUT_VOLTAGE_MIN	350
 #define	LUT_VOLTAGE_MAX	600
 

@@ -1,4 +1,4 @@
-/************************************************************************
+﻿/************************************************************************
 *
 * Device     : RX/RX600/RX62N
 *
@@ -142,8 +142,8 @@ void Excep_ICU_IRQ2(void){ }
 // ICU IRQ3
 void Excep_ICU_IRQ3(void)
 {
-	SEQ.CBUS_NUMBER = from_cbus();							// ��������ް���͊֐�
-	SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_LONG = from_dbus();		// �ް����͊֐�
+	SEQ.CBUS_NUMBER = from_cbus();							// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ入力関数
+	SEQ.INPUT_DBUS = SEQ.INPUT_DBUS_LONG = from_dbus();		// ﾃﾞｰﾀ入力関数
 }
 
 // ICU IRQ4
@@ -182,7 +182,7 @@ void Excep_ICU_IRQ14(void){ }
 // ICU IRQ15
 void Excep_ICU_IRQ15(void)
 {
-	// POWERSW���荞��
+	// POWERSW割り込み
 }
 
 // USB USBR0
@@ -200,11 +200,11 @@ void Excep_WDT_WOVI(void){ }
 // AD0 ADI0
 void Excep_AD0_ADI0(void)
 {
-	// AD�l��z��Ɋi�[
+	// AD値を配列に格納
 	ADCOV.ADIN0[ADCOV.COUNT] = AD0.ADDRA;
-	AD0.ADCSR.BIT.ADIE = 0;					// ���������֎~
-	ADCOV.FLAG.BIT.FIN = 1;					// AD�ϊ��I���׸�
-	ADCOV.COUNT++;							// ���ݽ�������ړ�
+	AD0.ADCSR.BIT.ADIE = 0;					// 完了割込禁止
+	ADCOV.FLAG.BIT.FIN = 1;					// AD変換終了ﾌﾗｸﾞ
+	ADCOV.COUNT++;							// ｼｰｹﾝｽ処理を移動
 }
 
 // AD1 ADI1
@@ -396,8 +396,8 @@ void Excep_POE_OEI4(void){ }
 // TMR0 CMIA0
 void Excep_TMR0_CMIA0(void)
 {
-	// 5us���ƂɊ��荞��
-	int_1us_func();		// 1us��ϰ�����֐�
+	// 5usごとに割り込み
+	int_1us_func();		// 1usﾀｲﾏｰ割込関数
 }
 
 // TMR0 CMIB0
@@ -457,23 +457,23 @@ void Excep_SCI0_ERI0(void)
 {
 	SEQ.JUNK = SCI0.SSR.BYTE;
 	
-	// �װ����
-	// �װ�����̺���
-	if(SCI0.SSR.BIT.ORER)	SCI0.SSR.BIT.ORER	= 0;	//���ް�ݴװ�̏������L�q
-	if(SCI0.SSR.BIT.FER)	SCI0.SSR.BIT.FER	= 0;	//�ڰ�ݸ޴װ�̏������L�q
-	if(SCI0.SSR.BIT.PER)	SCI0.SSR.BIT.PER	= 0;	//���è�װ�̏������L�q
+	// ｴﾗｰ処理
+	// ｴﾗｰ処理のｺｰﾄﾞ
+	if(SCI0.SSR.BIT.ORER)	SCI0.SSR.BIT.ORER	= 0;	//ｵｰﾊﾞｰﾗﾝｴﾗｰの処理を記述
+	if(SCI0.SSR.BIT.FER)	SCI0.SSR.BIT.FER	= 0;	//ﾌﾚｰﾐﾝｸﾞｴﾗｰの処理を記述
+	if(SCI0.SSR.BIT.PER)	SCI0.SSR.BIT.PER	= 0;	//ﾊﾟﾘﾃｨｴﾗｰの処理を記述
 }
 
 // SCI0 RXI0
 void Excep_SCI0_RXI0(void)
 {
-	rs422_rxi();			// RS422��M
+	rs422_rxi();			// RS422受信
 }
 
 // SCI0 TXI0
 void Excep_SCI0_TXI0(void)
 {
-	rs422_txi();			// RS422���M
+	rs422_txi();			// RS422送信
 }
 
 // SCI0 TEI0
@@ -500,11 +500,11 @@ void Excep_SCI2_ERI2(void)
 {
 	SEQ.JUNK = SCI2.SSR.BYTE;
 	
-	// �װ����
-	// �װ�����̺���
-	if(SCI2.SSR.BIT.ORER)	SCI2.SSR.BIT.ORER	= 0;	//���ް�ݴװ�̏������L�q
-	if(SCI2.SSR.BIT.FER)	SCI2.SSR.BIT.FER	= 0;	//�ڰ�ݸ޴װ�̏������L�q
-	if(SCI2.SSR.BIT.PER)	SCI2.SSR.BIT.PER	= 0;	//���è�װ�̏������L�q
+	// ｴﾗｰ処理
+	// ｴﾗｰ処理のｺｰﾄﾞ
+	if(SCI2.SSR.BIT.ORER)	SCI2.SSR.BIT.ORER	= 0;	//ｵｰﾊﾞｰﾗﾝｴﾗｰの処理を記述
+	if(SCI2.SSR.BIT.FER)	SCI2.SSR.BIT.FER	= 0;	//ﾌﾚｰﾐﾝｸﾞｴﾗｰの処理を記述
+	if(SCI2.SSR.BIT.PER)	SCI2.SSR.BIT.PER	= 0;	//ﾊﾟﾘﾃｨｴﾗｰの処理を記述
 }
 
 // SCI2 RXI2
@@ -514,13 +514,13 @@ void Excep_SCI2_RXI2(void){
 
 // SCI2 TXI2
 void Excep_SCI2_TXI2(void){
-	rs232c_txi();						// RS232C(SCI2)TXI(���M�ް�����è���荞��)
+	rs232c_txi();						// RS232C(SCI2)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
 
 }
 
 // SCI2 TEI2
 void Excep_SCI2_TEI2(void){
-	rs232c_tei();						// RS232C(SCI2)TEI(���M�I�����荞��)
+	rs232c_tei();						// RS232C(SCI2)TEI(送信終了割り込み)
 }
 
 // SCI3 ERI3
@@ -532,13 +532,13 @@ void Excep_SCI3_RXI3(void){ }
 // SCI3 TXI3
 void Excep_SCI3_TXI3(void)
 {
-	cfg_txi();	// CFG(SCI3)TXI(���M�ް�����è���荞��)
+	cfg_txi();	// CFG(SCI3)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
 }
 
 // SCI3 TEI3
 void Excep_SCI3_TEI3(void)
 {
-	cfg_tei();	// CFG(SCI3)TEI(���M�I�����荞��)
+	cfg_tei();	// CFG(SCI3)TEI(送信終了割り込み)
 }
 
 // SCI5 ERI5
@@ -558,29 +558,29 @@ void Excep_SCI6_ERI6(void)
 {
 	SEQ.JUNK = SCI6.SSR.BYTE;
 	
-	// �װ����
-	// �װ�����̺���
-	if(SCI6.SSR.BIT.ORER)	SCI6.SSR.BIT.ORER	= 0;	//���ް�ݴװ�̏������L�q
-	if(SCI6.SSR.BIT.FER)	SCI6.SSR.BIT.FER	= 0;	//�ڰ�ݸ޴װ�̏������L�q
-	if(SCI6.SSR.BIT.PER)	SCI6.SSR.BIT.PER	= 0;	//���è�װ�̏������L�q
+	// ｴﾗｰ処理
+	// ｴﾗｰ処理のｺｰﾄﾞ
+	if(SCI6.SSR.BIT.ORER)	SCI6.SSR.BIT.ORER	= 0;	//ｵｰﾊﾞｰﾗﾝｴﾗｰの処理を記述
+	if(SCI6.SSR.BIT.FER)	SCI6.SSR.BIT.FER	= 0;	//ﾌﾚｰﾐﾝｸﾞｴﾗｰの処理を記述
+	if(SCI6.SSR.BIT.PER)	SCI6.SSR.BIT.PER	= 0;	//ﾊﾟﾘﾃｨｴﾗｰの処理を記述
 }
 
 // SCI6 RXI6
 void Excep_SCI6_RXI6(void)
 {
-	m25_rxi();		// M25(SCI6)RXI(��M�ް��ي��荞��)
+	m25_rxi();		// M25(SCI6)RXI(受信ﾃﾞｰﾀﾌﾙ割り込み)
 }
 
 // SCI6 TXI6
 void Excep_SCI6_TXI6(void)
 {
-	m25_txi();		// M25(SCI6)TXI(���M�ް�����è���荞��)
+	m25_txi();		// M25(SCI6)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
 }
 
 // SCI6 TEI6
 void Excep_SCI6_TEI6(void)
 {
-	m25_tei();		// M25(SCI6)TEI(���M�I�����荞��)
+	m25_tei();		// M25(SCI6)TEI(送信終了割り込み)
 }
 
 // RTC /////////////////////////////////////////////////////////////////////////

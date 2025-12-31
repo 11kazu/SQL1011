@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
 * File Name	: cfg_sci3.c
 ******************************************************************************/
 #include <stdint.h>
@@ -9,25 +9,25 @@
 #include "usercopy.h"
 #include "user_define.h"
 
-void sci3_init(void);					// M25�����ݒ�
+void sci3_init(void);					// M25初期設定
 
-void cfg_txi(void);						// M25���M
-void cfg_tei(void);						// M25���M�I��
+void cfg_txi(void);						// M25送信
+void cfg_tei(void);						// M25送信終了
 
 //************************************************************/
-//				CFG�����ݒ�(SCI3)
+//				CFG初期設定(SCI3)
 //************************************************************/
 void sci3_init(void)
 {
-	MSTP(SCI3) = 0;			// RIIC0Ӽޭ�ٽį�߉���
+	MSTP(SCI3) = 0;			// RIIC0ﾓｼﾞｭｰﾙｽﾄｯﾌﾟ解除
 	
-	// ���荞�ݗv���֎~
+	// 割り込み要求禁止
 	IEN(SCI3, TEI3) = 0;
 	IEN(SCI3, ERI3) = 0;
 	IEN(SCI3, TXI3) = 0;
 	IEN(SCI3, RXI3) = 0;
 	
-	IOPORT.PFFSCI.BIT.SCI3S = 1;		// P23-25��رْ[�q�Ƃ��Đݒ�
+	IOPORT.PFFSCI.BIT.SCI3S = 1;		// P23-25をｼﾘｱﾙ端子として設定
 	
 	SCI3.SCR.BYTE = 0x00;
 
@@ -50,39 +50,39 @@ void sci3_init(void)
 	
 	// BRR - Bit Rate Register
 	// 921600bps
-	// �ۯ�������Ӱ��
-	//Bit Rate: (48MHz/(8*2^(-1)*921600bps))-1 = 12.0208 �� 12
+	// ｸﾛｯｸ同期式ﾓｰﾄﾞ
+	//Bit Rate: (48MHz/(8*2^(-1)*921600bps))-1 = 12.0208 ≒ 12
 	//SCI3.BRR = 12;			// 921600bps
 	//SCI3.BRR = 6;// 140821 PASS
 //	SCI3.BRR = 8;//
-	//�s����ωӏ� 2014/09/18	
+	//市川改変箇所 2014/09/18	
 	SCI3.BRR = 1;//
 	
 	//SCI3.BRR = 4;//	// 140919
 	
 	//SCI3.BRR = 22;ng
 	
-	delay_ms(1);			// 1�ޯĊ��ԑҋ@
+	delay_ms(1);			// 1ﾋﾞｯﾄ期間待機
 	
-	// ���荞�ݗD�����ِݒ�
+	// 割り込み優先ﾚﾍﾞﾙ設定
 /*	IPR(SCI3, TXI3) = 1;
 	IPR(SCI3, RXI3) = 1;
 	IPR(SCI3, TEI3) = 1;
 	IPR(SCI3, ERI3) = 1;*/
 	
-	//�s����ωӏ� 2014/09/18	
+	//市川改変箇所 2014/09/18	
 	IPR(SCI3, TXI3) = 13;
 	IPR(SCI3, RXI3) = 13;
 	IPR(SCI3, TEI3) = 13;
 	IPR(SCI3, ERI3) = 13;
 	
-	// ���荞�ݗv���ر
+	// 割り込み要求ｸﾘｱ
 	IR(SCI3, TXI3) = 0;
 	IR(SCI3, RXI3) = 0;
 	IR(SCI3, TEI3) = 0;
 	IR(SCI3, ERI3) = 0;
 	
-	// ���荞�ݗv������
+	// 割り込み要求許可
 	IEN(SCI3, TXI3) = 1;
 	//IEN(SCI3, RXI3) = 1;
 	//IEN(SCI3, ERI3) = 1;
@@ -90,39 +90,39 @@ void sci3_init(void)
 }
 
 /********************************************************/
-/*		CFG(SCI3)TXI(���M�ް�����è���荞��)
+/*		CFG(SCI3)TXI(送信ﾃﾞｰﾀｴﾝﾌﾟﾃｨ割り込み)
 /********************************************************/
 void cfg_txi(void)
 {
 	SCI3.TDR = COM3.WR_BUF[COM3.WR_CONT];
 	
-	if(COM3.WR_CONT == COM3.SEND_COUNT){		// �Ō�܂ő��M������
-		SCI3.SCR.BIT.TIE = 0;					// TXI���荞�ݗv�����֎~
-		SCI3.SCR.BIT.TEIE = 1;					// TEI���荞�ݗv��������
+	if(COM3.WR_CONT == COM3.SEND_COUNT){		// 最後まで送信したら
+		SCI3.SCR.BIT.TIE = 0;					// TXI割り込み要求を禁止
+		SCI3.SCR.BIT.TEIE = 1;					// TEI割り込み要求を許可
 		
-		while(SCI3.SSR.BIT.TEND != 1){}				// TEND�׸ނ��u1�v�ɂȂ�܂őҋ@
+		while(SCI3.SSR.BIT.TEND != 1){}				// TENDﾌﾗｸﾞが「1」になるまで待機
 		
-		SCI3.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-		SCI3.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-		SCI3.SCR.BIT.TE = 0;						// �رّ��M������֎~
+		SCI3.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+		SCI3.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+		SCI3.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 	}
 	
 	COM3.WR_CONT++;
 }
 
 /********************************************************/
-/*		CFG(SCI3)TEI(���M�I�����荞��)
+/*		CFG(SCI3)TEI(送信終了割り込み)
 /********************************************************/
 void cfg_tei(void)
 {
-	while(SCI3.SSR.BIT.TEND != 1){}				// TEND�׸ނ��u1�v�ɂȂ�܂őҋ@
+	while(SCI3.SSR.BIT.TEND != 1){}				// TENDﾌﾗｸﾞが「1」になるまで待機
 	
-	SCI3.SCR.BIT.TEIE = 0;						// TEI���荞�ݗv�����֎~
-	SCI3.SCR.BIT.TIE = 0;						// TXI���荞�ݗv�����֎~
-	SCI3.SCR.BIT.TE = 0;						// �رّ��M������֎~
+	SCI3.SCR.BIT.TEIE = 0;						// TEI割り込み要求を禁止
+	SCI3.SCR.BIT.TIE = 0;						// TXI割り込み要求を禁止
+	SCI3.SCR.BIT.TE = 0;						// ｼﾘｱﾙ送信動作を禁止
 	
-	SCI3.SCR.BIT.RIE = 1;						// RXI�����ERI���荞�ݗv��������
-	SCI3.SCR.BIT.RE = 1;						// �رَ�M���������
+	SCI3.SCR.BIT.RIE = 1;						// RXIおよびERI割り込み要求を許可
+	SCI3.SCR.BIT.RE = 1;						// ｼﾘｱﾙ受信動作を許可
 	
 	COM3.SUB_STATUS++;
 }

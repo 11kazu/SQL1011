@@ -1,4 +1,4 @@
-/******************************************************************************
+ï»¿/******************************************************************************
 * File Name	: ctl_interface_func.c
 ******************************************************************************/
 #include <machine.h>
@@ -8,92 +8,92 @@
 #include "user_define.h"
 
 //************************************************************/
-//				“à•”ŠÖ”ƒvƒƒgƒ^ƒCƒvéŒ¾					
+//				å†…éƒ¨é–¢æ•°ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€					
 //************************************************************/
 void disp_battery_power(void);
-void disp_software_version(void);			// ¿ÌÄ³ª±ÊŞ°¼Ş®İ•\¦
+void disp_software_version(void);			// ï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾Šï¾ï½°ï½¼ï¾ï½®ï¾è¡¨ç¤º
 
-void disp_data_reset(void);					// LED•\¦ÃŞ°ÀØ¾¯Ä
+void disp_data_reset(void);					// LEDè¡¨ç¤ºï¾ƒï¾ï½°ï¾€ï¾˜ï½¾ï½¯ï¾„
 
-void disp0_data_set(void);					// DISP0ÃŞ°À¾¯Ä
-void disp1_data_set(void);					// DISP1ÃŞ°À¾¯Ä
-void disp2_data_set(void);					// DISP2ÃŞ°À¾¯Ä
-void disp3_data_set(void);					// DISP3ÃŞ°À¾¯Ä
-void disp4_data_set(void);					// DISP4ÃŞ°À¾¯Ä
-void disp5_data_set(void);					// DISP5ÃŞ°À¾¯Ä
-void disp6_data_set(void);					// DISP6ÃŞ°À¾¯Ä
-void disp7_data_set(void);					// DISP7ÃŞ°À¾¯Ä
+void disp0_data_set(void);					// DISP0ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp1_data_set(void);					// DISP1ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp2_data_set(void);					// DISP2ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp3_data_set(void);					// DISP3ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp4_data_set(void);					// DISP4ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp5_data_set(void);					// DISP5ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp6_data_set(void);					// DISP6ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+void disp7_data_set(void);					// DISP7ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 
-void clk1_pulse(void);						// CLK1ÊßÙ½
-void clk2_pulse(void);						// CLK2ÊßÙ½
-void clk3_pulse(void);						// CLK3ÊßÙ½
-void clk4_pulse(void);						// CLK4ÊßÙ½
+void clk1_pulse(void);						// CLK1ï¾Šï¾Ÿï¾™ï½½
+void clk2_pulse(void);						// CLK2ï¾Šï¾Ÿï¾™ï½½
+void clk3_pulse(void);						// CLK3ï¾Šï¾Ÿï¾™ï½½
+void clk4_pulse(void);						// CLK4ï¾Šï¾Ÿï¾™ï½½
 
-void led_output(void);						// LEDo—Í
+void led_output(void);						// LEDå‡ºåŠ›
 
-void drv_disp_data_out(_UBYTE w_data);		// •\¦ÃŞ°Ào—ÍŠÖ”
+void drv_disp_data_out(_UBYTE w_data);		// è¡¨ç¤ºï¾ƒï¾ï½°ï¾€å‡ºåŠ›é–¢æ•°
 
-_UBYTE drv_seg_change(_UBYTE seg);			// ¾¸ŞÒİÄÃŞ°À•ÏŠ·ŠÖ”
+_UBYTE drv_seg_change(_UBYTE seg);			// ï½¾ï½¸ï¾ï¾’ï¾ï¾„ï¾ƒï¾ï½°ï¾€å¤‰æ›é–¢æ•°
 
-//void analog_value_verification(void);		// ±ÅÛ¸Ş’lŒŸØ(ÃŞÊŞ¯¸Ş—p)
+//void analog_value_verification(void);		// ï½±ï¾…ï¾›ï½¸ï¾å€¤æ¤œè¨¼(ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾ç”¨)
 
-void out_master(void);						// o—Í¼°¹İ½ŠÖ”(O.1ms‚²‚Æ‚Éˆ—)
+void out_master(void);						// å‡ºåŠ›ï½¼ï½°ï½¹ï¾ï½½é–¢æ•°(O.1msã”ã¨ã«å‡¦ç†)
 
-void led_on_state(void);					// LED ONó‘Ô
-void led_off_state(void);					// LED OFFó‘Ô
+void led_on_state(void);					// LED ONçŠ¶æ…‹
+void led_off_state(void);					// LED OFFçŠ¶æ…‹
 
 //************************************************************/
-//				±ÅÛ¸Ş’lŒŸØ(ÃŞÊŞ¯¸Ş—p)
+//				ï½±ï¾…ï¾›ï½¸ï¾å€¤æ¤œè¨¼(ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾ç”¨)
 //************************************************************/
 /*
 void analog_value_verification(void)
 {
-	// ±ÅÛ¸Ş’lŒŸØ
+	// ï½±ï¾…ï¾›ï½¸ï¾å€¤æ¤œè¨¼
 	if(ADCOV.V_BATT >= 506){
-		SEQ.BATTERY_POWER = 100;								// “d’rc—Ê(%)
+		SEQ.BATTERY_POWER = 100;								// é›»æ± æ®‹é‡(%)
 	}else if(ADCOV.V_BATT <= 352){
-		SEQ.BATTERY_POWER = 0;									// “d’rc—Ê(%)
+		SEQ.BATTERY_POWER = 0;									// é›»æ± æ®‹é‡(%)
 	}else{
-		SEQ.BATTERY_POWER = (ADCOV.V_BATT-352)*100 / 154;		// “d’rc—Ê(%)
+		SEQ.BATTERY_POWER = (ADCOV.V_BATT-352)*100 / 154;		// é›»æ± æ®‹é‡(%)
 	}
 					
-	// •S‚ÌˆÊ
+	// ç™¾ã®ä½
 	if(ADCOV.V_BATT < 100)		LED.SEG_BUF[11] = ' ';
 	else						LED.SEG_BUF[11] = (((ADCOV.V_BATT / 100) % 10) + 0x30);
-	// \‚ÌˆÊ
+	// åã®ä½
 	if(ADCOV.V_BATT < 10)		LED.SEG_BUF[12] = ' ';
 	else						LED.SEG_BUF[12] = (((ADCOV.V_BATT / 10) % 10) + 0x30);
-	// ˆê‚ÌˆÊ
+	// ä¸€ã®ä½
 	LED.SEG_BUF[13]	= ((ADCOV.V_BATT % 10) + 0x30);
 	//
 	
-	// •S‚ÌˆÊ
+	// ç™¾ã®ä½
 	if(SEQ.BATTERY_POWER < 100)		LED.SEG_BUF[11] = ' ';
 	else							LED.SEG_BUF[11] = (((SEQ.BATTERY_POWER / 100) % 10) + 0x30);
-	// \‚ÌˆÊ
+	// åã®ä½
 	if(SEQ.BATTERY_POWER < 10)		LED.SEG_BUF[12] = ' ';
 	else							LED.SEG_BUF[12] = (((SEQ.BATTERY_POWER / 10) % 10) + 0x30);
-	// ˆê‚ÌˆÊ
+	// ä¸€ã®ä½
 	LED.SEG_BUF[13]	= ((SEQ.BATTERY_POWER % 10) + 0x30);
 	//
 }
 */
 
 //************************************************************/
-//				o—Í¼°¹İ½ŠÖ”(O.1ms‚²‚Æ‚Éˆ—)
+//				å‡ºåŠ›ï½¼ï½°ï½¹ï¾ï½½é–¢æ•°(O.1msã”ã¨ã«å‡¦ç†)
 //************************************************************/
 void out_master(void)
 {
-	//analog_value_verification();						// ±ÅÛ¸Ş’lŒŸØ(ÃŞÊŞ¯¸Ş—p)
+	//analog_value_verification();						// ï½±ï¾…ï¾›ï½¸ï¾å€¤æ¤œè¨¼(ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾ç”¨)
 	
 	switch(OUT.MASTER_STATUS){
-		case INIT_START_MODE:							// ‰ŠúÓ°ÄŞ
+		case INIT_START_MODE:							// åˆæœŸï¾“ï½°ï¾„ï¾
 			break;
 			
-		case DRV_MODE:									// ’ÊíÓ°ÄŞ
-			led_on_state();								// LED ONó‘Ô
-			if(SEQ.FLAG5.BIT.LOW_BATTERY == 1){			// POWER LED‚Ì“_–Å
-				// “dˆ³ƒGƒ‰[‚ª”­¶‚·‚é‚Æ“_–Å‚³‚¹‚È‚¢
+		case DRV_MODE:									// é€šå¸¸ï¾“ï½°ï¾„ï¾
+			led_on_state();								// LED ONçŠ¶æ…‹
+			if(SEQ.FLAG5.BIT.LOW_BATTERY == 1){			// POWER LEDã®ç‚¹æ»…
+				// é›»åœ§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹ã¨ç‚¹æ»…ã•ã›ãªã„
 				if(SEQ.FLAG5.BIT.VOLTAGE_ERROR == 0){
 					if(SEQ.FLAG5.BIT.LOW_BATTERY_FLAG == 1)		LED.MSP.BIT.POWER = 0;
 					else										LED.MSP.BIT.POWER = 1;
@@ -102,10 +102,10 @@ void out_master(void)
 			led_output();
 			break;
 			
-		case IDLE_MODE:									// ‘Ò‹@Ó°ÄŞ
-			led_off_state();							// LED OFFó‘Ô
-			if(SEQ.FLAG5.BIT.LOW_BATTERY == 1){			// POWER LED‚Ì“_–Å
-				// “dˆ³ƒGƒ‰[‚ª”­¶‚·‚é‚Æ“_–Å‚³‚¹‚È‚¢
+		case IDLE_MODE:									// å¾…æ©Ÿï¾“ï½°ï¾„ï¾
+			led_off_state();							// LED OFFçŠ¶æ…‹
+			if(SEQ.FLAG5.BIT.LOW_BATTERY == 1){			// POWER LEDã®ç‚¹æ»…
+				// é›»åœ§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã™ã‚‹ã¨ç‚¹æ»…ã•ã›ãªã„
 				if(SEQ.FLAG5.BIT.VOLTAGE_ERROR == 0){
 					if(SEQ.FLAG5.BIT.LOW_BATTERY_FLAG == 1)		LED.MSP.BIT.POWER = 0;
 					else										LED.MSP.BIT.POWER = 1;
@@ -117,29 +117,29 @@ void out_master(void)
 			break;
 			
 		default:
-			OUT.MASTER_STATUS = IDLE_MODE;	// ‘Ò‹@Ó°ÄŞ
+			OUT.MASTER_STATUS = IDLE_MODE;	// å¾…æ©Ÿï¾“ï½°ï¾„ï¾
 	}
 }
 
 //************************************************************/
-//				LED ONó‘Ô
-//	1 ¨ 2 ¨ 3 ¨ 4
+//				LED ONçŠ¶æ…‹
+//	1 â†’ 2 â†’ 3 â†’ 4
 //
-//	u1vƒXƒNƒ[ƒ‹
-//	11 ¨ 99
-//	   ¨ 12 ¨ 13 ¨ 99
-//	               ¨ 14 ¨ 15 ¨ 99
-//	                           ¨ 16 ¨ 17 ¨ 99
-//	                                       ¨ 18 ¨ 19 ¨ 99
-//	                                                   ¨ 20 ¨ 11
+//	ã€Œ1ã€ã‚¹ã‚¯ãƒ­ãƒ¼ãƒ«
+//	11 â†’ 99
+//	   â†’ 12 â†’ 13 â†’ 99
+//	               â†’ 14 â†’ 15 â†’ 99
+//	                           â†’ 16 â†’ 17 â†’ 99
+//	                                       â†’ 18 â†’ 19 â†’ 99
+//	                                                   â†’ 20 â†’ 11
 //
-//	31 ¨ 99
-//	   ¨ 32 ¨ 33 ¨ 99
-//	               ¨ 34 ¨ 35 ¨ 99
-//	                           ¨ 36 ¨ 37 ¨ 99
-//	                                       ¨ 38 ¨ 39 ¨ 99
-//	                                                   ¨ 40 ¨ 41 ¨ 99
-//	                                                               ¨ 42 ¨ 31
+//	31 â†’ 99
+//	   â†’ 32 â†’ 33 â†’ 99
+//	               â†’ 34 â†’ 35 â†’ 99
+//	                           â†’ 36 â†’ 37 â†’ 99
+//	                                       â†’ 38 â†’ 39 â†’ 99
+//	                                                   â†’ 40 â†’ 41 â†’ 99
+//	                                                               â†’ 42 â†’ 31
 //************************************************************/
 void led_on_state(void)
 {
@@ -147,12 +147,12 @@ void led_on_state(void)
 
 	switch(OUT.SUB_STATUS){
 		case 1:
-			// “dŒ¹ON‹N“®
-			// İ’è’l‚Ì“Ç‚İ‚İ
-			LED.FOCUSING = 0x07FF;		// X²LED
-			LED.Z_FOCUSING = 0x0F;		// Z²LED
-			LED.FOCUS.BYTE = 0x07;		// Å“_LEREZ
-			LED.MSP.WORD = 0x0FFF;		// MeasureESettingEPeak HoldEPOWEREECOE—\”õ
+			// é›»æºONèµ·å‹•æ™‚
+			// è¨­å®šå€¤ã®èª­ã¿è¾¼ã¿
+			LED.FOCUSING = 0x07FF;		// Xè»¸LED
+			LED.Z_FOCUSING = 0x0F;		// Zè»¸LED
+			LED.FOCUS.BYTE = 0x07;		// ç„¦ç‚¹Lãƒ»Rãƒ»Z
+			LED.MSP.WORD = 0x0FFF;		// Measureãƒ»Settingãƒ»Peak Holdãƒ»POWERãƒ»ECOãƒ»äºˆå‚™
 			
 			for(i=1;i<=14;i++){
 				LED.SEG_BUF[i] = '8';
@@ -163,37 +163,37 @@ void led_on_state(void)
 			break;
 			
 		case 2:
-			// 1s‘Ò‹@ŒãŸ‚Ö
+			// 1så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
-				LED.MSP.WORD = 0x0000;		// MeasureESettingEPeak HoldEPOWEREECOE—\”õ
+				LED.MSP.WORD = 0x0000;		// Measureãƒ»Settingãƒ»Peak Holdãƒ»POWERãƒ»ECOãƒ»äºˆå‚™
 				LED.MSP.BIT.POWER = 1;
 				LED.MSP.BIT.ECO = SEQ.FLAG.BIT.ECO;
 				
 // chg 2015.09.02 K.Uemura start	
-				if(IN.FLAG.BIT.HARDWARE_TYPE == PORTABLE_EDITION){			// Îß°ÀÌŞÙ”Å‚Ì‚Æ‚«
-					COM0.NO311 = 100;		// Å“_‡‚í‚¹(X)
+				if(IN.FLAG.BIT.HARDWARE_TYPE == PORTABLE_EDITION){			// ï¾ï¾Ÿï½°ï¾€ï¾Œï¾ï¾™ç‰ˆã®ã¨ã
+					COM0.NO311 = 100;		// ç„¦ç‚¹åˆã‚ã›(X)
 				}else{
-					COM0.NO311 = 0;			// ‚È‚µ
+					COM0.NO311 = 0;			// ãªã—
 				}
-//				COM0.NO311 = 100;			// Å“_‡‚í‚¹(X)
+//				COM0.NO311 = 100;			// ç„¦ç‚¹åˆã‚ã›(X)
 // chg 2015.09.02 K.Uemura end
 				SEQ.SELECT.BIT.MEASURE = MODE_FOCUS;
-				SEQ.FLUTES = PARAM_FLUTES;			// n”
+				SEQ.FLUTES = PARAM_FLUTES;			// åˆƒæ•°
 
 				for(i=11;i<=14;i++){
 					LED.SEG_BUF[i] = ' ';
 				}
 
-				led_measure_set();						// LED ‘ª’èEİ’è¾¯Ä
+				led_measure_set();						// LED æ¸¬å®šãƒ»è¨­å®šï½¾ï½¯ï¾„
 				
 				SEQ.SELECT.BIT.PEAKHOLD = PEAK_HOLD_5S;
-				led_peakhold_set();						// LED Ëß°¸Î°ÙÄŞ¾¯Ä
+				led_peakhold_set();						// LED ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾ï½¾ï½¯ï¾„
 				
 				switch(SEQ.SELECT.BIT.MEASURE){
 					case MODE_D4_LOW:
 					case MODE_RUNOUT:
-						disp_flutes();						// n”•\¦
+						disp_flutes();						// åˆƒæ•°è¡¨ç¤º
 						break;
 
 					default:
@@ -204,38 +204,38 @@ void led_on_state(void)
 				OUT.SUB_STATUS++;
 
 #ifdef	DEBUG_AUTOSTART
-				// sw.c S2FSTART_SW_IN
-				// Œv‘ªŠJn
+				// sw.c S2ï¼šSTART_SW_IN
+				// è¨ˆæ¸¬é–‹å§‹
 				SEQ.FLAG.BIT.MEASUREMENT = 1;
 				
 				SEQ.CBUS_NUMBER = 394;
-				SEQ.CHANGE_FPGA = 2;			// ‘ª’è
+				SEQ.CHANGE_FPGA = 2;			// æ¸¬å®š
 				SEQ.FPGA_SEND_STATUS = 1;
-				SEQ.FLAG.BIT.PORTABLE = 1;				// Îß°ÀÌŞÙ‘€ìÌ×¸Ş
+				SEQ.FLAG.BIT.PORTABLE = 1;				// ï¾ï¾Ÿï½°ï¾€ï¾Œï¾ï¾™æ“ä½œï¾Œï¾—ï½¸ï¾
 #endif
 			}
 			break;
 			
 		case 3:
-			// “dŒ¹ON‹N“®Œã‘Ò‹@’†
-			// İ’è’l‚Ì“Ç‚İ‚İ
-			LED.FOCUSING = 0x0000;		// X²LED
-			LED.Z_FOCUSING = 0x00;		// Z²LED
-			LED.FOCUS.BYTE = 0x00;		// Å“_LEREZ
+			// é›»æºONèµ·å‹•å¾Œå¾…æ©Ÿä¸­
+			// è¨­å®šå€¤ã®èª­ã¿è¾¼ã¿
+			LED.FOCUSING = 0x0000;		// Xè»¸LED
+			LED.Z_FOCUSING = 0x00;		// Zè»¸LED
+			LED.FOCUS.BYTE = 0x00;		// ç„¦ç‚¹Lãƒ»Rãƒ»Z
 			
-			if(COM0.NO312 == 0)		set_7seg_upper_no_data();				// 7¾¸Ş•\¦(-----)(ã’i)
-			else					set_7seg_led_error_no(COM0.NO312);		// 7ƒZƒOLED‚Ì´×°ÅİÊŞ°İ’è
+			if(COM0.NO312 == 0)		set_7seg_upper_no_data();				// 7ï½¾ï½¸ï¾è¡¨ç¤º(-----)(ä¸Šæ®µ)
+			else					set_7seg_led_error_no(COM0.NO312);		// 7ã‚»ã‚°LEDã®ï½´ï¾—ï½°ï¾…ï¾ï¾Šï¾ï½°è¨­å®š
 			
-			set_7seg_lower_no_data();				// 7¾¸Ş•\¦(-----)(‰º’i)
+			set_7seg_lower_no_data();				// 7ï½¾ï½¸ï¾è¡¨ç¤º(-----)(ä¸‹æ®µ)
 			
 			OUT.SUB_STATUS++;
 			
 #if	EXHIBITION
-			// POWER¼°¹İ½Š®—¹ŒãH‹ïŒa(4ˆÈ‰º)‚ÌŒv‘ª‚ğs‚¤ 141021
+			// POWERï½¼ï½°ï½¹ï¾ï½½å®Œäº†å¾Œå·¥å…·å¾„(4ä»¥ä¸‹)ã®è¨ˆæ¸¬ã‚’è¡Œã† 141021
 			// for exhibitions 141021
-			COM0.NO301 = 10;							// H‹ïŒa(4ˆÈ‰º)
-			COM0.NO300.BIT.EXE = 1;						// i—ß(Às)‚ªON‚Ì‚Æ‚«
-			COM0.NO300.BIT.ROF = 1;						// READY OFFŒŸ’m
+			COM0.NO301 = 10;							// å·¥å…·å¾„(4ä»¥ä¸‹)
+			COM0.NO300.BIT.EXE = 1;						// å¸ä»¤(å®Ÿè¡Œ)ãŒONã®ã¨ã
+			COM0.NO300.BIT.ROF = 1;						// READY OFFæ¤œçŸ¥
 			//
 #endif
 			
@@ -244,14 +244,14 @@ void led_on_state(void)
 		case 4:
 			break;
 			
-		// STARTÀs’†
-		// Á­°Æİ¸Ş
+		// STARTå®Ÿè¡Œä¸­
+		// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾
 		case 11:
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			//LED.FOCUSING = 0x0000;		// FOCUS‘SÁ“”
-			// Á­°Æİ¸Ş1
+			//LED.FOCUSING = 0x0000;		// FOCUSå…¨æ¶ˆç¯
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾1
 			LED.SEG_BUF[1]	= ' ';
 			LED.SEG_BUF[2]	= ' ';
 			LED.SEG_BUF[3]	= ' ';
@@ -269,7 +269,7 @@ void led_on_state(void)
 			break;
 			
 		case 12:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -280,7 +280,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş2
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾2
 			LED.SEG_BUF[4]	= '1';
 			LED.SEG_BUF[9]	= '1';
 			
@@ -289,7 +289,7 @@ void led_on_state(void)
 			break;
 			
 		case 14:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -300,7 +300,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş3
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾3
 			LED.SEG_BUF[3]	= '1';
 			LED.SEG_BUF[8]	= '1';
 			
@@ -309,7 +309,7 @@ void led_on_state(void)
 			break;
 			
 		case 16:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -320,7 +320,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş4
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾4
 			LED.SEG_BUF[2]	= '1';
 			LED.SEG_BUF[7]	= '1';
 			
@@ -329,7 +329,7 @@ void led_on_state(void)
 			break;
 			
 		case 18:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -340,7 +340,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş5
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾5
 			LED.SEG_BUF[1]	= '1';
 			LED.SEG_BUF[6]	= '1';
 			
@@ -349,7 +349,7 @@ void led_on_state(void)
 			break;
 			
 		case 20:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS = 11;
@@ -357,14 +357,14 @@ void led_on_state(void)
 			break;
 
 #if	1
-		// STARTÀs’†
-		// Á­°Æİ¸Ş
+		// STARTå®Ÿè¡Œä¸­
+		// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾
 		case 31:
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			//LED.FOCUSING = 0x0000;		// FOCUS‘SÁ“”
-			// Á­°Æİ¸Ş1
+			//LED.FOCUSING = 0x0000;		// FOCUSå…¨æ¶ˆç¯
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾1
 			LED.SEG_BUF[1]	= ' ';
 			LED.SEG_BUF[2]	= ' ';
 			LED.SEG_BUF[3]	= ' ';
@@ -382,7 +382,7 @@ void led_on_state(void)
 			break;
 			
 		case 32:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -393,7 +393,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş2
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾2
 			LED.SEG_BUF[5]	= OUT_SEG_NO2;
 			
 			ctl_uni_timer1(20);	// 0.2s
@@ -401,7 +401,7 @@ void led_on_state(void)
 			break;
 			
 		case 34:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -412,7 +412,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş3
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾3
 			LED.SEG_BUF[5]	= OUT_SEG_NO3;
 			
 			ctl_uni_timer1(20);	// 0.2s
@@ -420,7 +420,7 @@ void led_on_state(void)
 			break;
 			
 		case 36:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -431,7 +431,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş4
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾4
 			LED.SEG_BUF[10]	= OUT_SEG_NO1;
 			
 			ctl_uni_timer1(20);	// 0.2s
@@ -439,7 +439,7 @@ void led_on_state(void)
 			break;
 			
 		case 38:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -450,7 +450,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş5
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾5
 			LED.SEG_BUF[10]	= OUT_SEG_NO2;
 			
 			ctl_uni_timer1(20);	// 0.2s
@@ -458,7 +458,7 @@ void led_on_state(void)
 			break;
 			
 		case 40:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS++;
@@ -469,7 +469,7 @@ void led_on_state(void)
 			if(SEQ.FLAG.BIT.MEASUREMENT == MEASURE_STOP){
 				OUT.SUB_STATUS = 99;
 			}
-			// Á­°Æİ¸Ş5
+			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾5
 			LED.SEG_BUF[10]	= OUT_SEG_NO3;
 			
 			ctl_uni_timer1(20);	// 0.2s
@@ -477,7 +477,7 @@ void led_on_state(void)
 			break;
 			
 		case 42:
-			// 0.2s‘Ò‹@ŒãŸ‚Ö
+			// 0.2så¾…æ©Ÿå¾Œæ¬¡ã¸
 			if(TIM1.MSEC_10.BIT.UNI_UP1){
 				TIM1.MSEC_10.BIT.UNI_UP1 = 0;
 				OUT.SUB_STATUS = 31;
@@ -491,16 +491,16 @@ void led_on_state(void)
 }
 			
 //************************************************************/
-//				LED OFFó‘Ô
+//				LED OFFçŠ¶æ…‹
 //************************************************************/
-// ‘S‚Ä‚ÌLED•\¦‚ğOFF‚É‚·‚é
+// å…¨ã¦ã®LEDè¡¨ç¤ºã‚’OFFã«ã™ã‚‹
 void led_off_state(void)
 {
-	// İ’è’l‚Ì“Ç‚İ‚İ
-	LED.FOCUSING = 0x0000;		// X²LED
-	LED.Z_FOCUSING = 0x00;		// Z²LED
-	LED.FOCUS.BYTE = 0x00;		// Å“_LEREZ
-	LED.MSP.WORD = 0x0000;		// MeasureESettingEPeak HoldEPOWEREECOE—\”õ
+	// è¨­å®šå€¤ã®èª­ã¿è¾¼ã¿
+	LED.FOCUSING = 0x0000;		// Xè»¸LED
+	LED.Z_FOCUSING = 0x00;		// Zè»¸LED
+	LED.FOCUS.BYTE = 0x00;		// ç„¦ç‚¹Lãƒ»Rãƒ»Z
+	LED.MSP.WORD = 0x0000;		// Measureãƒ»Settingãƒ»Peak Holdãƒ»POWERãƒ»ECOãƒ»äºˆå‚™
 	
 	LED.SEG_BUF[1]	= ' ';
 	LED.SEG_BUF[2]	= ' ';
@@ -517,45 +517,45 @@ void led_off_state(void)
 	LED.SEG_BUF[13]	= ' ';
 	LED.SEG_BUF[14]	= ' ';
 	
-	// “d’rc—Ê•\¦
+	// é›»æ± æ®‹é‡è¡¨ç¤º
 	disp_battery_power();
 
-	// “dˆ³ƒGƒ‰[•\¦
+	// é›»åœ§ã‚¨ãƒ©ãƒ¼è¡¨ç¤º
 	disp_voltage_error();
 	
 // chg 2015.03.18 K.Uemura start	
-	// ¿ÌÄ³ª±ÊŞ°¼Ş®İ•\¦
+	// ï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾Šï¾ï½°ï½¼ï¾ï½®ï¾è¡¨ç¤º
 	disp_software_version();
-//	// Ó°ÄŞ½²¯Á(S6)‚ğ‰Ÿ‚µ‚Ä‚¢‚é‚Æ‚«¿ÌÄ³ª±ÊŞ°¼Ş®İ•\¦
+//	// ï¾“ï½°ï¾„ï¾ï½½ï½²ï½¯ï¾(S6)ã‚’æŠ¼ã—ã¦ã„ã‚‹ã¨ãï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾Šï¾ï½°ï½¼ï¾ï½®ï¾è¡¨ç¤º
 //	if(IN.FLAG.BIT.MODE_SW == 1)	disp_software_version();
 // chg 2015.03.18 K.Uemura end
 }
 
 //************************************************************/
-//				ƒoƒbƒeƒŠ[c—Ê•\¦
+//				ãƒãƒƒãƒ†ãƒªãƒ¼æ®‹é‡è¡¨ç¤º
 //************************************************************/
 void disp_battery_power(void)
 {
 // add 2015.03.23 K.Uemura start	F32301
-	// ƒoƒbƒeƒŠ“®ì
+	// ãƒãƒƒãƒ†ãƒªå‹•ä½œæ™‚
 	if(IN.FLAG.BIT.EXT_POWER == POWER_SUPPLY_BATTERY){
 // add 2015.03.23 K.Uemura end
-		// ã‰º½²¯Á‚ğ“¯‰Ÿ‚µ‚µ‚Ä‚¢‚é‚Æ‚«
+		// ä¸Šä¸‹ï½½ï½²ï½¯ï¾ã‚’åŒæ™‚æŠ¼ã—ã—ã¦ã„ã‚‹ã¨ã
 		if((IN.UP_SW.BIT.ON >= 10)&&(IN.DOWN_SW.BIT.ON >= 10)){
-			// •S‚ÌˆÊ
+			// ç™¾ã®ä½
 			if(SEQ.BATTERY_POWER < 100)		LED.SEG_BUF[11] = ' ';
 			else							LED.SEG_BUF[11] = (((SEQ.BATTERY_POWER / 100) % 10) + 0x30);
-			// \‚ÌˆÊ
+			// åã®ä½
 			if(SEQ.BATTERY_POWER < 10)		LED.SEG_BUF[12] = ' ';
 			else							LED.SEG_BUF[12] = (((SEQ.BATTERY_POWER / 10) % 10) + 0x30);
-			// ˆê‚ÌˆÊ
+			// ä¸€ã®ä½
 			LED.SEG_BUF[13]	= ((SEQ.BATTERY_POWER % 10) + 0x30);
 		}
 	}
 }
 
 //************************************************************/
-//				¿ÌÄ³ª±ÊŞ°¼Ş®İ•\¦
+//				ï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾Šï¾ï½°ï½¼ï¾ï½®ï¾è¡¨ç¤º
 //************************************************************/
 void disp_software_version(void)
 {
@@ -566,7 +566,7 @@ void disp_software_version(void)
 
 	if(IN.FLAG.BIT.HARDWARE_TYPE == PORTABLE_EDITION){
 // add 2015.03.18 K.Uemura start	
-		// ã‰º½²¯Á‚ğ“¯‰Ÿ‚µ‚µ‚Ä‚¢‚é‚Æ‚«
+		// ä¸Šä¸‹ï½½ï½²ï½¯ï¾ã‚’åŒæ™‚æŠ¼ã—ã—ã¦ã„ã‚‹ã¨ã
 		if((IN.UP_SW.BIT.ON >= 10)&&(IN.DOWN_SW.BIT.ON >= 10)){
 			disp_flag = 1;
 		}
@@ -579,36 +579,36 @@ void disp_software_version(void)
 
 	if(disp_flag == 1){
 // chg 2015.05.13 K.Uemura end
-		// FPGA¿ÌÄ³ª±ÊŞ°¼Ş®İ
+		// FPGAï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾Šï¾ï½°ï½¼ï¾ï½®ï¾
 		temp = SEQ.FPGA_RIVISION;
 		//LED.SEG_BUF[1] = 'F';
 		if(temp < 10000)	LED.SEG_BUF[1] = ' ';
-		else				LED.SEG_BUF[1] = ((temp / 10000) % 10 + 0x30);	// •S‚ÌˆÊ
+		else				LED.SEG_BUF[1] = ((temp / 10000) % 10 + 0x30);	// ç™¾ã®ä½
 		if(temp < 1000)		LED.SEG_BUF[2] = ' ';
-		else				LED.SEG_BUF[2] = ((temp / 1000) % 10 + 0x30);	// \‚ÌˆÊ
-							LED.SEG_BUF[3] = ((temp / 100) % 10 + 0x30);	// ˆê‚ÌˆÊ
-							LED.SEG_BUF[3] |= 0x80;							// ¬”“_
-							LED.SEG_BUF[4] = ((temp / 10) % 10 + 0x30);		// ¬”‘æˆêˆÊ
-							LED.SEG_BUF[5] = (temp % 10 + 0x30);			// ¬”‘æ“ñˆÊ
+		else				LED.SEG_BUF[2] = ((temp / 1000) % 10 + 0x30);	// åã®ä½
+							LED.SEG_BUF[3] = ((temp / 100) % 10 + 0x30);	// ä¸€ã®ä½
+							LED.SEG_BUF[3] |= 0x80;							// å°æ•°ç‚¹
+							LED.SEG_BUF[4] = ((temp / 10) % 10 + 0x30);		// å°æ•°ç¬¬ä¸€ä½
+							LED.SEG_BUF[5] = (temp % 10 + 0x30);			// å°æ•°ç¬¬äºŒä½
 										
-		// RX¿ÌÄ³ª±ÊŞ°¼Ş®İ
+		// RXï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾Šï¾ï½°ï½¼ï¾ï½®ï¾
 		temp = RX_RIVISION;
 		//LED.SEG_BUF[6] = 'r';
 		if(temp < 10000)	LED.SEG_BUF[6] = ' ';
-		else				LED.SEG_BUF[6] = ((temp / 10000) % 10 + 0x30);	// •S‚ÌˆÊ
+		else				LED.SEG_BUF[6] = ((temp / 10000) % 10 + 0x30);	// ç™¾ã®ä½
 		if(temp < 1000)		LED.SEG_BUF[7] = ' ';
-		else				LED.SEG_BUF[7] = ((temp / 1000) % 10 + 0x30);	// \‚ÌˆÊ
-							LED.SEG_BUF[8] = ((temp / 100) % 10 + 0x30);	// ˆê‚ÌˆÊ
-							LED.SEG_BUF[8] |= 0x80;							// ¬”“_
-							LED.SEG_BUF[9] = ((temp / 10) % 10 + 0x30);		// ¬”‘æˆêˆÊ
-							LED.SEG_BUF[10] = (temp % 10 + 0x30);			// ¬”‘æ“ñˆÊ
+		else				LED.SEG_BUF[7] = ((temp / 1000) % 10 + 0x30);	// åã®ä½
+							LED.SEG_BUF[8] = ((temp / 100) % 10 + 0x30);	// ä¸€ã®ä½
+							LED.SEG_BUF[8] |= 0x80;							// å°æ•°ç‚¹
+							LED.SEG_BUF[9] = ((temp / 10) % 10 + 0x30);		// å°æ•°ç¬¬ä¸€ä½
+							LED.SEG_BUF[10] = (temp % 10 + 0x30);			// å°æ•°ç¬¬äºŒä½
 	}
 }
 
 //************************************************************/
-//				LED•\¦ÃŞ°ÀØ¾¯Ä
+//				LEDè¡¨ç¤ºï¾ƒï¾ï½°ï¾€ï¾˜ï½¾ï½¯ï¾„
 //************************************************************/
-// LED•\¦‚ğ‘S‚ÄOFF‚É‚·‚é‚½‚ß‚ÌÃŞ°À‚ğ¾¯Ä‚·‚é
+// LEDè¡¨ç¤ºã‚’å…¨ã¦OFFã«ã™ã‚‹ãŸã‚ã®ï¾ƒï¾ï½°ï¾€ã‚’ï½¾ï½¯ï¾„ã™ã‚‹
 void disp_data_reset(void)
 {
 	/*
@@ -626,7 +626,7 @@ void disp_data_reset(void)
 }
 
 //************************************************************/
-//				DISP0ÃŞ°À¾¯Ä
+//				DISP0ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp0_data_set(void)
 {
@@ -635,7 +635,7 @@ void disp0_data_set(void)
 }
 
 //************************************************************/
-//				DISP1ÃŞ°À¾¯Ä
+//				DISP1ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp1_data_set(void)
 {
@@ -644,7 +644,7 @@ void disp1_data_set(void)
 }
 
 //************************************************************/
-//				DISP2ÃŞ°À¾¯Ä
+//				DISP2ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp2_data_set(void)
 {
@@ -653,7 +653,7 @@ void disp2_data_set(void)
 }
 
 //************************************************************/
-//				DISP3ÃŞ°À¾¯Ä
+//				DISP3ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp3_data_set(void)
 {
@@ -662,7 +662,7 @@ void disp3_data_set(void)
 }
 
 //************************************************************/
-//				DISP4ÃŞ°À¾¯Ä
+//				DISP4ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp4_data_set(void)
 {
@@ -671,7 +671,7 @@ void disp4_data_set(void)
 }
 
 //************************************************************/
-//				DISP5ÃŞ°À¾¯Ä
+//				DISP5ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp5_data_set(void)
 {
@@ -680,7 +680,7 @@ void disp5_data_set(void)
 }
 
 //************************************************************/
-//				DISP6ÃŞ°À¾¯Ä
+//				DISP6ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp6_data_set(void)
 {
@@ -689,7 +689,7 @@ void disp6_data_set(void)
 }
 
 //************************************************************/
-//				DISP7ÃŞ°À¾¯Ä
+//				DISP7ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
 //************************************************************/
 void disp7_data_set(void)
 {
@@ -698,7 +698,7 @@ void disp7_data_set(void)
 }
 
 //************************************************************/
-//				CLK1ÊßÙ½
+//				CLK1ï¾Šï¾Ÿï¾™ï½½
 //************************************************************/
 void clk1_pulse(void)
 {
@@ -707,7 +707,7 @@ void clk1_pulse(void)
 }
 
 //************************************************************/
-//				CLK2ÊßÙ½
+//				CLK2ï¾Šï¾Ÿï¾™ï½½
 //************************************************************/
 void clk2_pulse(void)
 {
@@ -716,7 +716,7 @@ void clk2_pulse(void)
 }
 
 //************************************************************/
-//				CLK3ÊßÙ½
+//				CLK3ï¾Šï¾Ÿï¾™ï½½
 //************************************************************/
 void clk3_pulse(void)
 {
@@ -725,7 +725,7 @@ void clk3_pulse(void)
 }
 
 //************************************************************/
-//				CLK4ÊßÙ½
+//				CLK4ï¾Šï¾Ÿï¾™ï½½
 //************************************************************/
 void clk4_pulse(void)
 {
@@ -734,19 +734,19 @@ void clk4_pulse(void)
 }
 
 //************************************************************/
-//				LEDo—Í
+//				LEDå‡ºåŠ›
 //************************************************************/
-// LED‚ğ•\¦‚·‚é‚½‚ß‚Ì¼°¹İ½
+// LEDã‚’è¡¨ç¤ºã™ã‚‹ãŸã‚ã®ï½¼ï½°ï½¹ï¾ï½½
 void led_output(void)
 {
 	_UBYTE buf;
-	const char on_count_7seg = 4;				// 7¾¸Ş—p	0.4msONE0.1msOFF
-	const char on_count_led = 29;				// LED—p	2.9msONE0.1msOFF
+	const char on_count_7seg = 4;				// 7ï½¾ï½¸ï¾ç”¨	0.4msONãƒ»0.1msOFF
+	const char on_count_led = 29;				// LEDç”¨	2.9msONãƒ»0.1msOFF
 	
-	// 0.1ms‚²‚Æ‚É§Œä
-	// ÒÓØ‘€ì‚É7¾¸ŞELED‚ª‚¿‚ç‚Â‚­‚½‚ß•\¦‚ğÁ‚·
+	// 0.1msã”ã¨ã«åˆ¶å¾¡
+	// ï¾’ï¾“ï¾˜æ“ä½œæ™‚ã«7ï½¾ï½¸ï¾ãƒ»LEDãŒã¡ã‚‰ã¤ããŸã‚è¡¨ç¤ºã‚’æ¶ˆã™
 	switch(OUT.LED_STATUS){
-		// ‘S‚Ä‚ÌÃŞ°À‚ğØ¾¯Ä
+		// å…¨ã¦ã®ï¾ƒï¾ï½°ï¾€ã‚’ï¾˜ï½¾ï½¯ï¾„
 		// 7SEG
 		case 2:
 		case 4:
@@ -755,234 +755,234 @@ void led_output(void)
 		case 10:
 		case 12:
 		case 14:
-			LED.ON_COUNT++;						// ONŠÔ‚ğ‰ÁZ
-			if(LED.ON_COUNT >= on_count_7seg){	// ONŠÔ‚ªİ’è’l‚É’B‚µ‚½‚ç
-				LED.ON_COUNT = 0;				// ONŠÔ‚ğØ¾¯Ä
-				disp_data_reset();				// LED•\¦ÃŞ°ÀØ¾¯Ä
-				clk3_pulse();					// CLK3ÊßÙ½
+			LED.ON_COUNT++;						// ONæ™‚é–“ã‚’åŠ ç®—
+			if(LED.ON_COUNT >= on_count_7seg){	// ONæ™‚é–“ãŒè¨­å®šå€¤ã«é”ã—ãŸã‚‰
+				LED.ON_COUNT = 0;				// ONæ™‚é–“ã‚’ï¾˜ï½¾ï½¯ï¾„
+				disp_data_reset();				// LEDè¡¨ç¤ºï¾ƒï¾ï½°ï¾€ï¾˜ï½¾ï½¯ï¾„
+				clk3_pulse();					// CLK3ï¾Šï¾Ÿï¾™ï½½
 				OUT.LED_STATUS++;
 			}
 			break;
 			
 		// 7SEG1
 		case 1:
-			// ÒÓØ‘€ì‚É7¾¸ŞELED‚ª‚¿‚ç‚Â‚­‚½‚ß•\¦‚ğÁ‚·
+			// ï¾’ï¾“ï¾˜æ“ä½œæ™‚ã«7ï½¾ï½¸ï¾ãƒ»LEDãŒã¡ã‚‰ã¤ããŸã‚è¡¨ç¤ºã‚’æ¶ˆã™
 			if(SEQ.FLAG.BIT.MEMORY_CONTROL == 1)	break;
 		
-			// TLC59210‚ÉÃŞ°À‚ğ¾¯Ä‚µ‚½ŒãATLC59213‚ÉÃŞ°À‚ğ¾¯Ä‚·‚é
-			// uDvuR.O.v1
-			DISP8_OUT = 1;						// CLR‚ğ‰ğœ
+			// TLC59210ã«ï¾ƒï¾ï½°ï¾€ã‚’ï½¾ï½¯ï¾„ã—ãŸå¾Œã€TLC59213ã«ï¾ƒï¾ï½°ï¾€ã‚’ï½¾ï½¯ï¾„ã™ã‚‹
+			// ã€ŒDã€ã€ŒR.O.ã€1
+			DISP8_OUT = 1;						// CLRã‚’è§£é™¤
 			
-			// uDBUS00-07v
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[1]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[6]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG10v
-			disp0_data_set();					// DISP0ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG10ã€
+			disp0_data_set();					// DISP0ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 		
 		// 7SEG2
 		case 3:
-			// uDvuR.O.v2
-			// uDBUS00-07v
+			// ã€ŒDã€ã€ŒR.O.ã€2
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[2]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[7]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG11v
-			disp1_data_set();					// DISP1ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG11ã€
+			disp1_data_set();					// DISP1ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 
 		// 7SEG3
 		case 5:
-			// uDvuR.O.v3
-			// uDBUS00-07v
+			// ã€ŒDã€ã€ŒR.O.ã€3
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[3]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[8]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG12v
-			disp2_data_set();					// DISP2ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG12ã€
+			disp2_data_set();					// DISP2ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 
 		// 7SEG4
 		case 7:
-			// uDvuR.O.v4
-			// uDBUS00-07v
+			// ã€ŒDã€ã€ŒR.O.ã€4
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[4]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[9]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG13v
-			disp3_data_set();					// DISP3ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG13ã€
+			disp3_data_set();					// DISP3ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 
 		// 7SEG5
 		case 9:
-			// uDvuR.O.v5
-			// uDBUS00-07v
+			// ã€ŒDã€ã€ŒR.O.ã€5
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[5]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[10]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG14v
-			disp4_data_set();					// DISP4ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG14ã€
+			disp4_data_set();					// DISP4ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 
 		// 7SEG6
 		case 11:
-			// uSpindle Speedv1uNumber of Flutesv
-			// uDBUS00-07v
+			// ã€ŒSpindle Speedã€1ã€ŒNumber of Flutesã€
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[11]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[14]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG15v
-			disp7_data_set();					// DISP7ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG15ã€
+			disp7_data_set();					// DISP7ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 
 		// 7SEG7
 		case 13:
-			// uSpindle Speedv2E3
-			// uDBUS00-07v
+			// ã€ŒSpindle Speedã€2ãƒ»3
+			// ã€ŒDBUS00-07ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[12]));
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			drv_disp_data_out(drv_seg_change(LED.SEG_BUF[13]));
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG16v
-			disp6_data_set();					// DISP6ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG16ã€
+			disp6_data_set();					// DISP6ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 
-		// Å“_LEREX²11“”LED
+		// ç„¦ç‚¹Lãƒ»Rãƒ»Xè»¸11ç¯LED
 		case 15:
-			// uDBUS00-07v
-			buf = LED.FOCUSING;					// X²11“”LED(‰ºˆÊ8ËŞ¯Ä)
+			// ã€ŒDBUS00-07ã€
+			buf = LED.FOCUSING;					// Xè»¸11ç¯LED(ä¸‹ä½8ï¾‹ï¾ï½¯ï¾„)
 			drv_disp_data_out(buf);
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
-			buf =	(LED.FOCUSING >> 8) & 0x07;	// X²11“”LED(ãˆÊ3ËŞ¯Ä)
-			buf |=	(LED.FOCUS.BIT.R << 4) | (LED.FOCUS.BIT.L << 3);	// Å“_LER
+			// ã€ŒDBUS08-15ã€
+			buf =	(LED.FOCUSING >> 8) & 0x07;	// Xè»¸11ç¯LED(ä¸Šä½3ï¾‹ï¾ï½¯ï¾„)
+			buf |=	(LED.FOCUS.BIT.R << 4) | (LED.FOCUS.BIT.L << 3);	// ç„¦ç‚¹Lãƒ»R
 			drv_disp_data_out(buf);
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG17v
-			disp5_data_set();					// DISP5ÃŞ°À¾¯Ä
-			clk3_pulse();						// CLK3ÊßÙ½
+			// ã€ŒDEG17ã€
+			disp5_data_set();					// DISP5ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk3_pulse();						// CLK3ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 			
-		// ‘S‚Ä‚ÌÃŞ°À‚ğØ¾¯Ä
+		// å…¨ã¦ã®ï¾ƒï¾ï½°ï¾€ã‚’ï¾˜ï½¾ï½¯ï¾„
 		case 16:
-			LED.ON_COUNT++;						// ONŠÔ‚ğ‰ÁZ
-			if(LED.ON_COUNT >= on_count_led){	// ONŠÔ‚ªİ’è’l‚É’B‚µ‚½‚ç
-				LED.ON_COUNT = 0;				// ONŠÔ‚ğØ¾¯Ä
-				disp_data_reset();				// LED•\¦ÃŞ°ÀØ¾¯Ä
-				clk3_pulse();					// CLK3ÊßÙ½
+			LED.ON_COUNT++;						// ONæ™‚é–“ã‚’åŠ ç®—
+			if(LED.ON_COUNT >= on_count_led){	// ONæ™‚é–“ãŒè¨­å®šå€¤ã«é”ã—ãŸã‚‰
+				LED.ON_COUNT = 0;				// ONæ™‚é–“ã‚’ï¾˜ï½¾ï½¯ï¾„
+				disp_data_reset();				// LEDè¡¨ç¤ºï¾ƒï¾ï½°ï¾€ï¾˜ï½¾ï½¯ï¾„
+				clk3_pulse();					// CLK3ï¾Šï¾Ÿï¾™ï½½
 				OUT.LED_STATUS++;
 			}
 			break;
 			
-		// ‘ª’èEİ’èEËß°¸Î°ÙÄŞ
+		// æ¸¬å®šãƒ»è¨­å®šãƒ»ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾
 		case 17:
-			// uDBUS00-07v
-			buf = LED.MSP.WORD;					// MeasureESettingEPeak Hold“_“”İ’è(‰ºˆÊ8ËŞ¯Ä)
+			// ã€ŒDBUS00-07ã€
+			buf = LED.MSP.WORD;					// Measureãƒ»Settingãƒ»Peak Holdç‚¹ç¯è¨­å®š(ä¸‹ä½8ï¾‹ï¾ï½¯ï¾„)
 			drv_disp_data_out(buf);
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
-			buf = (LED.MSP.WORD >> 8);			// MeasureESettingEPeak Hold“_“”İ’è(ãˆÊ1ËŞ¯Ä)
+			// ã€ŒDBUS08-15ã€
+			buf = (LED.MSP.WORD >> 8);			// Measureãƒ»Settingãƒ»Peak Holdç‚¹ç¯è¨­å®š(ä¸Šä½1ï¾‹ï¾ï½¯ï¾„)
 			drv_disp_data_out(buf);
-			clk2_pulse();						// CLK2ÊßÙ½
+			clk2_pulse();						// CLK2ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDEG18v
-			disp0_data_set();					// DISP0ÃŞ°À¾¯Ä
-			clk4_pulse();						// CLK4ÊßÙ½
+			// ã€ŒDEG18ã€
+			disp0_data_set();					// DISP0ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk4_pulse();						// CLK4ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 			
-		// ‘S‚Ä‚ÌÃŞ°À‚ğØ¾¯Ä
+		// å…¨ã¦ã®ï¾ƒï¾ï½°ï¾€ã‚’ï¾˜ï½¾ï½¯ï¾„
 		case 18:
-			LED.ON_COUNT++;						// ONŠÔ‚ğ‰ÁZ
-			if(LED.ON_COUNT >= on_count_led){	// ONŠÔ‚ªİ’è’l‚É’B‚µ‚½‚ç
-				LED.ON_COUNT = 0;				// ONŠÔ‚ğØ¾¯Ä
-				disp_data_reset();				// LED•\¦ÃŞ°ÀØ¾¯Ä
-				clk4_pulse();					// CLK4ÊßÙ½
+			LED.ON_COUNT++;						// ONæ™‚é–“ã‚’åŠ ç®—
+			if(LED.ON_COUNT >= on_count_led){	// ONæ™‚é–“ãŒè¨­å®šå€¤ã«é”ã—ãŸã‚‰
+				LED.ON_COUNT = 0;				// ONæ™‚é–“ã‚’ï¾˜ï½¾ï½¯ï¾„
+				disp_data_reset();				// LEDè¡¨ç¤ºï¾ƒï¾ï½°ï¾€ï¾˜ï½¾ï½¯ï¾„
+				clk4_pulse();					// CLK4ï¾Šï¾Ÿï¾™ï½½
 				//OUT.LED_STATUS = 1;
 				OUT.LED_STATUS++;
 			}
 			break;
 			
 		//
-		// Å“_ZEZ²4“”LED
+		// ç„¦ç‚¹Zãƒ»Zè»¸4ç¯LED
 		case 19:
-			// uDBUS00-07v
-			buf = LED.Z_FOCUSING;				// Z²4“”LED
-			buf |=	LED.FOCUS.BIT.Z << 4;		// Å“_Z
+			// ã€ŒDBUS00-07ã€
+			buf = LED.Z_FOCUSING;				// Zè»¸4ç¯LED
+			buf |=	LED.FOCUS.BIT.Z << 4;		// ç„¦ç‚¹Z
 			drv_disp_data_out(buf);
-			clk1_pulse();						// CLK1ÊßÙ½
+			clk1_pulse();						// CLK1ï¾Šï¾Ÿï¾™ï½½
 			
-			// uDBUS08-15v
+			// ã€ŒDBUS08-15ã€
 			
-			// uDEG16v(CNC)
-			disp1_data_set();					// DISP0ÃŞ°À¾¯Ä
-			clk4_pulse();						// CLK4ÊßÙ½
+			// ã€ŒDEG16ã€(CNC)
+			disp1_data_set();					// DISP0ï¾ƒï¾ï½°ï¾€ï½¾ï½¯ï¾„
+			clk4_pulse();						// CLK4ï¾Šï¾Ÿï¾™ï½½
 			
 			OUT.LED_STATUS++;
 			break;
 			
-		// ‘S‚Ä‚ÌÃŞ°À‚ğØ¾¯Ä
+		// å…¨ã¦ã®ï¾ƒï¾ï½°ï¾€ã‚’ï¾˜ï½¾ï½¯ï¾„
 		case 20:
-			LED.ON_COUNT++;						// ONŠÔ‚ğ‰ÁZ
-			if(LED.ON_COUNT >= on_count_led){	// ONŠÔ‚ªİ’è’l‚É’B‚µ‚½‚ç
-				LED.ON_COUNT = 0;				// ONŠÔ‚ğØ¾¯Ä
-				disp_data_reset();				// LED•\¦ÃŞ°ÀØ¾¯Ä
-				clk4_pulse();					// CLK4ÊßÙ½
+			LED.ON_COUNT++;						// ONæ™‚é–“ã‚’åŠ ç®—
+			if(LED.ON_COUNT >= on_count_led){	// ONæ™‚é–“ãŒè¨­å®šå€¤ã«é”ã—ãŸã‚‰
+				LED.ON_COUNT = 0;				// ONæ™‚é–“ã‚’ï¾˜ï½¾ï½¯ï¾„
+				disp_data_reset();				// LEDè¡¨ç¤ºï¾ƒï¾ï½°ï¾€ï¾˜ï½¾ï½¯ï¾„
+				clk4_pulse();					// CLK4ï¾Šï¾Ÿï¾™ï½½
 				OUT.LED_STATUS = 1;
 			}
 			break;
@@ -993,12 +993,12 @@ void led_output(void)
 	}
 }
 //************************************************************/
-//				•\¦ÃŞ°Ào—ÍŠÖ”
+//				è¡¨ç¤ºï¾ƒï¾ï½°ï¾€å‡ºåŠ›é–¢æ•°
 //************************************************************/
 void drv_disp_data_out(_UBYTE w_data)
 {
 	/*
-	// 7¾¸ŞELEDo—Í
+	// 7ï½¾ï½¸ï¾ãƒ»LEDå‡ºåŠ›
 	DISP0_OUT = w_data & 0x01;
 	DISP1_OUT = (w_data >> 1) & 0x01;
 	DISP2_OUT = (w_data >> 2) & 0x01;
@@ -1010,13 +1010,13 @@ void drv_disp_data_out(_UBYTE w_data)
 	*/
 	PORT7.DR.BYTE = w_data;
 	
-	//#define DISP0_OUT			PORT7.DR.BIT.B0			// DISP0o—Í
+	//#define DISP0_OUT			PORT7.DR.BIT.B0			// DISP0å‡ºåŠ›
 }
 
 //************************************************************/
-//				¾¸ŞÒİÄÃŞ°À•ÏŠ·ŠÖ”
+//				ï½¾ï½¸ï¾ï¾’ï¾ï¾„ï¾ƒï¾ï½°ï¾€å¤‰æ›é–¢æ•°
 //************************************************************/
-//ASCÃŞ°À‚ğ¾¸ŞÒİÄÃŞ°À‚É•ÏŠ·‚·‚é
+//ASCï¾ƒï¾ï½°ï¾€ã‚’ï½¾ï½¸ï¾ï¾’ï¾ï¾„ï¾ƒï¾ï½°ï¾€ã«å¤‰æ›ã™ã‚‹
 _UBYTE drv_seg_change(_UBYTE seg)
 {
 	_UBYTE ret;
@@ -1042,7 +1042,7 @@ _UBYTE drv_seg_change(_UBYTE seg)
 		
 		case 'r':		ret	= OUT_SEG_r;	break;
 		
-		// ¬”“_•t‚«
+		// å°æ•°ç‚¹ä»˜ã
 		case 0xB0:		ret	= OUT_SEG_0_DOT;	break;	// 0.
 		case 0xB1:		ret	= OUT_SEG_1_DOT;	break;	// 1.
 		case 0xB2:		ret	= OUT_SEG_2_DOT;	break;	// 2.

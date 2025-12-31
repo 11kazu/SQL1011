@@ -1,29 +1,29 @@
-/******************************************************************************
+ï»¿/******************************************************************************
 * File Name	: user.h
 ******************************************************************************/
 
 /****************************/
-/*		ƒOƒ[ƒoƒ‹•Ï”’è‹`	*/
+/*		ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°å®šç¾©	*/
 /****************************/
 
-/*	Ò²İ¼°¹İ½§Œä—p\‘¢‘Ì	*/
+/*	ï¾’ï½²ï¾ï½¼ï½°ï½¹ï¾ï½½åˆ¶å¾¡ç”¨æ§‹é€ ä½“	*/
 struct {
 		union{
 			unsigned short	WORD;
 			struct{
 				unsigned short				:4;
-				unsigned short	TP_SHOT		:1;			// À¯ÁÊßÈÙŠÖ”Ì×¸Ş
-				unsigned short	F_SHOT		:1;			// FPGAŠÖ”Ì×¸Ş
-				unsigned short	R_SHOT		:1;			// ROMŠÖ”ˆ—
-				unsigned short	I_SHOT		:1;			// “ü—ÍŠÖ”Ì×¸Ş
-				unsigned short	A_SHOT		:1;			// ±ÅÛ¸Ş“ü—ÍŠÖ”Ì×¸Ş
-				unsigned short	O_SHOT		:1;			// o—ÍŠÖ”Ì×¸Ş
-				unsigned short	T_SHOT		:1;			// À²Ï°ŠÖ”Ì×¸Ş
-				unsigned short	M25_SHOT	:1;			// M25ŠÖ”Ì×¸Ş
-				unsigned short	HDI_SHOT	:1;			// HDIŠÖ”Ì×¸Ş
-				unsigned short	DEB_SHOT	:1;			// ÃŞÊŞ¯¸Şo—ÍŠÖ”Ì×¸Ş
-				unsigned short	SEC_SHOT	:1;			// 1sÌ×¸Ş
-				unsigned short	MSEC_SHOT	:1;			// 1msÌ×¸Ş
+				unsigned short	TP_SHOT		:1;			// ï¾€ï½¯ï¾ï¾Šï¾Ÿï¾ˆï¾™é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	F_SHOT		:1;			// FPGAé–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	R_SHOT		:1;			// ROMé–¢æ•°å‡¦ç†
+				unsigned short	I_SHOT		:1;			// å…¥åŠ›é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	A_SHOT		:1;			// ï½±ï¾…ï¾›ï½¸ï¾å…¥åŠ›é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	O_SHOT		:1;			// å‡ºåŠ›é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	T_SHOT		:1;			// ï¾€ï½²ï¾ï½°é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	M25_SHOT	:1;			// M25é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	HDI_SHOT	:1;			// HDIé–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	DEB_SHOT	:1;			// ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾å‡ºåŠ›é–¢æ•°ï¾Œï¾—ï½¸ï¾
+				unsigned short	SEC_SHOT	:1;			// 1sï¾Œï¾—ï½¸ï¾
+				unsigned short	MSEC_SHOT	:1;			// 1msï¾Œï¾—ï½¸ï¾
 				}	BIT;
 			}	FLAG1;
 
@@ -31,61 +31,61 @@ struct {
 			unsigned short	WORD;
 			struct{
 				unsigned short   					:1;
-				unsigned short   CHANGE_MODE		:1;			// Œv‘ªÓ°ÄŞØ‚è‘Ö‚¦Ì×¸Ş
-				unsigned short   POWER				:1;			// “dŒ¹		0:OFF	1:ON
-				unsigned short   MEASUREMENT		:1;			// Œv‘ª		0:STOP	1:START
+				unsigned short   CHANGE_MODE		:1;			// è¨ˆæ¸¬ï¾“ï½°ï¾„ï¾åˆ‡ã‚Šæ›¿ãˆï¾Œï¾—ï½¸ï¾
+				unsigned short   POWER				:1;			// é›»æº		0:OFF	1:ON
+				unsigned short   MEASUREMENT		:1;			// è¨ˆæ¸¬		0:STOP	1:START
 				unsigned short   ECO				:1;			// ECO		0:OFF	1:ON
-				unsigned short   POWER_ON			:1;			// “dŒ¹ONÌ×¸Ş
-				unsigned short   POWER_OFF			:1;			// “dŒ¹OFFÌ×¸Ş
-				unsigned short   MEMORY_CONTROL		:1;			// ÒÓØ§ŒäÌ×¸Ş
-				unsigned short   BUFFER_RESET		:1;			// ÊŞ¯Ì§Ø¾¯ÄÌ×¸Ş
-				unsigned short   AFTER_STOPPING		:1;			// Œv‘ª’â~Œã1»²¸Ùæ“¾Ì×¸Ş
-				unsigned short   SWING_OUTPUT		:1;			// U‚êo—ÍÌ×¸Ş
-				unsigned short   BUFFER_TRANSFER	:1;			// ÊŞ¯Ì§“]‘—Ì×¸Ş
-				unsigned short   PORTABLE			:1;			// Îß°ÀÌŞÙ‘€ìÌ×¸Ş
-				unsigned short   PARAM_INITIAL		:1;			// Êß×Ò°À‰Šú‰»Ì×¸Ş
-				unsigned short   CNC_INITIAL		:1;			// CNC“dŒ¹‹N“®‰Šú‰»Ì×¸Ş
+				unsigned short   POWER_ON			:1;			// é›»æºONï¾Œï¾—ï½¸ï¾
+				unsigned short   POWER_OFF			:1;			// é›»æºOFFï¾Œï¾—ï½¸ï¾
+				unsigned short   MEMORY_CONTROL		:1;			// ï¾’ï¾“ï¾˜åˆ¶å¾¡ï¾Œï¾—ï½¸ï¾
+				unsigned short   BUFFER_RESET		:1;			// ï¾Šï¾ï½¯ï¾Œï½§ï¾˜ï½¾ï½¯ï¾„ï¾Œï¾—ï½¸ï¾
+				unsigned short   AFTER_STOPPING		:1;			// è¨ˆæ¸¬åœæ­¢å¾Œ1ï½»ï½²ï½¸ï¾™å–å¾—ï¾Œï¾—ï½¸ï¾
+				unsigned short   SWING_OUTPUT		:1;			// æŒ¯ã‚Œå‡ºåŠ›ï¾Œï¾—ï½¸ï¾
+				unsigned short   BUFFER_TRANSFER	:1;			// ï¾Šï¾ï½¯ï¾Œï½§è»¢é€ï¾Œï¾—ï½¸ï¾
+				unsigned short   PORTABLE			:1;			// ï¾ï¾Ÿï½°ï¾€ï¾Œï¾ï¾™æ“ä½œï¾Œï¾—ï½¸ï¾
+				unsigned short   PARAM_INITIAL		:1;			// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€åˆæœŸåŒ–ï¾Œï¾—ï½¸ï¾
+				unsigned short   CNC_INITIAL		:1;			// CNCé›»æºèµ·å‹•æ™‚åˆæœŸåŒ–ï¾Œï¾—ï½¸ï¾
 				
-				unsigned short   GROWTH_OUTPUT		:1;			//L‚ÑŒ‹‰Êo—ÍÌ×¸Ş
+				unsigned short   GROWTH_OUTPUT		:1;			//ä¼¸ã³çµæœå‡ºåŠ›ï¾Œï¾—ï½¸ï¾
 				}	BIT;
 			}	FLAG;
 			
 		union{
 			unsigned short	WORD;
 			struct{
-				unsigned short	DIMMER					:1;			// ÃŞ¨Ï°
-				unsigned short	BLACK_WHITE_COMPLETE	:1;			// BLACKÁª¯¸EWHITEÁª¯¸Š®—¹Ì×¸Ş
-				unsigned short	MEMORY_RESET			:1;			// ‹L‰¯Ø¾¯ÄÌ×¸Ş
-				unsigned short	OK						:1;			// OKÌ×¸Ş
-				unsigned short	AUTO_RIGHT				:1;			// ©“®”»•Ê(‰E)Ì×¸Ş
-				unsigned short	AUTO_LEFT				:1;			// ©“®”»•Ê(¶)Ì×¸Ş
-				unsigned short	AUTO_BOTH				:1;			// ©“®”»•Ê(—¼’[)Ì×¸Ş
-				unsigned short	AUTO_UNDETECTED			:1;			// ©“®”»•Ê(–¢ŒŸo)Ì×¸Ş
-				unsigned short	AUTO_MODE				:3;			// ©“®”»•ÊÓ°ÄŞ	0:‚È‚µ	1:H‹ïŒa(d…4)	2:H‹ïŒa(d„4 ¶‘¤)	3:H‹ïŒa(d„4 ‰E‘¤)
-				unsigned short	EDGE_LEFT_NG			:1;			// ´¯¼Ş ¶NGÌ×¸Ş
-				unsigned short	EDGE_RIGHT_NG			:1;			// ´¯¼Ş ‰ENGÌ×¸Ş
-				unsigned short	FOCUS_LEFT_NG			:1;			// Å“_ ¶NGÌ×¸Ş
-				unsigned short	FOCUS_RIGHT_NG			:1;			// Å“_ ‰ENGÌ×¸Ş
-				unsigned short	PROFILE_AUTO			:1;			// ÌßÛÌ§²Ù©“®”»•ÊÏÌ×¸Ş
+				unsigned short	DIMMER					:1;			// ï¾ƒï¾ï½¨ï¾ï½°
+				unsigned short	BLACK_WHITE_COMPLETE	:1;			// BLACKï¾ï½ªï½¯ï½¸ãƒ»WHITEï¾ï½ªï½¯ï½¸å®Œäº†ï¾Œï¾—ï½¸ï¾
+				unsigned short	MEMORY_RESET			:1;			// è¨˜æ†¶ï¾˜ï½¾ï½¯ï¾„ï¾Œï¾—ï½¸ï¾
+				unsigned short	OK						:1;			// OKï¾Œï¾—ï½¸ï¾
+				unsigned short	AUTO_RIGHT				:1;			// è‡ªå‹•åˆ¤åˆ¥(å³)ï¾Œï¾—ï½¸ï¾
+				unsigned short	AUTO_LEFT				:1;			// è‡ªå‹•åˆ¤åˆ¥(å·¦)ï¾Œï¾—ï½¸ï¾
+				unsigned short	AUTO_BOTH				:1;			// è‡ªå‹•åˆ¤åˆ¥(ä¸¡ç«¯)ï¾Œï¾—ï½¸ï¾
+				unsigned short	AUTO_UNDETECTED			:1;			// è‡ªå‹•åˆ¤åˆ¥(æœªæ¤œå‡º)ï¾Œï¾—ï½¸ï¾
+				unsigned short	AUTO_MODE				:3;			// è‡ªå‹•åˆ¤åˆ¥ï¾“ï½°ï¾„ï¾	0:ãªã—	1:å·¥å…·å¾„(dâ‰¦4)	2:å·¥å…·å¾„(dï¼4 å·¦å´)	3:å·¥å…·å¾„(dï¼4 å³å´)
+				unsigned short	EDGE_LEFT_NG			:1;			// ï½´ï½¯ï½¼ï¾ å·¦NGï¾Œï¾—ï½¸ï¾
+				unsigned short	EDGE_RIGHT_NG			:1;			// ï½´ï½¯ï½¼ï¾ å³NGï¾Œï¾—ï½¸ï¾
+				unsigned short	FOCUS_LEFT_NG			:1;			// ç„¦ç‚¹ å·¦NGï¾Œï¾—ï½¸ï¾
+				unsigned short	FOCUS_RIGHT_NG			:1;			// ç„¦ç‚¹ å³NGï¾Œï¾—ï½¸ï¾
+				unsigned short	PROFILE_AUTO			:1;			// ï¾Œï¾Ÿï¾›ï¾Œï½§ï½²ï¾™è‡ªå‹•åˆ¤åˆ¥æ¸ˆï¾Œï¾—ï½¸ï¾
 				}	BIT;
 			}	FLAG2;
 			
 		union{
 			unsigned short	WORD;
 			struct{
-				unsigned short	PARA_READ				:2;			// Êß×Ò°À“Ç‚İo‚µÌ×¸Ş
-				unsigned short	PARA_WRITE				:2;			// Êß×Ò°À‘‚«‚İÌ×¸Ş
-				unsigned short	BOOT_LED				:1;			// BOOTLED“_–ÅÌ×¸Ş
-				unsigned short	BLINK_LED				:1;			// LED“_–ÅÌ×¸Ş
-				unsigned short	AUTO_ERROR				:1;			// ©“®´×°Ì×¸Ş
-				unsigned short	TUNING_ERROR			:1;			// Á­°Æİ¸Ş´×°
-				unsigned short	EDGE_L_ERROR			:1;			// ´¯¼ŞL´×°Ì×¸Ş
-				unsigned short	EDGE_R_ERROR			:1;			// ´¯¼ŞR´×°Ì×¸Ş
-				unsigned short	SWING_RISE				:2;			// U‚êã¸Ì×¸Ş
-				unsigned short	SWING_RESET				:1;			// U‚ê¶³İÄØ¾¯ÄÌ×¸Ş
-				unsigned short	HDI_OUTPUT				:1;			// HDIo—ÍÌ×¸Ş
-				unsigned short	PEAKHOLD_ENABLE			:1;			// Ëß°¸Î°ÙÄŞ—LŒøÌ×¸Ş
-				unsigned short	PEAKHOLD_RESET			:1;			// Ëß°¸Î°ÙÄŞØ¾¯ÄÌ×¸Ş
+				unsigned short	PARA_READ				:2;			// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€èª­ã¿å‡ºã—ï¾Œï¾—ï½¸ï¾
+				unsigned short	PARA_WRITE				:2;			// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€æ›¸ãè¾¼ã¿ï¾Œï¾—ï½¸ï¾
+				unsigned short	BOOT_LED				:1;			// BOOTLEDç‚¹æ»…ï¾Œï¾—ï½¸ï¾
+				unsigned short	BLINK_LED				:1;			// LEDç‚¹æ»…ï¾Œï¾—ï½¸ï¾
+				unsigned short	AUTO_ERROR				:1;			// è‡ªå‹•ï½´ï¾—ï½°ï¾Œï¾—ï½¸ï¾
+				unsigned short	TUNING_ERROR			:1;			// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾ï½´ï¾—ï½°
+				unsigned short	EDGE_L_ERROR			:1;			// ï½´ï½¯ï½¼ï¾Lï½´ï¾—ï½°ï¾Œï¾—ï½¸ï¾
+				unsigned short	EDGE_R_ERROR			:1;			// ï½´ï½¯ï½¼ï¾Rï½´ï¾—ï½°ï¾Œï¾—ï½¸ï¾
+				unsigned short	SWING_RISE				:2;			// æŒ¯ã‚Œä¸Šæ˜‡ï¾Œï¾—ï½¸ï¾
+				unsigned short	SWING_RESET				:1;			// æŒ¯ã‚Œï½¶ï½³ï¾ï¾„ï¾˜ï½¾ï½¯ï¾„ï¾Œï¾—ï½¸ï¾
+				unsigned short	HDI_OUTPUT				:1;			// HDIå‡ºåŠ›ï¾Œï¾—ï½¸ï¾
+				unsigned short	PEAKHOLD_ENABLE			:1;			// ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾æœ‰åŠ¹ï¾Œï¾—ï½¸ï¾
+				unsigned short	PEAKHOLD_RESET			:1;			// ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾ï¾˜ï½¾ï½¯ï¾„ï¾Œï¾—ï½¸ï¾
 				}	BIT;
 			}	FLAG3;
 			
@@ -94,18 +94,18 @@ struct {
 			struct{
 // chg 2016.01.21 K.Uemura start	G12102
 				unsigned short							:6;
-				unsigned short	OKCOUNT_FLAG			:1;			// OK¶³İÄÌ×¸Ş(Œ‹‰Ê’B¬)
+				unsigned short	OKCOUNT_FLAG			:1;			// OKï½¶ï½³ï¾ï¾„ï¾Œï¾—ï½¸ï¾(çµæœé”æˆ)
 //				unsigned short							:7;
 // chg 2016.01.21 K.Uemura end
-				unsigned short	EDGE_L					:1;			// ´¯¼ŞLÌ×¸Ş(Œ»Œ‹‰Ê)
-				unsigned short	EDGE_R					:1;			// ´¯¼ŞRÌ×¸Ş(Œ»Œ‹‰Ê)
-				unsigned short	EDGE_LR					:1;			// ´¯¼ŞLRÌ×¸Ş(Œ»Œ‹‰Ê)
-				unsigned short	EDGE_L_POLLING			:1;			// ´¯¼ŞLÌ×¸Ş(Îß°Øİ¸ŞŠÔ)
-				unsigned short	EDGE_R_POLLING			:1;			// ´¯¼ŞRÌ×¸Ş(Îß°Øİ¸ŞŠÔ)
-				unsigned short	EDGE_LR_POLLING			:1;			// ´¯¼ŞLRÌ×¸Ş(Îß°Øİ¸ŞŠÔ)
-				unsigned short	EDGE_L_SCAN				:1;			// ´¯¼ŞLÌ×¸Ş(Œv‘ªŠJn`)
-				unsigned short	EDGE_R_SCAN				:1;			// ´¯¼ŞRÌ×¸Ş(Œv‘ªŠJn`)
-				unsigned short	EDGE_LR_SCAN			:1;			// ´¯¼ŞLRÌ×¸Ş(Œv‘ªŠJn`)
+				unsigned short	EDGE_L					:1;			// ï½´ï½¯ï½¼ï¾Lï¾Œï¾—ï½¸ï¾(ç¾çµæœ)
+				unsigned short	EDGE_R					:1;			// ï½´ï½¯ï½¼ï¾Rï¾Œï¾—ï½¸ï¾(ç¾çµæœ)
+				unsigned short	EDGE_LR					:1;			// ï½´ï½¯ï½¼ï¾LRï¾Œï¾—ï½¸ï¾(ç¾çµæœ)
+				unsigned short	EDGE_L_POLLING			:1;			// ï½´ï½¯ï½¼ï¾Lï¾Œï¾—ï½¸ï¾(ï¾ï¾Ÿï½°ï¾˜ï¾ï½¸ï¾é–“)
+				unsigned short	EDGE_R_POLLING			:1;			// ï½´ï½¯ï½¼ï¾Rï¾Œï¾—ï½¸ï¾(ï¾ï¾Ÿï½°ï¾˜ï¾ï½¸ï¾é–“)
+				unsigned short	EDGE_LR_POLLING			:1;			// ï½´ï½¯ï½¼ï¾LRï¾Œï¾—ï½¸ï¾(ï¾ï¾Ÿï½°ï¾˜ï¾ï½¸ï¾é–“)
+				unsigned short	EDGE_L_SCAN				:1;			// ï½´ï½¯ï½¼ï¾Lï¾Œï¾—ï½¸ï¾(è¨ˆæ¸¬é–‹å§‹ï½)
+				unsigned short	EDGE_R_SCAN				:1;			// ï½´ï½¯ï½¼ï¾Rï¾Œï¾—ï½¸ï¾(è¨ˆæ¸¬é–‹å§‹ï½)
+				unsigned short	EDGE_LR_SCAN			:1;			// ï½´ï½¯ï½¼ï¾LRï¾Œï¾—ï½¸ï¾(è¨ˆæ¸¬é–‹å§‹ï½)
 				}	BIT;
 			}	FLAG4;
 			
@@ -115,21 +115,21 @@ struct {
 // chg 2015.05.13 K.Uemura start	
 				unsigned short							:3;
 // add 2015.12.22 K.Uemura start	FB2201
-				unsigned short	MOVE_COVER				:1;			// ƒJƒo[ˆÚ“®’†
+				unsigned short	MOVE_COVER				:1;			// ã‚«ãƒãƒ¼ç§»å‹•ä¸­
 // add 2015.12.22 K.Uemura end
-				unsigned short	DISP_SOFTVERSION		:1;			// ƒ\ƒtƒgƒo[ƒWƒ‡ƒ“
+				unsigned short	DISP_SOFTVERSION		:1;			// ã‚½ãƒ•ãƒˆãƒãƒ¼ã‚¸ãƒ§ãƒ³
 //				unsigned short							:6;
 // chg 2015.05.13 K.Uemura end
-				unsigned short	BOOTUP_PROCESS			:1;			// ‹N“®ƒvƒƒZƒX(‹N“®ˆ—‚ªŠ®—¹‚·‚é‚Æ1)
+				unsigned short	BOOTUP_PROCESS			:1;			// èµ·å‹•ãƒ—ãƒ­ã‚»ã‚¹(èµ·å‹•å‡¦ç†ãŒå®Œäº†ã™ã‚‹ã¨1)
 // add 2015.11.04 K.Uemura start	
-				unsigned short	INITIALIZE_FLAG			:1;			// ‹N“®ƒvƒƒZƒX(‰Šú‰»ˆ—‚ªŠ®—¹‚·‚é‚Æ1)
+				unsigned short	INITIALIZE_FLAG			:1;			// èµ·å‹•ãƒ—ãƒ­ã‚»ã‚¹(åˆæœŸåŒ–å‡¦ç†ãŒå®Œäº†ã™ã‚‹ã¨1)
 // add 2015.11.04 K.Uemura end
-				unsigned short	LOW_BATTERY				:1;			// ÊŞ¯ÃØ°c—Ê
+				unsigned short	LOW_BATTERY				:1;			// ï¾Šï¾ï½¯ï¾ƒï¾˜ï½°æ®‹é‡
 				unsigned short	LOW_BATTERY_FLAG		:1;
-				unsigned short	VOLTAGE_ERROR			:1;			// “dˆ³•s‘«
-				unsigned short	DEB_SIOOUT_FLAG			:1;			// 232co—Íƒtƒ‰ƒO
-				unsigned short	DEB_SIOOUT_TIME			:4;			// 232co—ÍƒJƒEƒ“ƒg”
-				unsigned short	DEB_RESET_FLAG			:1;			// Ä‹N“®ƒtƒ‰ƒO
+				unsigned short	VOLTAGE_ERROR			:1;			// é›»åœ§ä¸è¶³
+				unsigned short	DEB_SIOOUT_FLAG			:1;			// 232cå‡ºåŠ›ãƒ•ãƒ©ã‚°
+				unsigned short	DEB_SIOOUT_TIME			:4;			// 232cå‡ºåŠ›ã‚«ã‚¦ãƒ³ãƒˆæ•°
+				unsigned short	DEB_RESET_FLAG			:1;			// å†èµ·å‹•ãƒ•ãƒ©ã‚°
 				}	BIT;
 			}	FLAG5;
 			
@@ -137,43 +137,43 @@ struct {
 			unsigned short	WORD;
 			struct{
 				unsigned short							:4;
-				unsigned short	START_DELAY_TIME		:1;			// Œv‘ªŠJn’x‰„ŠÔÌ×¸Ş
-				unsigned short	VERIFY_ERROR			:1;			// Êß×Ò°ÀŠm”F´×°Ì×¸Ş
-				unsigned short	PIXEL_END				:1;			// “Á’è‰æ‘fI—¹Ì×¸Ş
-				unsigned short	HDI_CHECK_OK			:1;			// HDIÁª¯¸OKÌ×¸Ş
-				unsigned short	HDI_CHECK_COMPLETION	:1;			// HDIÁª¯¸Š®—¹Ì×¸Ş
-				unsigned short	DATA_TRANSMISSION		:1;			// ÃŞ°À‘—MÌ×¸Ş
-				unsigned short	PROFILE_PROCESSING		:1;			// ÌßÛÌ§²Ùˆ—Ì×¸Ş
-				unsigned short	ROUGH_SCAN				:1;			// ‘e‘ª’èˆ—Ì×¸Ş
+				unsigned short	START_DELAY_TIME		:1;			// è¨ˆæ¸¬é–‹å§‹é…å»¶æ™‚é–“ï¾Œï¾—ï½¸ï¾
+				unsigned short	VERIFY_ERROR			:1;			// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€ç¢ºèªï½´ï¾—ï½°ï¾Œï¾—ï½¸ï¾
+				unsigned short	PIXEL_END				:1;			// ç‰¹å®šç”»ç´ çµ‚äº†ï¾Œï¾—ï½¸ï¾
+				unsigned short	HDI_CHECK_OK			:1;			// HDIï¾ï½ªï½¯ï½¸OKï¾Œï¾—ï½¸ï¾
+				unsigned short	HDI_CHECK_COMPLETION	:1;			// HDIï¾ï½ªï½¯ï½¸å®Œäº†ï¾Œï¾—ï½¸ï¾
+				unsigned short	DATA_TRANSMISSION		:1;			// ï¾ƒï¾ï½°ï¾€é€ä¿¡ï¾Œï¾—ï½¸ï¾
+				unsigned short	PROFILE_PROCESSING		:1;			// ï¾Œï¾Ÿï¾›ï¾Œï½§ï½²ï¾™å‡¦ç†ï¾Œï¾—ï½¸ï¾
+				unsigned short	ROUGH_SCAN				:1;			// ç²—æ¸¬å®šå‡¦ç†ï¾Œï¾—ï½¸ï¾
 				
-				unsigned short	CLEANING				:1;			// ´‘|ÀsÌ×¸Ş
-				unsigned short	ADD_DATA				:1;			// ’Ç‰ÁÃŞ°ÀÌ×¸Ş(•½‹ÏEÅ¬EÅ‘å) ADD 160226
+				unsigned short	CLEANING				:1;			// æ¸…æƒå®Ÿè¡Œï¾Œï¾—ï½¸ï¾
+				unsigned short	ADD_DATA				:1;			// è¿½åŠ ï¾ƒï¾ï½°ï¾€ï¾Œï¾—ï½¸ï¾(å¹³å‡ãƒ»æœ€å°ãƒ»æœ€å¤§) ADD 160226
 				
-				unsigned short	DEBUG_LEVEL				:1;			// ¾İ»ÚÍŞÙÌ×¸Ş	ADD 161025
-				unsigned short	HDI_UPDATE				:1;			// HDIXVÌ×¸Ş	ADD 170204
+				unsigned short	DEBUG_LEVEL				:1;			// ï½¾ï¾ï½»ï¾šï¾ï¾ï¾™ï¾Œï¾—ï½¸ï¾	ADD 161025
+				unsigned short	HDI_UPDATE				:1;			// HDIæ›´æ–°ï¾Œï¾—ï½¸ï¾	ADD 170204
 				}	BIT;
 			}	FLAG6;
 			
-		unsigned long	DEB_RESET_TIME;					// Ä‹N“®ƒtƒ‰ƒO¦•b‚Åw’è‚·‚é‚±‚Æ(15[min]à54,000[sec])
+		unsigned long	DEB_RESET_TIME;					// å†èµ·å‹•ãƒ•ãƒ©ã‚°â€»ç§’ã§æŒ‡å®šã™ã‚‹ã“ã¨(15[min]â‰’54,000[sec])
 
 		union{
 			unsigned short	WORD;
 			struct{
 				unsigned short					:2;
 				unsigned short	MEASURE_BEFORE	:6;
-				unsigned short	MEASURE			:6;			// 0:H‹ïŒa(d…4)	1:H‹ïŒa(d„4 ¶‘¤)	2:U‚ê	3:Å“_	4:’†SˆÊ’uİ’è	5:ÌßÛÌ§²Ù	6:Œõ²’²®	7:ORIGIN	8:ORIGIN(´¯¼Şl—¶)	10:H‹ïŒa(©“®)	11:H‹ïŒa(d„4 ‰E‘¤)
+				unsigned short	MEASURE			:6;			// 0:å·¥å…·å¾„(dâ‰¦4)	1:å·¥å…·å¾„(dï¼4 å·¦å´)	2:æŒ¯ã‚Œ	3:ç„¦ç‚¹	4:ä¸­å¿ƒä½ç½®è¨­å®š	5:ï¾Œï¾Ÿï¾›ï¾Œï½§ï½²ï¾™	6:å…‰è»¸èª¿æ•´	7:ORIGIN	8:ORIGIN(ï½´ï½¯ï½¼ï¾è€ƒæ…®)	10:å·¥å…·å¾„(è‡ªå‹•)	11:å·¥å…·å¾„(dï¼4 å³å´)
 				unsigned short	PEAKHOLD		:2;			// 0:Off	1:On	2:5s	3:10s
 				}	BIT;
 			}	SELECT;
 			
-		unsigned short	AUTO_RIGHT_COUNT;				// ©“®”»•Ê(‰E)¶³İÀ
-		unsigned short	AUTO_LEFT_COUNT;				// ©“®”»•Ê(¶)¶³İÀ
-		unsigned short	AUTO_BOTH_COUNT;				// ©“®”»•Ê(—¼’[)¶³İÀ
-		unsigned short	AUTO_UNDETECTED_COUNT;			// ©“®”»•Ê(–¢ŒŸo)¶³İÀ
+		unsigned short	AUTO_RIGHT_COUNT;				// è‡ªå‹•åˆ¤åˆ¥(å³)ï½¶ï½³ï¾ï¾€
+		unsigned short	AUTO_LEFT_COUNT;				// è‡ªå‹•åˆ¤åˆ¥(å·¦)ï½¶ï½³ï¾ï¾€
+		unsigned short	AUTO_BOTH_COUNT;				// è‡ªå‹•åˆ¤åˆ¥(ä¸¡ç«¯)ï½¶ï½³ï¾ï¾€
+		unsigned short	AUTO_UNDETECTED_COUNT;			// è‡ªå‹•åˆ¤åˆ¥(æœªæ¤œå‡º)ï½¶ï½³ï¾ï¾€
 		
-		unsigned short	FIN_COUNT;						// Š®—¹‘Ò‹@¶³İÀ
+		unsigned short	FIN_COUNT;						// å®Œäº†å¾…æ©Ÿï½¶ï½³ï¾ï¾€
 		
-		unsigned short	PEAKHOLD_COUNT;					// Ëß°¸Î°ÙÄŞ¶³İÀ
+		unsigned short	PEAKHOLD_COUNT;					// ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾ï½¶ï½³ï¾ï¾€
 		
 		union{
 			unsigned char	BYTE;
@@ -188,337 +188,337 @@ struct {
 				}	BIT;
 			}	HDI;
 		
-		unsigned char	AUTO_COUNT;						// •ûŒü”»•Ê¶³İÄ
-		unsigned char	TUNING_COUNT;					// Á­°Æİ¸Ş¶³İÄ
+		unsigned char	AUTO_COUNT;						// æ–¹å‘åˆ¤åˆ¥ï½¶ï½³ï¾ï¾„
+		unsigned char	TUNING_COUNT;					// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾ï½¶ï½³ï¾ï¾„
 		
-		unsigned char	BUFFER_OUTPUT;					// ÊŞ¯Ì§o—Íó‘Ô
+		unsigned char	BUFFER_OUTPUT;					// ï¾Šï¾ï½¯ï¾Œï½§å‡ºåŠ›çŠ¶æ…‹
 		
-		unsigned char	BATTERY_POWER;					// “d’rc—Ê(%)
+		unsigned char	BATTERY_POWER;					// é›»æ± æ®‹é‡(%)
 		
-		unsigned short	MASTER_STATUS;					// Ò²İ¼°¹İ½—p½Ã°À½•Ï”
-		unsigned char	MASTER_COUNT;					// Ï½À°¼°¹İ½½Ú¯ÄŞ¶³İÀ
+		unsigned short	MASTER_STATUS;					// ï¾’ï½²ï¾ï½¼ï½°ï½¹ï¾ï½½ç”¨ï½½ï¾ƒï½°ï¾€ï½½å¤‰æ•°
+		unsigned char	MASTER_COUNT;					// ï¾ï½½ï¾€ï½°ï½¼ï½°ï½¹ï¾ï½½ï½½ï¾šï½¯ï¾„ï¾ï½¶ï½³ï¾ï¾€
 		
-		unsigned short	TIM_COUNT;						// 1msÀ²Ï¶³İÀ
+		unsigned short	TIM_COUNT;						// 1msï¾€ï½²ï¾ï½¶ï½³ï¾ï¾€
 		
-		unsigned long	COMPARE_DBUS_LONG[4];			// DBUS‚Ì’l”äŠr—pÃŞ°À
+		unsigned long	COMPARE_DBUS_LONG[4];			// DBUSã®å€¤æ¯”è¼ƒç”¨ï¾ƒï¾ï½°ï¾€
 		
-		unsigned long	BLACK_WHITE_CHECK[4];			// BLACKÁª¯¸EWHITEÁª¯¸‚ÌÃŞ°À
-		unsigned char	WHITE_CHECK_COUNT;				// WHITEÁª¯¸¶³İÀ
+		unsigned long	BLACK_WHITE_CHECK[4];			// BLACKï¾ï½ªï½¯ï½¸ãƒ»WHITEï¾ï½ªï½¯ï½¸ã®ï¾ƒï¾ï½°ï¾€
+		unsigned char	WHITE_CHECK_COUNT;				// WHITEï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾€
 		
-		unsigned char	CHECK_RETRY_COUNT;				// BLACKÁª¯¸EWHITEÁª¯¸Ä‘—¶³İÀ
+		unsigned char	CHECK_RETRY_COUNT;				// BLACKï¾ï½ªï½¯ï½¸ãƒ»WHITEï¾ï½ªï½¯ï½¸å†é€ï½¶ï½³ï¾ï¾€
 		
-		unsigned char	DIM_RETRY_COUNT;				// ’²ŒõØÄ×²¶³İÄ
-		unsigned short	DIM_LEVEL;						// ’²ŒõÚÍŞÙ
+		unsigned char	DIM_RETRY_COUNT;				// èª¿å…‰ï¾˜ï¾„ï¾—ï½²ï½¶ï½³ï¾ï¾„
+		unsigned short	DIM_LEVEL;						// èª¿å…‰ï¾šï¾ï¾ï¾™
 		
-		long			INPUT_DBUS_LONG;				// DBUS‚Ì“ü—ÍÃŞ°À
+		long			INPUT_DBUS_LONG;				// DBUSã®å…¥åŠ›ï¾ƒï¾ï½°ï¾€
 			
-		float			INPUT_DBUS;						// DBUS‚Ì“ü—ÍÃŞ°À
-		float			INPUT_DBUS_BEFORE[3];			// DBUS‚Ì“ü—ÍÃŞ°À(1‚Â‘O‚ÌÃŞ°À)
+		float			INPUT_DBUS;						// DBUSã®å…¥åŠ›ï¾ƒï¾ï½°ï¾€
+		float			INPUT_DBUS_BEFORE[3];			// DBUSã®å…¥åŠ›ï¾ƒï¾ï½°ï¾€(1ã¤å‰ã®ï¾ƒï¾ï½°ï¾€)
 		
-		float			INPUT_CBUS;						// CBUS‚Ì“ü—ÍÃŞ°À
+		float			INPUT_CBUS;						// CBUSã®å…¥åŠ›ï¾ƒï¾ï½°ï¾€
 		
-		unsigned short	CORRECTION_TABLE_NUMBER;		// •â³Ã°ÌŞÙ”Ô†
+		unsigned short	CORRECTION_TABLE_NUMBER;		// è£œæ­£ï¾ƒï½°ï¾Œï¾ï¾™ç•ªå·
 		
-		float			TABLE_TEMP_DATA[1001];			// Ã°ÌŞÙˆêÃŞ°À
-		unsigned short	TABLE_TEMP_COUNT;				// Ã°ÌŞÙˆêÃŞ°À¶³İÄ
+		float			TABLE_TEMP_DATA[1001];			// ï¾ƒï½°ï¾Œï¾ï¾™ä¸€æ™‚ï¾ƒï¾ï½°ï¾€
+		unsigned short	TABLE_TEMP_COUNT;				// ï¾ƒï½°ï¾Œï¾ï¾™ä¸€æ™‚ï¾ƒï¾ï½°ï¾€ï½¶ï½³ï¾ï¾„
 		
-		unsigned long	TABLE_EDGE_DISTANCE[100];		// ‹——£(À¡Š·ZÃ°ÌŞÙ)
-		unsigned long	TABLE_EDGE_LEFT[100];			// ´¯¼Ş ¶(À¡Š·ZÃ°ÌŞÙ)
-		unsigned long	TABLE_EDGE_RIGHT[100];			// ´¯¼Ş ‰E(À¡Š·ZÃ°ÌŞÙ)
+		unsigned long	TABLE_EDGE_DISTANCE[100];		// è·é›¢(å®Ÿå¯¸æ›ç®—ï¾ƒï½°ï¾Œï¾ï¾™)
+		unsigned long	TABLE_EDGE_LEFT[100];			// ï½´ï½¯ï½¼ï¾ å·¦(å®Ÿå¯¸æ›ç®—ï¾ƒï½°ï¾Œï¾ï¾™)
+		unsigned long	TABLE_EDGE_RIGHT[100];			// ï½´ï½¯ï½¼ï¾ å³(å®Ÿå¯¸æ›ç®—ï¾ƒï½°ï¾Œï¾ï¾™)
 		
-		unsigned long	Z_TABLE_EDGE_DISTANCE[100];		// ‹——£(À¡Š·ZÃ°ÌŞÙ)
-		unsigned long	Z_TABLE_EDGE_RIGHT[100];		// ´¯¼Ş ‰E(Z)(À¡Š·ZÃ°ÌŞÙ)
+		unsigned long	Z_TABLE_EDGE_DISTANCE[100];		// è·é›¢(å®Ÿå¯¸æ›ç®—ï¾ƒï½°ï¾Œï¾ï¾™)
+		unsigned long	Z_TABLE_EDGE_RIGHT[100];		// ï½´ï½¯ï½¼ï¾ å³(Z)(å®Ÿå¯¸æ›ç®—ï¾ƒï½°ï¾Œï¾ï¾™)
 		
-		// Á­°Æİ¸Şˆ—
-		float			TUNING_EDGE_SMALL_D_LOWER;			// d‚ÌÅ‘å‰ºŒÀ(Á­°Æİ¸Ş)
-		float			TUNING_EDGE_SMALL_D_UPPER;			// d‚ÌÅ‘åãŒÀ(Á­°Æİ¸Ş)
-		float			TUNING_EDGE_LEFT_MIN_LOWER;			// ´¯¼Ş ¶Å¬‰ºŒÀ(Á­°Æİ¸Ş)
-		float			TUNING_EDGE_LEFT_MIN_UPPER;			// ´¯¼Ş ¶Å¬ãŒÀ(Á­°Æİ¸Ş)
-		float			TUNING_EDGE_RIGHT_MAX_LOWER;		// ´¯¼Ş ‰EÅ‘å‰ºŒÀ(Á­°Æİ¸Ş)
-		float			TUNING_EDGE_RIGHT_MAX_UPPER;		// ´¯¼Ş ‰EÅ‘åãŒÀ(Á­°Æİ¸Ş)
+		// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾å‡¦ç†
+		float			TUNING_EDGE_SMALL_D_LOWER;			// dã®æœ€å¤§ä¸‹é™(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
+		float			TUNING_EDGE_SMALL_D_UPPER;			// dã®æœ€å¤§ä¸Šé™(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
+		float			TUNING_EDGE_LEFT_MIN_LOWER;			// ï½´ï½¯ï½¼ï¾ å·¦æœ€å°ä¸‹é™(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
+		float			TUNING_EDGE_LEFT_MIN_UPPER;			// ï½´ï½¯ï½¼ï¾ å·¦æœ€å°ä¸Šé™(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
+		float			TUNING_EDGE_RIGHT_MAX_LOWER;		// ï½´ï½¯ï½¼ï¾ å³æœ€å¤§ä¸‹é™(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
+		float			TUNING_EDGE_RIGHT_MAX_UPPER;		// ï½´ï½¯ï½¼ï¾ å³æœ€å¤§ä¸Šé™(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
 		
-		float			TUNING_FOCUS_LEFT_MIN;				// Å“_ ¶Å¬(Á­°Æİ¸Ş)
-		float			TUNING_FOCUS_RIGHT_MIN;				// Å“_ ‰EÅ¬(Á­°Æİ¸Ş)
+		float			TUNING_FOCUS_LEFT_MIN;				// ç„¦ç‚¹ å·¦æœ€å°(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
+		float			TUNING_FOCUS_RIGHT_MIN;				// ç„¦ç‚¹ å³æœ€å°(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾)
 		
 		//
 		
 		float			PEAKHOLD_DATA1[3];				// 
 		float			PEAKHOLD_DATA2[3];				// 
 		
-		unsigned char	SWING_UP_COUNT;					// U‚êã¸¶³İÄ
-		unsigned char	SWING_DOWN_COUNT;				// U‚ê‰º~¶³İÄ
+		unsigned char	SWING_UP_COUNT;					// æŒ¯ã‚Œä¸Šæ˜‡ï½¶ï½³ï¾ï¾„
+		unsigned char	SWING_DOWN_COUNT;				// æŒ¯ã‚Œä¸‹é™ï½¶ï½³ï¾ï¾„
 		
-		unsigned short	SWING_BUFFER_COUNT;				// U‚êÊŞ¯Ì§Ši”[—p¶³İÄ
-		unsigned short	SWING_BUFFER_COUNT2;			// U‚êÊŞ¯Ì§Ši”[—p¶³İÄ
-		unsigned short	PROFILE_BUFFER_COUNT;			// ÌßÛÌ§²ÙÊŞ¯Ì§Ši”[—p¶³İÄ
+		unsigned short	SWING_BUFFER_COUNT;				// æŒ¯ã‚Œï¾Šï¾ï½¯ï¾Œï½§æ ¼ç´ç”¨ï½¶ï½³ï¾ï¾„
+		unsigned short	SWING_BUFFER_COUNT2;			// æŒ¯ã‚Œï¾Šï¾ï½¯ï¾Œï½§æ ¼ç´ç”¨ï½¶ï½³ï¾ï¾„
+		unsigned short	PROFILE_BUFFER_COUNT;			// ï¾Œï¾Ÿï¾›ï¾Œï½§ï½²ï¾™ï¾Šï¾ï½¯ï¾Œï½§æ ¼ç´ç”¨ï½¶ï½³ï¾ï¾„
 		
-		unsigned short	BUFFER_NO_OLD;					// ÊŞ¯Ì§ÅİÊŞ°‹Œ
-		unsigned short	BUFFER_NO_NEW;					// ÊŞ¯Ì§ÅİÊŞ°V
+		unsigned short	BUFFER_NO_OLD;					// ï¾Šï¾ï½¯ï¾Œï½§ï¾…ï¾ï¾Šï¾ï½°æ—§
+		unsigned short	BUFFER_NO_NEW;					// ï¾Šï¾ï½¯ï¾Œï½§ï¾…ï¾ï¾Šï¾ï½°æ–°
 		
-		unsigned short	START_DELAY_TIME;				// Œv‘ªŠJn’x‰„ŠÔ
+		unsigned short	START_DELAY_TIME;				// è¨ˆæ¸¬é–‹å§‹é…å»¶æ™‚é–“
 		
 // add 2016.03.21 K.Uemura start	G32101
-		unsigned char	END_CONDITION;					// I—¹ğŒ
+		unsigned char	END_CONDITION;					// çµ‚äº†æ¡ä»¶
 // add 2016.03.21 K.Uemura end
-		unsigned long	SPINDLE_SPEED;					// ‰ñ“]”
-		unsigned short	FLUTES;							// n”
-		unsigned short	RADIUS;							// H‹ïŒa
+		unsigned long	SPINDLE_SPEED;					// å›è»¢æ•°
+		unsigned short	FLUTES;							// åˆƒæ•°
+		unsigned short	RADIUS;							// å·¥å…·å¾„
 // add 2016.03.10 K.Uemura start	G31002
-		unsigned short	EXTEND_CYCLE;					// L‚Ñ‘ª’è»²¸Ù
+		unsigned short	EXTEND_CYCLE;					// ä¼¸ã³æ¸¬å®šï½»ï½²ï½¸ï¾™
 // add 2016.03.10 K.Uemura end
 // add 2016.03.21 K.Uemura start	G32101
-		unsigned char	COVER_OPEN_SENSOR;				// ¶ÊŞ°¾İ»Open
-		unsigned char	COVER_CLOSE_SENSOR;				// ¶ÊŞ°¾İ»Close
+		unsigned char	COVER_OPEN_SENSOR;				// ï½¶ï¾Šï¾ï½°ï½¾ï¾ï½»Open
+		unsigned char	COVER_CLOSE_SENSOR;				// ï½¶ï¾Šï¾ï½°ï½¾ï¾ï½»Close
 // add 2016.03.21 K.Uemura end
 		
-		unsigned short	IDLE_COUNT;						// ‹ó‰ñ‚µ¶³İÄ
-		unsigned short	IDLE_COUNT_SET;					// ‹ó‰ñ‚µ¶³İÄ¾¯Ä
+		unsigned short	IDLE_COUNT;						// ç©ºå›ã—ï½¶ï½³ï¾ï¾„
+		unsigned short	IDLE_COUNT_SET;					// ç©ºå›ã—ï½¶ï½³ï¾ï¾„ï½¾ï½¯ï¾„
 		
 		//
-		unsigned short	TUNING_ENABLE;					// ŒXÎÁ­°Æİ¸Ş—L–³
-		unsigned short	TUNING_SECONDS;					// Á­°Æİ¸Ş•b”
-		unsigned short	TUNING_OFFSET;					// Á­°Æİ¸ŞµÌ¾¯Ä
-		unsigned short	TUNING_RATIO_LOWER_LIMIT;		// Á­°Æİ¸Ş”ä—¦‰ºŒÀ
-		unsigned short	TUNING_RATIO_UPPER_LIMIT;		// Á­°Æİ¸Ş”ä—¦ãŒÀ
-		unsigned short	MANUAL_GRADIENT;				// è“®ŒXÎ‰æ‘f
-		unsigned short	FOCUSING_GRADIENT;				// Å“_‡‚í‚¹ŒXÎ
-		unsigned short	ORIGIN_THRESHOLD;				// ORIGIN(´¯¼Şl—¶)‚µ‚«‚¢’l
+		unsigned short	TUNING_ENABLE;					// å‚¾æ–œï¾ï½­ï½°ï¾†ï¾ï½¸ï¾æœ‰ç„¡
+		unsigned short	TUNING_SECONDS;					// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾ç§’æ•°
+		unsigned short	TUNING_OFFSET;					// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾ï½µï¾Œï½¾ï½¯ï¾„
+		unsigned short	TUNING_RATIO_LOWER_LIMIT;		// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾æ¯”ç‡ä¸‹é™
+		unsigned short	TUNING_RATIO_UPPER_LIMIT;		// ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾æ¯”ç‡ä¸Šé™
+		unsigned short	MANUAL_GRADIENT;				// æ‰‹å‹•å‚¾æ–œç”»ç´ 
+		unsigned short	FOCUSING_GRADIENT;				// ç„¦ç‚¹åˆã‚ã›å‚¾æ–œ
+		unsigned short	ORIGIN_THRESHOLD;				// ORIGIN(ï½´ï½¯ï½¼ï¾è€ƒæ…®)ã—ãã„å€¤
 		//
 		
-		unsigned short	BUFFER_COUNT;					// ÊŞ¯Ì§¶³İÄ
-		unsigned short	STROBE_COUNT;					// STROBEÊßÙ½¶³İÄ
+		unsigned short	BUFFER_COUNT;					// ï¾Šï¾ï½¯ï¾Œï½§ï½¶ï½³ï¾ï¾„
+		unsigned short	STROBE_COUNT;					// STROBEï¾Šï¾Ÿï¾™ï½½ï½¶ï½³ï¾ï¾„
 // add 2015.09.02 K.Uemura start	
-		unsigned short	INITIAL_COUNT;					// ‰Šú‰»ÊßÙ½¶³İÄ
+		unsigned short	INITIAL_COUNT;					// åˆæœŸåŒ–ï¾Šï¾Ÿï¾™ï½½ï½¶ï½³ï¾ï¾„
 // add 2015.09.02 K.Uemura end
 // add 2015.09.02 K.Uemura start	
-		unsigned short	COVER_COUNT;					// ¶ÊŞ°ÊßÙ½¶³İÄ
+		unsigned short	COVER_COUNT;					// ï½¶ï¾Šï¾ï½°ï¾Šï¾Ÿï¾™ï½½ï½¶ï½³ï¾ï¾„
 // add 2015.09.02 K.Uemura end
 // add 2016.02.18 K.Uemura start	G21804
-		unsigned short	CLEANING_CYCLE;					// ´‘|¶³İÄ
-		unsigned short	CLEANING_COUNT_TOTAL;			// ´‘|ÊßÙ½¶³İÄ(‡Œv)
-		unsigned short	CLEANING_COUNT_PASS;			// ´‘|ÊßÙ½¶³İÄ(³í)
+		unsigned short	CLEANING_CYCLE;					// æ¸…æƒï½¶ï½³ï¾ï¾„
+		unsigned short	CLEANING_COUNT_TOTAL;			// æ¸…æƒï¾Šï¾Ÿï¾™ï½½ï½¶ï½³ï¾ï¾„(åˆè¨ˆ)
+		unsigned short	CLEANING_COUNT_PASS;			// æ¸…æƒï¾Šï¾Ÿï¾™ï½½ï½¶ï½³ï¾ï¾„(æ­£å¸¸)
 // add 2016.02.18 K.Uemura end
 		//
 		
 		// ADD 160226
-		unsigned short	AVE_AVE;						// •½‹Ï’l(•½‹Ï)
-		unsigned short	AVE_MIN;						// •½‹Ï’l(Å¬)
-		unsigned short	AVE_MAX;						// •½‹Ï’l(Å‘å)
-		unsigned short	AVE_RATE;						// •½‹Ï’l(—¦)
+		unsigned short	AVE_AVE;						// å¹³å‡å€¤(å¹³å‡)
+		unsigned short	AVE_MIN;						// å¹³å‡å€¤(æœ€å°)
+		unsigned short	AVE_MAX;						// å¹³å‡å€¤(æœ€å¤§)
+		unsigned short	AVE_RATE;						// å¹³å‡å€¤(ç‡)
 		
-		unsigned short	MIN_AVE;						// Å¬’l(•½‹Ï)
-		unsigned short	MIN_MIN;						// Å¬’l(Å¬)
-		unsigned short	MIN_MAX;						// Å¬’l(Å‘å)
-		unsigned short	MIN_RATE;						// Å¬’l(—¦)
+		unsigned short	MIN_AVE;						// æœ€å°å€¤(å¹³å‡)
+		unsigned short	MIN_MIN;						// æœ€å°å€¤(æœ€å°)
+		unsigned short	MIN_MAX;						// æœ€å°å€¤(æœ€å¤§)
+		unsigned short	MIN_RATE;						// æœ€å°å€¤(ç‡)
 		
-		unsigned short	MAX_AVE;						// Å‘å’l(•½‹Ï)
-		unsigned short	MAX_MIN;						// Å‘å’l(Å¬)
-		unsigned short	MAX_MAX;						// Å‘å’l(Å‘å)
-		unsigned short	MAX_RATE;						// Å‘å’l(—¦)
+		unsigned short	MAX_AVE;						// æœ€å¤§å€¤(å¹³å‡)
+		unsigned short	MAX_MIN;						// æœ€å¤§å€¤(æœ€å°)
+		unsigned short	MAX_MAX;						// æœ€å¤§å€¤(æœ€å¤§)
+		unsigned short	MAX_RATE;						// æœ€å¤§å€¤(ç‡)
 		
-		unsigned long	AVE_TOTAL;						// •½‹Ï’l(‡Œv)
-		unsigned long	MIN_TOTAL;						// Å¬’l(‡Œv)
-		unsigned long	MAX_TOTAL;						// Å‘å’l(‡Œv)
+		unsigned long	AVE_TOTAL;						// å¹³å‡å€¤(åˆè¨ˆ)
+		unsigned long	MIN_TOTAL;						// æœ€å°å€¤(åˆè¨ˆ)
+		unsigned long	MAX_TOTAL;						// æœ€å¤§å€¤(åˆè¨ˆ)
 		//
 		
-		unsigned long	INPUT_DBUS213;					// ¶´¯¼ŞŒXÎ‚Ì“ü—ÍÃŞ°À
-		unsigned long	INPUT_DBUS214;					// ‰E´¯¼ŞŒXÎ‚Ì“ü—ÍÃŞ°À
+		unsigned long	INPUT_DBUS213;					// å·¦ï½´ï½¯ï½¼ï¾å‚¾æ–œã®å…¥åŠ›ï¾ƒï¾ï½°ï¾€
+		unsigned long	INPUT_DBUS214;					// å³ï½´ï½¯ï½¼ï¾å‚¾æ–œã®å…¥åŠ›ï¾ƒï¾ï½°ï¾€
 		
-		unsigned long	INPUT_DBUS224;					// ¶´¯¼ŞÃŞ°À
-		unsigned long	INPUT_DBUS225;					// ‰E´¯¼ŞÃŞ°À
+		unsigned long	INPUT_DBUS224;					// å·¦ï½´ï½¯ï½¼ï¾ï¾ƒï¾ï½°ï¾€
+		unsigned long	INPUT_DBUS225;					// å³ï½´ï½¯ï½¼ï¾ï¾ƒï¾ï½°ï¾€
 		
-		unsigned short	BUFFER_COUNT2;					// ÊŞ¯Ì§¶³İÄ2(“®ìŠm”F—p)
+		unsigned short	BUFFER_COUNT2;					// ï¾Šï¾ï½¯ï¾Œï½§ï½¶ï½³ï¾ï¾„2(å‹•ä½œç¢ºèªç”¨)
 		
-		unsigned short	CBUS_NUMBER;					// CBUSÅİÊŞ°
-		unsigned short	LAST_CBUS_NUMBER;				// CBUSÅİÊŞ°(1»²¸ÙÅI)
+		unsigned short	CBUS_NUMBER;					// CBUSï¾…ï¾ï¾Šï¾ï½°
+		unsigned short	LAST_CBUS_NUMBER;				// CBUSï¾…ï¾ï¾Šï¾ï½°(1ï½»ï½²ï½¸ï¾™æœ€çµ‚)
 		
-		unsigned short	FPGA_RESTART_COUNT;				// FPGAÄ½À°Ä¶³İÄ		
-		unsigned char	FPGA_SEND_COUNT;				// FPGAÄ‘—M¶³İÄ
+		unsigned short	FPGA_RESTART_COUNT;				// FPGAå†ï½½ï¾€ï½°ï¾„ï½¶ï½³ï¾ï¾„		
+		unsigned char	FPGA_SEND_COUNT;				// FPGAå†é€ä¿¡ï½¶ï½³ï¾ï¾„
 		
-		unsigned char	FPGA_SEND_STATUS;				// FPGA‘—M½Ã°À½
-		unsigned char	FPGA_RECEIVE_STATUS;			// FPGAóM½Ã°À½
+		unsigned char	FPGA_SEND_STATUS;				// FPGAé€ä¿¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	FPGA_RECEIVE_STATUS;			// FPGAå—ä¿¡ï½½ï¾ƒï½°ï¾€ï½½
 		
-		unsigned char	FPGA_PARAM_COUNT;				// FPGAÊß×Ò°ÀÄ‘—M¶³İÄ
+		unsigned char	FPGA_PARAM_COUNT;				// FPGAï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€å†é€ä¿¡ï½¶ï½³ï¾ï¾„
 		
-		unsigned char	TP_CONTROL_STATUS;				// À¯ÁÊßÈÙ§Œä½Ã°À½
+		unsigned char	TP_CONTROL_STATUS;				// ï¾€ï½¯ï¾ï¾Šï¾Ÿï¾ˆï¾™åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
 		
-		unsigned char	POWER_STATUS;					// “dŒ¹½²¯Á½Ã°À½
-		unsigned char	POWER_COUNT;					// “dŒ¹§Œä¶³İÄ
-		unsigned char	POWER_SEQUENCE_COUNT;			// POWER¼°¹İ½¶³İÄ
+		unsigned char	POWER_STATUS;					// é›»æºï½½ï½²ï½¯ï¾ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	POWER_COUNT;					// é›»æºåˆ¶å¾¡ï½¶ï½³ï¾ï¾„
+		unsigned char	POWER_SEQUENCE_COUNT;			// POWERï½¼ï½°ï½¹ï¾ï½½ï½¶ï½³ï¾ï¾„
 		
-		unsigned int	JUNK;							// ÀŞĞ°Ø°ÄŞ
+		unsigned int	JUNK;							// ï¾€ï¾ï¾ï½°ï¾˜ï½°ï¾„ï¾
 		
 		union UFloatLong{
 			long lLong;
 			float fFloat;
 		};
 		
-		unsigned short	STARTUP_COUNT;					// ‹N“®‘Ò‚¿ŠÔ
+		unsigned short	STARTUP_COUNT;					// èµ·å‹•å¾…ã¡æ™‚é–“
 		
-		unsigned short	LED_BRIGHTNESS;					// LED‹P“x
-		unsigned short	X_LED_BRIGHTNESS;				// LED‹P“x(X)
-		unsigned short	Z_LED_BRIGHTNESS;				// LED‹P“x(Z)
+		unsigned short	LED_BRIGHTNESS;					// LEDè¼åº¦
+		unsigned short	X_LED_BRIGHTNESS;				// LEDè¼åº¦(X)
+		unsigned short	Z_LED_BRIGHTNESS;				// LEDè¼åº¦(Z)
 // add 2016.03.08 K.Uemura start	G30702
-		unsigned short	X_LED_BRIGHTNESS_WHITE;			// LED‹P“x ÎÜ²Ä•½‹Ï’l(X)
-		unsigned short	Z_LED_BRIGHTNESS_WHITE;			// LED‹P“x ÎÜ²Ä•½‹Ï’l(Z)
+		unsigned short	X_LED_BRIGHTNESS_WHITE;			// LEDè¼åº¦ ï¾ï¾œï½²ï¾„å¹³å‡å€¤(X)
+		unsigned short	Z_LED_BRIGHTNESS_WHITE;			// LEDè¼åº¦ ï¾ï¾œï½²ï¾„å¹³å‡å€¤(Z)
 // add 2016.03.08 K.Uemura end
 		
-		unsigned short	X_BLACK_AVE;					// ÌŞ×¯¸•½‹Ï’l(X)
-		unsigned short	X_WHITE_AVE;					// ÎÜ²Ä•½‹Ï’l(X)
-		unsigned short	X_WHITE_MAX;					// ÎÜ²ÄÅ‘å’l(X)
-		unsigned short	X_WHITE_MIN;					// ÎÜ²ÄÅ¬’l(X)
+		unsigned short	X_BLACK_AVE;					// ï¾Œï¾ï¾—ï½¯ï½¸å¹³å‡å€¤(X)
+		unsigned short	X_WHITE_AVE;					// ï¾ï¾œï½²ï¾„å¹³å‡å€¤(X)
+		unsigned short	X_WHITE_MAX;					// ï¾ï¾œï½²ï¾„æœ€å¤§å€¤(X)
+		unsigned short	X_WHITE_MIN;					// ï¾ï¾œï½²ï¾„æœ€å°å€¤(X)
 		
-		unsigned short	Z_BLACK_AVE;					// ÌŞ×¯¸•½‹Ï’l(Z)
-		unsigned short	Z_WHITE_AVE;					// ÎÜ²Ä•½‹Ï’l(Z)
-		unsigned short	Z_WHITE_MAX;					// ÎÜ²ÄÅ‘å’l(Z)
-		unsigned short	Z_WHITE_MIN;					// ÎÜ²ÄÅ¬’l(Z)
+		unsigned short	Z_BLACK_AVE;					// ï¾Œï¾ï¾—ï½¯ï½¸å¹³å‡å€¤(Z)
+		unsigned short	Z_WHITE_AVE;					// ï¾ï¾œï½²ï¾„å¹³å‡å€¤(Z)
+		unsigned short	Z_WHITE_MAX;					// ï¾ï¾œï½²ï¾„æœ€å¤§å€¤(Z)
+		unsigned short	Z_WHITE_MIN;					// ï¾ï¾œï½²ï¾„æœ€å°å€¤(Z)
 
-		char			SIO_BUF[512];					// ƒVƒŠƒAƒ‹‘—Mƒoƒbƒtƒ@
-		unsigned char	SIO_IDX;						// ƒVƒŠƒAƒ‹ƒoƒbƒtƒ@ƒCƒ“ƒfƒbƒNƒX
-		long			PARA_DATA[50];					// Êß×Ò°ÀÃŞ°À(FPGA‚É‘Î‚µ‚Ä‘—M‚·‚éºÏİÄŞ)
-		long			ALL_DATA[1001];					// ‘SÒÓØÃŞ°À(Êß×Ò°ÀÅİÊŞ°)
-//		long			HDI_DATA[13];					// HDIÃŞ°À
-//		unsigned char	HDI_DATA_COUNT;					// HDIÃŞ°À¶³İÀ
-		long			X_HDI_DATA[13];					// HDIÃŞ°À(X)
-		long			Z_HDI_DATA[13];					// HDIÃŞ°À(Z)
+		char			SIO_BUF[512];					// ã‚·ãƒªã‚¢ãƒ«é€ä¿¡ãƒãƒƒãƒ•ã‚¡
+		unsigned char	SIO_IDX;						// ã‚·ãƒªã‚¢ãƒ«ãƒãƒƒãƒ•ã‚¡ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+		long			PARA_DATA[50];					// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€ï¾ƒï¾ï½°ï¾€(FPGAã«å¯¾ã—ã¦é€ä¿¡ã™ã‚‹ï½ºï¾ï¾ï¾„ï¾)
+		long			ALL_DATA[1001];					// å…¨ï¾’ï¾“ï¾˜ï¾ƒï¾ï½°ï¾€(ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€ï¾…ï¾ï¾Šï¾ï½°)
+//		long			HDI_DATA[13];					// HDIï¾ƒï¾ï½°ï¾€
+//		unsigned char	HDI_DATA_COUNT;					// HDIï¾ƒï¾ï½°ï¾€ï½¶ï½³ï¾ï¾€
+		long			X_HDI_DATA[13];					// HDIï¾ƒï¾ï½°ï¾€(X)
+		long			Z_HDI_DATA[13];					// HDIï¾ƒï¾ï½°ï¾€(Z)
 		
-		unsigned int	END_TIMEOUT_PERIOD_SET;			// À²Ñ±³ÄŠÔ¾¯Ä(I—¹ğŒ)(s)
-		unsigned int	OK_COUNT_SET;					// OK¶³İÄ”¾¯Ä
-		unsigned int	NG_COUNT_SET;					// ˜A‘±NG¶³İÄ”¾¯Ä
+		unsigned int	END_TIMEOUT_PERIOD_SET;			// ï¾€ï½²ï¾‘ï½±ï½³ï¾„æ™‚é–“ï½¾ï½¯ï¾„(çµ‚äº†æ¡ä»¶)(s)
+		unsigned int	OK_COUNT_SET;					// OKï½¶ï½³ï¾ï¾„æ•°ï½¾ï½¯ï¾„
+		unsigned int	NG_COUNT_SET;					// é€£ç¶šNGï½¶ï½³ï¾ï¾„æ•°ï½¾ï½¯ï¾„
 // chg 2017.01.06 K.Uemura start	H10601	
-		unsigned int	WAIT_COUNT_SET;					// WAIT¶³İÄ”¾¯Ä
+		unsigned int	WAIT_COUNT_SET;					// WAITï½¶ï½³ï¾ï¾„æ•°ï½¾ï½¯ï¾„
 // chg 2017.01.06 K.Uemura end
 		
-		unsigned long	END_TIMEOUT_PERIOD;				// À²Ñ±³ÄŠÔ(I—¹ğŒ)(ms)
-		unsigned long	OK_COUNT;						// OK¶³İÄ”
-		unsigned long	NG_COUNT;						// ˜A‘±NG¶³İÄ”
+		unsigned long	END_TIMEOUT_PERIOD;				// ï¾€ï½²ï¾‘ï½±ï½³ï¾„æ™‚é–“(çµ‚äº†æ¡ä»¶)(ms)
+		unsigned long	OK_COUNT;						// OKï½¶ï½³ï¾ï¾„æ•°
+		unsigned long	NG_COUNT;						// é€£ç¶šNGï½¶ï½³ï¾ï¾„æ•°
 		
-		unsigned long	TOTAL_COUNT;					// Œv‘ª‘”
+		unsigned long	TOTAL_COUNT;					// è¨ˆæ¸¬ç·æ•°
 		
-		unsigned int	COM_START_PERIOD;				// Œv‘ªŠJnŠÔ(ms)
-		unsigned int	COM_TIMEOUT_PERIOD;				// À²Ñ±³ÄŠÔ(’ÊMİ’è)(ms)
+		unsigned int	COM_START_PERIOD;				// è¨ˆæ¸¬é–‹å§‹æ™‚é–“(ms)
+		unsigned int	COM_TIMEOUT_PERIOD;				// ï¾€ï½²ï¾‘ï½±ï½³ï¾„æ™‚é–“(é€šä¿¡è¨­å®š)(ms)
 		
-		unsigned int	MEMORY_TIME;					// ‹L‰¯ŠÔ(ms)
+		unsigned int	MEMORY_TIME;					// è¨˜æ†¶æ™‚é–“(ms)
 		
-		unsigned int	POLLING_COUNT;					// Îß°Øİ¸ŞüŠú¶³İÄ
+		unsigned int	POLLING_COUNT;					// ï¾ï¾Ÿï½°ï¾˜ï¾ï½¸ï¾å‘¨æœŸï½¶ï½³ï¾ï¾„
 		
 // add 2016.03.11 K.Uemura start	G31101
-		unsigned short	HDI0_DELAY_COUNT;				// HDI0½·¯Ìß’x‰„¶³İÄ
-		unsigned short	HDI1_DELAY_COUNT;				// HDI1½·¯Ìß’x‰„¶³İÄ
-		unsigned short	HDI2_DELAY_COUNT;				// HDI2½·¯Ìß’x‰„¶³İÄ
-		unsigned short	HDI3_DELAY_COUNT;				// HDI3½·¯Ìß’x‰„¶³İÄ
-		unsigned short	HDI4_DELAY_COUNT;				// HDI4½·¯Ìß’x‰„¶³İÄ
-		unsigned short	HDI5_DELAY_COUNT;				// HDI5½·¯Ìß’x‰„¶³İÄ
+		unsigned short	HDI0_DELAY_COUNT;				// HDI0ï½½ï½·ï½¯ï¾Œï¾Ÿé…å»¶ï½¶ï½³ï¾ï¾„
+		unsigned short	HDI1_DELAY_COUNT;				// HDI1ï½½ï½·ï½¯ï¾Œï¾Ÿé…å»¶ï½¶ï½³ï¾ï¾„
+		unsigned short	HDI2_DELAY_COUNT;				// HDI2ï½½ï½·ï½¯ï¾Œï¾Ÿé…å»¶ï½¶ï½³ï¾ï¾„
+		unsigned short	HDI3_DELAY_COUNT;				// HDI3ï½½ï½·ï½¯ï¾Œï¾Ÿé…å»¶ï½¶ï½³ï¾ï¾„
+		unsigned short	HDI4_DELAY_COUNT;				// HDI4ï½½ï½·ï½¯ï¾Œï¾Ÿé…å»¶ï½¶ï½³ï¾ï¾„
+		unsigned short	HDI5_DELAY_COUNT;				// HDI5ï½½ï½·ï½¯ï¾Œï¾Ÿé…å»¶ï½¶ï½³ï¾ï¾„
 // add 2016.03.11 K.Uemura end
 		
-		unsigned short	HDI0_HOLD_COUNT;				// HDI0½·¯Ìß•Û¶³İÄ
-		unsigned short	HDI1_HOLD_COUNT;				// HDI1½·¯Ìß•Û¶³İÄ
-		unsigned short	HDI2_HOLD_COUNT;				// HDI2½·¯Ìß•Û¶³İÄ
-		unsigned short	HDI3_HOLD_COUNT;				// HDI3½·¯Ìß•Û¶³İÄ
-		unsigned short	HDI4_HOLD_COUNT;				// HDI4½·¯Ìß•Û¶³İÄ
-		unsigned short	HDI5_HOLD_COUNT;				// HDI5½·¯Ìß•Û¶³İÄ
+		unsigned short	HDI0_HOLD_COUNT;				// HDI0ï½½ï½·ï½¯ï¾Œï¾Ÿä¿æŒï½¶ï½³ï¾ï¾„
+		unsigned short	HDI1_HOLD_COUNT;				// HDI1ï½½ï½·ï½¯ï¾Œï¾Ÿä¿æŒï½¶ï½³ï¾ï¾„
+		unsigned short	HDI2_HOLD_COUNT;				// HDI2ï½½ï½·ï½¯ï¾Œï¾Ÿä¿æŒï½¶ï½³ï¾ï¾„
+		unsigned short	HDI3_HOLD_COUNT;				// HDI3ï½½ï½·ï½¯ï¾Œï¾Ÿä¿æŒï½¶ï½³ï¾ï¾„
+		unsigned short	HDI4_HOLD_COUNT;				// HDI4ï½½ï½·ï½¯ï¾Œï¾Ÿä¿æŒï½¶ï½³ï¾ï¾„
+		unsigned short	HDI5_HOLD_COUNT;				// HDI5ï½½ï½·ï½¯ï¾Œï¾Ÿä¿æŒï½¶ï½³ï¾ï¾„
 		
-		unsigned long	FPGA_RIVISION;					// FPGAÊŞ°¼Ş®İ
+		unsigned long	FPGA_RIVISION;					// FPGAï¾Šï¾ï½°ï½¼ï¾ï½®ï¾
 		
-		unsigned long	FOCUSING_HDI;					// Å“_‡‚í‚¹EHDI(FPGA‚©‚ç‚ÌÃŞ°À)
+		unsigned long	FOCUSING_HDI;					// ç„¦ç‚¹åˆã‚ã›ãƒ»HDI(FPGAã‹ã‚‰ã®ï¾ƒï¾ï½°ï¾€)
 		
-		unsigned long	PROCESS_STATUS;					// “®ìó‘Ô
+		unsigned long	PROCESS_STATUS;					// å‹•ä½œçŠ¶æ…‹
 		
-		unsigned long	START_DELAY_TIME_COUNT;			// Œv‘ªŠJn’x‰„ŠÔ¶³İÀ
-		//unsigned char	START_DELAY_TIME_FLAG;			// Œv‘ªŠJn’x‰„ŠÔÌ×¸Ş
+		unsigned long	START_DELAY_TIME_COUNT;			// è¨ˆæ¸¬é–‹å§‹é…å»¶æ™‚é–“ï½¶ï½³ï¾ï¾€
+		//unsigned char	START_DELAY_TIME_FLAG;			// è¨ˆæ¸¬é–‹å§‹é…å»¶æ™‚é–“ï¾Œï¾—ï½¸ï¾
 		
-		unsigned char   CHANGE_FPGA;					// FPGAˆ—Ø‚è‘Ö‚¦Ì×¸Ş
+		unsigned char   CHANGE_FPGA;					// FPGAå‡¦ç†åˆ‡ã‚Šæ›¿ãˆï¾Œï¾—ï½¸ï¾
 		
-		unsigned char	MEASUREMENT_DIRECTION;			// Œv‘ª•ûŒü
-		unsigned char	MEASUREMENT_DIRECTION_BEFORE;	// Œv‘ª•ûŒü(’¼‘O)
+		unsigned char	MEASUREMENT_DIRECTION;			// è¨ˆæ¸¬æ–¹å‘
+		unsigned char	MEASUREMENT_DIRECTION_BEFORE;	// è¨ˆæ¸¬æ–¹å‘(ç›´å‰)
 		
-		unsigned char	READY_PULSE_TIME;				// READY‚ÌÊßÙ½ŠÔ
-		//unsigned char	VERIFY_ERROR_FLAG;				// Êß×Ò°ÀŠm”F´×°Ì×¸Ş
+		unsigned char	READY_PULSE_TIME;				// READYã®ï¾Šï¾Ÿï¾™ï½½æ™‚é–“
+		//unsigned char	VERIFY_ERROR_FLAG;				// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€ç¢ºèªï½´ï¾—ï½°ï¾Œï¾—ï½¸ï¾
 		
-		//unsigned char	PIXEL_END_FLAG;					// “Á’è‰æ‘fI—¹Ì×¸Ş
-		unsigned short	PIXEL_END_COUNT;				// “Á’è‰æ‘fI—¹¶³İÄ
+		//unsigned char	PIXEL_END_FLAG;					// ç‰¹å®šç”»ç´ çµ‚äº†ï¾Œï¾—ï½¸ï¾
+		unsigned short	PIXEL_END_COUNT;				// ç‰¹å®šç”»ç´ çµ‚äº†ï½¶ï½³ï¾ï¾„
 		
-		unsigned short	HDI_CHECK_COUNT;				// HDIÁª¯¸¶³İÄ
+		unsigned short	HDI_CHECK_COUNT;				// HDIï¾ï½ªï½¯ï½¸ï½¶ï½³ï¾ï¾„
 		
-		unsigned short	TRIGGER_TIME_PERIOD;			// üŠúÄØ¶ŞŠÔ
+		unsigned short	TRIGGER_TIME_PERIOD;			// å‘¨æœŸï¾„ï¾˜ï½¶ï¾æ™‚é–“
 		
-		unsigned short	GROWTH_INTERVAL_COUNT;			// L‚ÑŒv‘ªŠÔŠu¶³İÄ
-		unsigned long	GROWTH_OUTPUT_COUNT;			// L‚ÑŒv‘ªo—Í¶³İÄ
+		unsigned short	GROWTH_INTERVAL_COUNT;			// ä¼¸ã³è¨ˆæ¸¬é–“éš”ï½¶ï½³ï¾ï¾„
+		unsigned long	GROWTH_OUTPUT_COUNT;			// ä¼¸ã³è¨ˆæ¸¬å‡ºåŠ›ï½¶ï½³ï¾ï¾„
 // add 2015.08.21 K.Uemura start	
-		long			GROWTH_MIN;						// L‚ÑÅ¬
-		long			GROWTH_MAX;						// L‚ÑÅ‘å
+		long			GROWTH_MIN;						// ä¼¸ã³æœ€å°
+		long			GROWTH_MAX;						// ä¼¸ã³æœ€å¤§
 // add 2015.08.21 K.Uemura end
-// add 2015.08.19 K.Uemura start	ƒvƒƒtƒ@ƒCƒ‹Å‘å^Å¬o—Í
-		unsigned long	PROFILE_OUTPUT_COUNT;			// ÌßÛÌ§²ÙŒv‘ªo—Í¶³İÄ
+// add 2015.08.19 K.Uemura start	ãƒ—ãƒ­ãƒ•ã‚¡ã‚¤ãƒ«æœ€å¤§ï¼æœ€å°å‡ºåŠ›
+		unsigned long	PROFILE_OUTPUT_COUNT;			// ï¾Œï¾Ÿï¾›ï¾Œï½§ï½²ï¾™è¨ˆæ¸¬å‡ºåŠ›ï½¶ï½³ï¾ï¾„
 // add 2015.08.19 K.Uemura end
 // add 2016.10.20 K.Uemura start	GA2001
-		unsigned short	VERIFY_COUNT;					// Êß×Ò°ÀŠm”F‰ñ”
+		unsigned short	VERIFY_COUNT;					// ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€ç¢ºèªå›æ•°
 // add 2016.10.20 K.Uemura end
 // add 2016.07.26 K.Uemura start	G72601
-		unsigned long	MSEC_COUNTER;					// msec¶³İÀ(–ñ429–œ•b à 49“ú)
-		unsigned char	MSEC_FLAG;						// msecÌ×¸Ş
-		unsigned char	MSEC_INDEX;						// msec²İÃŞ¯¸½
-		unsigned long	MSEC_BUFFER[30][10];			// msec•Ï”(EXE ¨ RDY OFF à lap)
-														//          EXE ¨ RDY OFF ¨ FIN
+		unsigned long	MSEC_COUNTER;					// msecï½¶ï½³ï¾ï¾€(ç´„429ä¸‡ç§’ â‰’ 49æ—¥)
+		unsigned char	MSEC_FLAG;						// msecï¾Œï¾—ï½¸ï¾
+		unsigned char	MSEC_INDEX;						// msecï½²ï¾ï¾ƒï¾ï½¯ï½¸ï½½
+		unsigned long	MSEC_BUFFER[30][10];			// msecå¤‰æ•°(EXE â†’ RDY OFF â‰’ lap)
+														//          EXE â†’ RDY OFF â†’ FIN
 // add 2016.07.26 K.Uemura end
 // add 2017.01.19 K.Uemura start	H11901	
-		unsigned short	ERROR_BEFORE;					// ´×°”Ô†(‘O‰ñ)
+		unsigned short	ERROR_BEFORE;					// ï½´ï¾—ï½°ç•ªå·(å‰å›)
 // add 2017.01.19 K.Uemura end
 }	SEQ;
 
-/*	RESULT§Œä—p\‘¢‘Ì	*/
+/*	RESULTåˆ¶å¾¡ç”¨æ§‹é€ ä½“	*/
 struct {
-		float			EDGE_LEFT_PIXEL[5];				// ´¯¼Ş ¶(‰æ‘f)
-		float			EDGE_RIGHT_PIXEL[5];			// ´¯¼Ş ‰E(‰æ‘f)
+		float			EDGE_LEFT_PIXEL[5];				// ï½´ï½¯ï½¼ï¾ å·¦(ç”»ç´ )
+		float			EDGE_RIGHT_PIXEL[5];			// ï½´ï½¯ï½¼ï¾ å³(ç”»ç´ )
 		
-		float			EDGE_LEFT_SCALE[5];				// ´¯¼Ş ¶
-		float			EDGE_RIGHT_SCALE[5];			// ´¯¼Ş ‰E
+		float			EDGE_LEFT_SCALE[5];				// ï½´ï½¯ï½¼ï¾ å·¦
+		float			EDGE_RIGHT_SCALE[5];			// ï½´ï½¯ï½¼ï¾ å³
 		
-		float			FOCUS_LEFT[5];					// Å“_ ¶
-		float			FOCUS_RIGHT[5];					// Å“_ ‰E
+		float			FOCUS_LEFT[5];					// ç„¦ç‚¹ å·¦
+		float			FOCUS_RIGHT[5];					// ç„¦ç‚¹ å³
 		
-		float			WORK_EDGE_DIFF[5];				// WORK ´¯¼Ş¶‰E‚Ì·
-		float			WORK_CENTER[5];					// WORK ’†‰›
+		float			WORK_EDGE_DIFF[5];				// WORK ï½´ï½¯ï½¼ï¾å·¦å³ã®å·®
+		float			WORK_CENTER[5];					// WORK ä¸­å¤®
 		
-		float			SMALL_D_MAX[5];					// d Å‘å
+		float			SMALL_D_MAX[5];					// d æœ€å¤§
 		
-		float			LARGE_D_MIN[5];					// D Å¬
-		float			LARGE_D_MAX[5];					// D Å‘å
-		float			LARGE_D_DIFF[5];				// D Å‘åÅ¬‚Ì·
+		float			LARGE_D_MIN[5];					// D æœ€å°
+		float			LARGE_D_MAX[5];					// D æœ€å¤§
+		float			LARGE_D_DIFF[5];				// D æœ€å¤§æœ€å°ã®å·®
 		
-		float			SWING_MIN[2];					// U‚ê Å¬	[0] n”0ˆÈŠO	[1] n”0
-		float			SWING_MAX[2];					// U‚ê Å‘å	[0] n”0ˆÈŠO	[1] n”0
-		float			SWING_DIFF[2];					// U‚ê Å‘åÅ¬‚Ì·
+		float			SWING_MIN[2];					// æŒ¯ã‚Œ æœ€å°	[0] åˆƒæ•°0ä»¥å¤–	[1] åˆƒæ•°0
+		float			SWING_MAX[2];					// æŒ¯ã‚Œ æœ€å¤§	[0] åˆƒæ•°0ä»¥å¤–	[1] åˆƒæ•°0
+		float			SWING_DIFF[2];					// æŒ¯ã‚Œ æœ€å¤§æœ€å°ã®å·®
 		
-		float			DELTA_X_DIFF[5];				// ƒ¢X ·
-		float			DELTA_X_DIFF_MIN[5];			// ƒ¢X Å¬
-		float			DELTA_X_DIFF_MAX[5];			// ƒ¢X Å‘å
+		float			DELTA_X_DIFF[5];				// Î”X å·®
+		float			DELTA_X_DIFF_MIN[5];			// Î”X æœ€å°
+		float			DELTA_X_DIFF_MAX[5];			// Î”X æœ€å¤§
 		
-		// ¶
-		float			GREATER_D_DIFF[5];				// D>4 ‰E-’†‰›
-		float			GREATER_D_DIFF_MIN[5];			// D>4 Å¬
-		float			GREATER_D_DIFF_MAX[5];			// D>4 Å‘å
+		// å·¦
+		float			GREATER_D_DIFF[5];				// D>4 å³-ä¸­å¤®
+		float			GREATER_D_DIFF_MIN[5];			// D>4 æœ€å°
+		float			GREATER_D_DIFF_MAX[5];			// D>4 æœ€å¤§
 		
-		// ‰E
-		float			GREATER_D_DIFF_RIGHT[5];		// D>4 ‰E-’†‰›(‰E‘¤)
-		float			GREATER_D_DIFF_RIGHT_MIN[5];	// D>4 Å¬(‰E‘¤)
-		float			GREATER_D_DIFF_RIGHT_MAX[5];	// D>4 Å‘å(‰E‘¤)
+		// å³
+		float			GREATER_D_DIFF_RIGHT[5];		// D>4 å³-ä¸­å¤®(å³å´)
+		float			GREATER_D_DIFF_RIGHT_MIN[5];	// D>4 æœ€å°(å³å´)
+		float			GREATER_D_DIFF_RIGHT_MAX[5];	// D>4 æœ€å¤§(å³å´)
 		
-		float			FOCUS_LEFT_MIN[5];				// Å“_ ¶Å¬
-		float			FOCUS_RIGHT_MIN[5];				// Å“_ ‰EÅ¬
+		float			FOCUS_LEFT_MIN[5];				// ç„¦ç‚¹ å·¦æœ€å°
+		float			FOCUS_RIGHT_MIN[5];				// ç„¦ç‚¹ å³æœ€å°
 		
-		float			TIR[7];							// U‚ê(ÊŞ¯Ì§o—Í—p)
-														// [0]Å‘å(üŠú)      [À¡]
-														// [1]Å‘å(Á­°Æİ¸Ş) [‰æ‘f]
-														// [2]U‚ê”ä—¦æZŒ‹‰Ê[‰æ‘f]
-														// [3]Å‘å(ŒŸ¸)    [À¡]
-														// [4]Å¬(ŒŸ¸)    [À¡]
-														// [5]·(Å‘å|Å¬)  [À¡]
+		float			TIR[7];							// æŒ¯ã‚Œ(ï¾Šï¾ï½¯ï¾Œï½§å‡ºåŠ›ç”¨)
+														// [0]æœ€å¤§(å‘¨æœŸ)      [å®Ÿå¯¸]
+														// [1]æœ€å¤§(ï¾ï½­ï½°ï¾†ï¾ï½¸ï¾æ™‚) [ç”»ç´ ]
+														// [2]æŒ¯ã‚Œæ¯”ç‡ä¹—ç®—çµæœ[ç”»ç´ ]
+														// [3]æœ€å¤§(æ¤œæŸ»æ™‚)    [å®Ÿå¯¸]
+														// [4]æœ€å°(æ¤œæŸ»æ™‚)    [å®Ÿå¯¸]
+														// [5]å·®(æœ€å¤§ï¼æœ€å°)  [å®Ÿå¯¸]
 // add 2015.07.29 K.Uemura start	
-														// [6]Å¬(üŠú)      [À¡]
+														// [6]æœ€å°(å‘¨æœŸ)      [å®Ÿå¯¸]
 // add 2015.07.29 K.Uemura end
 // add 2015.08.06 K.Uemura start	
-		float			TIR_MAX[10];					// Šen‚ÌÅ‘å(No1`9)
+		float			TIR_MAX[10];					// å„åˆƒã®æœ€å¤§(No1ï½9)
 // add 2015.08.06 K.Uemura end
 
 		float			LEFT_L[3];						// 
@@ -526,7 +526,7 @@ struct {
 		float			RIGHT_L[3];						// 
 		float			RIGHT_R[3];						// 
 
-		float			GROWTH[3];						// L‚Ñ(ÊŞ¯Ì§o—Í—p)
+		float			GROWTH[3];						// ä¼¸ã³(ï¾Šï¾ï½¯ï¾Œï½§å‡ºåŠ›ç”¨)
 
 // add 2015.09.30 K.Uemura start	093001
 		short			RUNOUT_MIN;
@@ -535,286 +535,286 @@ struct {
 		short			PROFILE_MAX;
 // add 2015.09.30 K.Uemura end
 // add 2016.06.22 K.Uemura start	G62202
-		short			SENSOR_LEVEL_X;					// ¾İ»ÚÍŞÙ X
-		short			SENSOR_LEVEL_Z;					// ¾İ»ÚÍŞÙ Z
+		short			SENSOR_LEVEL_X;					// ï½¾ï¾ï½»ï¾šï¾ï¾ï¾™ X
+		short			SENSOR_LEVEL_Z;					// ï½¾ï¾ï½»ï¾šï¾ï¾ï¾™ Z
 // add 2016.06.22 K.Uemura end
 }	RESULT;
 
-/*	debug—p\‘¢‘Ì	*/
+/*	debugç”¨æ§‹é€ ä½“	*/
 struct {
-		unsigned short	DEBUG_COUNT;					// ÃŞÊŞ¯¸Şo—Í—p¶³İÀ
-		long			DEBUG[4096];					// ÃŞÊŞ¯¸Şo—Í—pÃŞ°À
-		unsigned char	DEBUG_OUTPUT;					// ÃŞÊŞ¯¸Şo—Í—po—ÍÌ«°Ï¯Ä
-														// 0 ®”3Œ…
-														// 1 •„†E®”1Œ…E¬”“_3Œ…
-														// 2 ®”3Œ…E¬”“_3Œ…
+		unsigned short	DEBUG_COUNT;					// ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾å‡ºåŠ›ç”¨ï½¶ï½³ï¾ï¾€
+		long			DEBUG[4096];					// ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾å‡ºåŠ›ç”¨ï¾ƒï¾ï½°ï¾€
+		unsigned char	DEBUG_OUTPUT;					// ï¾ƒï¾ï¾Šï¾ï½¯ï½¸ï¾å‡ºåŠ›ç”¨å‡ºåŠ›ï¾Œï½«ï½°ï¾ï½¯ï¾„
+														// 0 æ•´æ•°3æ¡
+														// 1 ç¬¦å·ãƒ»æ•´æ•°1æ¡ãƒ»å°æ•°ç‚¹3æ¡
+														// 2 æ•´æ•°3æ¡ãƒ»å°æ•°ç‚¹3æ¡
 
 #ifdef	DEBUG_EACHSCAN
 // deb 2015.07.29 K.Uemura start	
 		char			DEBUG_FLAG;
-		unsigned short	DEBUG_EDGE[8000];				// ƒGƒbƒWÀ•W
-//		unsigned short	DEBUG_EDGE2[4000];				// ƒGƒbƒWÀ•W
-		unsigned char	DEBUG_FOCUS[8000];				// Å“_”’l
-		unsigned short	DEBUG_TIR_TIME;					// Œv‘ªŠÔ[ms]
-		unsigned short	DEBUG_NO[20];					// ƒGƒbƒW—v‘f
-		unsigned char	DEBUG_NO_COUNT;					// ƒGƒbƒW—v‘fƒJƒEƒ“ƒg”
+		unsigned short	DEBUG_EDGE[8000];				// ã‚¨ãƒƒã‚¸åº§æ¨™
+//		unsigned short	DEBUG_EDGE2[4000];				// ã‚¨ãƒƒã‚¸åº§æ¨™
+		unsigned char	DEBUG_FOCUS[8000];				// ç„¦ç‚¹æ•°å€¤
+		unsigned short	DEBUG_TIR_TIME;					// è¨ˆæ¸¬æ™‚é–“[ms]
+		unsigned short	DEBUG_NO[20];					// ã‚¨ãƒƒã‚¸è¦ç´ 
+		unsigned char	DEBUG_NO_COUNT;					// ã‚¨ãƒƒã‚¸è¦ç´ ã‚«ã‚¦ãƒ³ãƒˆæ•°
 // deb 2015.07.29 K.Uemura end
 #endif
 }	DEBUG_STR;
 
-/*	À²Ï°§Œä—p\‘¢‘Ì	*/
+/*	ï¾€ï½²ï¾ï½°åˆ¶å¾¡ç”¨æ§‹é€ ä½“	*/
 struct {
 		union{
 			unsigned short	WORD;
 			struct{
-				unsigned short  UNI_ST1	:1;				//ÕÆÊŞ°»Ù¶³İÀ1½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP1	:1;				//ÕÆÊŞ°»Ù¶³İÀ1Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST2	:1;				//ÕÆÊŞ°»Ù¶³İÀ2½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP2	:1;				//ÕÆÊŞ°»Ù¶³İÀ2Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST3	:1;				//ÕÆÊŞ°»Ù¶³İÀ3½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP3	:1;				//ÕÆÊŞ°»Ù¶³İÀ3Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST4	:1;				//ÕÆÊŞ°»Ù¶³İÀ4½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP4	:1;				//ÕÆÊŞ°»Ù¶³İÀ4Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST5	:1;				//ÕÆÊŞ°»Ù¶³İÀ5½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP5	:1;				//ÕÆÊŞ°»Ù¶³İÀ5Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST6	:1;				//ÕÆÊŞ°»Ù¶³İÀ6½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP6	:1;				//ÕÆÊŞ°»Ù¶³İÀ6Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST7	:1;				//ÕÆÊŞ°»Ù¶³İÀ7½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP7	:1;				//ÕÆÊŞ°»Ù¶³İÀ7Š®—¹ËŞ¯Ä
-				unsigned short  UNI_ST8	:1;				//ÕÆÊŞ°»Ù¶³İÀ8½À°ÄËŞ¯Ä
-				unsigned short  UNI_UP8	:1;				//ÕÆÊŞ°»Ù¶³İÀ8Š®—¹ËŞ¯Ä
+				unsigned short  UNI_ST1	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€1ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP1	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€1å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST2	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€2ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP2	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€2å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST3	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€3ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP3	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€3å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST4	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€4ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP4	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€4å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST5	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€5ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP5	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€5å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST6	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€6ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP6	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€6å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST7	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€7ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP7	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€7å®Œäº†ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_ST8	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€8ï½½ï¾€ï½°ï¾„ï¾‹ï¾ï½¯ï¾„
+				unsigned short  UNI_UP8	:1;				//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€8å®Œäº†ï¾‹ï¾ï½¯ï¾„
 				}	BIT;
 			}	MSEC_10;
-		unsigned short	UNI_CONT1	;					//ÕÆÊŞ°»Ù¶³İÀ1—p¶³İÀ
-		unsigned short	UNI_CONT2	;					//ÕÆÊŞ°»Ù¶³İÀ2—p¶³İÀ
-		unsigned short	UNI_CONT3	;					//ÕÆÊŞ°»Ù¶³İÀ3—p¶³İÀ
-		unsigned short	UNI_CONT4	;					//ÕÆÊŞ°»Ù¶³İÀ4—p¶³İÀ
-		unsigned short	UNI_CONT5	;					//ÕÆÊŞ°»Ù¶³İÀ5—p¶³İÀ
-		unsigned short	UNI_CONT6	;					//ÕÆÊŞ°»Ù¶³İÀ6—p¶³İÀ
-		unsigned short	UNI_CONT7	;					//ÕÆÊŞ°»Ù¶³İÀ7—p¶³İÀ
-		unsigned short	UNI_CONT8	;					//ÕÆÊŞ°»Ù¶³İÀ8—p¶³İÀ
-		unsigned short	UNI_COMP1	;					//ÕÆÊŞ°»Ù¶³İÀ1—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP2	;					//ÕÆÊŞ°»Ù¶³İÀ2—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP3	;					//ÕÆÊŞ°»Ù¶³İÀ3—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP4	;					//ÕÆÊŞ°»Ù¶³İÀ4—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP5	;					//ÕÆÊŞ°»Ù¶³İÀ5—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP6	;					//ÕÆÊŞ°»Ù¶³İÀ6—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP7	;					//ÕÆÊŞ°»Ù¶³İÀ7—p”äŠr¶³İÀ
-		unsigned short	UNI_COMP8	;					//ÕÆÊŞ°»Ù¶³İÀ8—p”äŠr¶³İÀ
+		unsigned short	UNI_CONT1	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€1ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT2	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€2ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT3	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€3ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT4	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€4ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT5	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€5ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT6	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€6ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT7	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€7ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_CONT8	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€8ç”¨ï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP1	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€1ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP2	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€2ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP3	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€3ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP4	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€4ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP5	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€5ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP6	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€6ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP7	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€7ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned short	UNI_COMP8	;					//ï¾•ï¾†ï¾Šï¾ï½°ï½»ï¾™ï½¶ï½³ï¾ï¾€8ç”¨æ¯”è¼ƒï½¶ï½³ï¾ï¾€
 		
-		unsigned char	MASTER_COUNT_1US;				// 1usÏ½À°¼°¹İ½½Ú¯ÄŞ¶³İÀ
-		unsigned char	MASTER_COUNT_10US;				// 10usÏ½À°¼°¹İ½½Ú¯ÄŞ¶³İÀ
-		unsigned char	MASTER_COUNT_100US;				// 100usÏ½À°¼°¹İ½½Ú¯ÄŞ¶³İÀ
+		unsigned char	MASTER_COUNT_1US;				// 1usï¾ï½½ï¾€ï½°ï½¼ï½°ï½¹ï¾ï½½ï½½ï¾šï½¯ï¾„ï¾ï½¶ï½³ï¾ï¾€
+		unsigned char	MASTER_COUNT_10US;				// 10usï¾ï½½ï¾€ï½°ï½¼ï½°ï½¹ï¾ï½½ï½½ï¾šï½¯ï¾„ï¾ï½¶ï½³ï¾ï¾€
+		unsigned char	MASTER_COUNT_100US;				// 100usï¾ï½½ï¾€ï½°ï½¼ï½°ï½¹ï¾ï½½ï½½ï¾šï½¯ï¾„ï¾ï½¶ï½³ï¾ï¾€
 		
 }	TIM1;
 
-/*	“ü—Íˆ——p\‘¢‘Ì	*/
+/*	å…¥åŠ›å‡¦ç†ç”¨æ§‹é€ ä½“	*/
 struct {
 		union{
 			unsigned short	WORD;
 			struct{
 				unsigned short					:1;		// 
-				unsigned short	IN_SHOT			:1;		// ŠO•”“ü—Í‹–‰Â
-				unsigned short	POWER_SW		:1;		// “dŒ¹½²¯Á
-				unsigned short	START_SW		:1;		// ½À°Ä½²¯Á
-				unsigned short	CLEAR_SW		:1;		// ¸Ø±½²¯Á
-				unsigned short	SELECT_SW		:1;		// ¾Ú¸Ä½²¯Á
-				unsigned short	PEAKHOLD_SW		:1;		// Ëß°¸Î°ÙÄŞ½²¯Á
-				unsigned short	MODE_SW			:1;		// Ó°ÄŞ½²¯Á
-				unsigned short	UP_SW			:1;		// ã½²¯Á
-				unsigned short	DOWN_SW			:1;		// ‰º½²¯Á
-				unsigned short	ECO_SW			:1;		// ECO½²¯Á
-				unsigned short	EXT_POWER		:1;		// ŠO•”“dŒ¹
-				unsigned short	HARDWARE_TYPE	:1;		// CNC/Îß°ÀÌŞÙØ‘Ö
-				unsigned short	BOOT_SW			:1;		// BOOT½²¯Á
-				unsigned short	COVER_OPEN		:1;		// ¶ÊŞ°½²¯ÁŠJ
-				unsigned short	COVER_CLOSE		:1;		// ¶ÊŞ°½²¯Á•Â
+				unsigned short	IN_SHOT			:1;		// å¤–éƒ¨å…¥åŠ›è¨±å¯
+				unsigned short	POWER_SW		:1;		// é›»æºï½½ï½²ï½¯ï¾
+				unsigned short	START_SW		:1;		// ï½½ï¾€ï½°ï¾„ï½½ï½²ï½¯ï¾
+				unsigned short	CLEAR_SW		:1;		// ï½¸ï¾˜ï½±ï½½ï½²ï½¯ï¾
+				unsigned short	SELECT_SW		:1;		// ï½¾ï¾šï½¸ï¾„ï½½ï½²ï½¯ï¾
+				unsigned short	PEAKHOLD_SW		:1;		// ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾ï½½ï½²ï½¯ï¾
+				unsigned short	MODE_SW			:1;		// ï¾“ï½°ï¾„ï¾ï½½ï½²ï½¯ï¾
+				unsigned short	UP_SW			:1;		// ä¸Šï½½ï½²ï½¯ï¾
+				unsigned short	DOWN_SW			:1;		// ä¸‹ï½½ï½²ï½¯ï¾
+				unsigned short	ECO_SW			:1;		// ECOï½½ï½²ï½¯ï¾
+				unsigned short	EXT_POWER		:1;		// å¤–éƒ¨é›»æº
+				unsigned short	HARDWARE_TYPE	:1;		// CNC/ï¾ï¾Ÿï½°ï¾€ï¾Œï¾ï¾™åˆ‡æ›¿
+				unsigned short	BOOT_SW			:1;		// BOOTï½½ï½²ï½¯ï¾
+				unsigned short	COVER_OPEN		:1;		// ï½¶ï¾Šï¾ï½°ï½½ï½²ï½¯ï¾é–‹
+				unsigned short	COVER_CLOSE		:1;		// ï½¶ï¾Šï¾ï½°ï½½ï½²ï½¯ï¾é–‰
 				}	BIT;
 			}	FLAG;
 			
-		unsigned char	JUMP_STATUS;					// ²İÌß¯Ä¶³İÀ
+		unsigned char	JUMP_STATUS;					// ï½²ï¾ï¾Œï¾Ÿï½¯ï¾„ï½¶ï½³ï¾ï¾€
 		
-		// ½²¯Á“ü—Í
-		// “dŒ¹½²¯Á
+		// ï½½ï½²ï½¯ï¾å…¥åŠ›
+		// é›»æºï½½ï½²ï½¯ï¾
 		union{
 			unsigned short	WORD;
 			struct{
-				unsigned short	ON		:8;				// “ü—Í‚ ‚è
-				unsigned short	OFF		:8;				// “ü—Í‚È‚µ
+				unsigned short	ON		:8;				// å…¥åŠ›ã‚ã‚Š
+				unsigned short	OFF		:8;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	POWER_SW;
 		
-		// ½À°Ä½²¯Á
+		// ï½½ï¾€ï½°ï¾„ï½½ï½²ï½¯ï¾
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char	ON		:4;				// “ü—Í‚ ‚è
-				unsigned char	OFF		:4;				// “ü—Í‚È‚µ
+				unsigned char	ON		:4;				// å…¥åŠ›ã‚ã‚Š
+				unsigned char	OFF		:4;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	START_SW;
 			
-		// ¸Ø±½²¯Á
+		// ï½¸ï¾˜ï½±ï½½ï½²ï½¯ï¾
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char	ON		:4;				// “ü—Í‚ ‚è
-				unsigned char	OFF		:4;				// “ü—Í‚È‚µ
+				unsigned char	ON		:4;				// å…¥åŠ›ã‚ã‚Š
+				unsigned char	OFF		:4;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	CLEAR_SW;
 			
-		// ¾Ú¸Ä½²¯Á
+		// ï½¾ï¾šï½¸ï¾„ï½½ï½²ï½¯ï¾
 		union{
 			unsigned long	LONG;
 			struct{
-				unsigned long	ON		:16;			// “ü—Í‚ ‚è
-				unsigned long	OFF		:16;			// “ü—Í‚È‚µ
+				unsigned long	ON		:16;			// å…¥åŠ›ã‚ã‚Š
+				unsigned long	OFF		:16;			// å…¥åŠ›ãªã—
 				}	BIT;
 			}	SELECT_SW;
 			
-		// Ëß°¸Î°ÙÄŞ½²¯Á
+		// ï¾‹ï¾Ÿï½°ï½¸ï¾ï½°ï¾™ï¾„ï¾ï½½ï½²ï½¯ï¾
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char	ON		:4;				// “ü—Í‚ ‚è
-				unsigned char	OFF		:4;				// “ü—Í‚È‚µ
+				unsigned char	ON		:4;				// å…¥åŠ›ã‚ã‚Š
+				unsigned char	OFF		:4;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	PEAKHOLD_SW;
 			
-		// Ó°ÄŞ½²¯Á
+		// ï¾“ï½°ï¾„ï¾ï½½ï½²ï½¯ï¾
 		union{
 			unsigned long	LONG;
 			struct{
-				unsigned long	ON		:16;			// “ü—Í‚ ‚è
-				unsigned long	OFF		:16;			// “ü—Í‚È‚µ
+				unsigned long	ON		:16;			// å…¥åŠ›ã‚ã‚Š
+				unsigned long	OFF		:16;			// å…¥åŠ›ãªã—
 				}	BIT;
 			}	MODE_SW;
 			
-		// ã½²¯Á
+		// ä¸Šï½½ï½²ï½¯ï¾
 		union{
 			unsigned long	LONG;
 			struct{
-				unsigned long	ON		:16;			// “ü—Í‚ ‚è
-				unsigned long	OFF		:16;			// “ü—Í‚È‚µ
+				unsigned long	ON		:16;			// å…¥åŠ›ã‚ã‚Š
+				unsigned long	OFF		:16;			// å…¥åŠ›ãªã—
 				}	BIT;
 			}	UP_SW;
 			
-		// ‰º½²¯Á
+		// ä¸‹ï½½ï½²ï½¯ï¾
 		union{
 			unsigned long	LONG;
 			struct{
-				unsigned long	ON		:16;			// “ü—Í‚ ‚è
-				unsigned long	OFF		:16;			// “ü—Í‚È‚µ
+				unsigned long	ON		:16;			// å…¥åŠ›ã‚ã‚Š
+				unsigned long	OFF		:16;			// å…¥åŠ›ãªã—
 				}	BIT;
 			}	DOWN_SW;
 			
-		// ECO½²¯Á
+		// ECOï½½ï½²ï½¯ï¾
 		union{
 			unsigned short	WORD;
 			struct{
-				unsigned short	ON		:8;				// “ü—Í‚ ‚è
-				unsigned short	OFF		:8;				// “ü—Í‚È‚µ
+				unsigned short	ON		:8;				// å…¥åŠ›ã‚ã‚Š
+				unsigned short	OFF		:8;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	ECO_SW;
 			
-		// ¶ÊŞ°½²¯ÁŠJ
+		// ï½¶ï¾Šï¾ï½°ï½½ï½²ï½¯ï¾é–‹
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char	ON		:4;				// “ü—Í‚ ‚è
-				unsigned char	OFF		:4;				// “ü—Í‚È‚µ
+				unsigned char	ON		:4;				// å…¥åŠ›ã‚ã‚Š
+				unsigned char	OFF		:4;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	COVER_OPEN;
 			
-		// ¶ÊŞ°½²¯Á•Â
+		// ï½¶ï¾Šï¾ï½°ï½½ï½²ï½¯ï¾é–‰
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char	ON		:4;				// “ü—Í‚ ‚è
-				unsigned char	OFF		:4;				// “ü—Í‚È‚µ
+				unsigned char	ON		:4;				// å…¥åŠ›ã‚ã‚Š
+				unsigned char	OFF		:4;				// å…¥åŠ›ãªã—
 				}	BIT;
 			}	COVER_CLOSE;
 }	IN;
 
-/*	o—Íˆ——p\‘¢‘Ì	*/
+/*	å‡ºåŠ›å‡¦ç†ç”¨æ§‹é€ ä½“	*/
 struct {
-		unsigned char	LED_STATUS;						// LED½Ã°À½
-		unsigned char	LED_STATUS_BEFORE;				// LED½Ã°À½(’¼‘O)
-		unsigned char	JUMP_STATUS;					// ²İÌß¯Ä¶³İÀ
-		unsigned char	MASTER_STATUS;					// §Œä½Ã°À½
-		unsigned char	SUB_STATUS;						// §Œä½Ã°À½
-		unsigned char	BOOT_LED_BLINK;					// BOOTLED“_–Å‰ñ”
+		unsigned char	LED_STATUS;						// LEDï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	LED_STATUS_BEFORE;				// LEDï½½ï¾ƒï½°ï¾€ï½½(ç›´å‰)
+		unsigned char	JUMP_STATUS;					// ï½²ï¾ï¾Œï¾Ÿï½¯ï¾„ï½¶ï½³ï¾ï¾€
+		unsigned char	MASTER_STATUS;					// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	SUB_STATUS;						// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	BOOT_LED_BLINK;					// BOOTLEDç‚¹æ»…å›æ•°
 		
-		unsigned short	BOOT_LED_COUNT;					// BOOTLED1ms¶³İÄ
+		unsigned short	BOOT_LED_COUNT;					// BOOTLED1msï½¶ï½³ï¾ï¾„
 }	OUT;
 
-/*	’ÊMˆ——p\‘¢‘Ì	*/
+/*	é€šä¿¡å‡¦ç†ç”¨æ§‹é€ ä½“	*/
 // RS422
 struct {
-		unsigned char	MASTER_STATUS;				// §Œä½Ã°À½
-		unsigned char	SUB_STATUS;					// §Œä½Ã°À½
-		unsigned char	WR_BUF[5000];				// ‘—MÊŞ¯Ì§
-		unsigned char	RE_BUF[1010];				// óMÊŞ¯Ì§
+		unsigned char	MASTER_STATUS;				// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	SUB_STATUS;					// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	WR_BUF[5000];				// é€ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
+		unsigned char	RE_BUF[1010];				// å—ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
 		
-		unsigned short	WR_CONT;					// ‘‚«‚İ¶³İÀ
-		unsigned short	RE_CONT;					// “Ç‚İo‚µ‰ñ”¶³İÀ
-		unsigned short	STARTUP_COUNT;				// ‹N“®ˆ—¶³İÄ
-		unsigned short	SEND_COUNT;					// ‘—M•¶š”
-		unsigned short	RECEIVE_COUNT;				// óM•¶š”
-		unsigned short	START_ADDRESS;				// ŠJn±ÄŞÚ½
+		unsigned short	WR_CONT;					// æ›¸ãè¾¼ã¿ï½¶ï½³ï¾ï¾€
+		unsigned short	RE_CONT;					// èª­ã¿å‡ºã—å›æ•°ï½¶ï½³ï¾ï¾€
+		unsigned short	STARTUP_COUNT;				// èµ·å‹•å‡¦ç†ï½¶ï½³ï¾ï¾„
+		unsigned short	SEND_COUNT;					// é€ä¿¡æ–‡å­—æ•°
+		unsigned short	RECEIVE_COUNT;				// å—ä¿¡æ–‡å­—æ•°
+		unsigned short	START_ADDRESS;				// é–‹å§‹ï½±ï¾„ï¾ï¾šï½½
 		
-		unsigned short	SET_COUNT;					// ºÏİÄŞ¾¯Ä¶³İÄ
-		unsigned short	SEND_DATA;					// ‘—MÃŞ°À
-		unsigned short	SEND_DATA_COUNT;			// ‘—MÃŞ°À¶³İÄ
-		unsigned short	RECEIVE_DATA;				// óMÃŞ°À
-		unsigned short	RECEIVE_DATA_COUNT;			// óMÃŞ°À¶³İÄ
+		unsigned short	SET_COUNT;					// ï½ºï¾ï¾ï¾„ï¾ï½¾ï½¯ï¾„ï½¶ï½³ï¾ï¾„
+		unsigned short	SEND_DATA;					// é€ä¿¡ï¾ƒï¾ï½°ï¾€
+		unsigned short	SEND_DATA_COUNT;			// é€ä¿¡ï¾ƒï¾ï½°ï¾€ï½¶ï½³ï¾ï¾„
+		unsigned short	RECEIVE_DATA;				// å—ä¿¡ï¾ƒï¾ï½°ï¾€
+		unsigned short	RECEIVE_DATA_COUNT;			// å—ä¿¡ï¾ƒï¾ï½°ï¾€ï½¶ï½³ï¾ï¾„
 		
-		unsigned short	receive[10];				// óMÃŞ°À
-		unsigned short	send[10];					// ‘—MÃŞ°À
+		unsigned short	receive[10];				// å—ä¿¡ï¾ƒï¾ï½°ï¾€
+		unsigned short	send[10];					// é€ä¿¡ï¾ƒï¾ï½°ï¾€
 		
 		/*
-		unsigned short	NO290;						// BLACK‚µ‚«‚¢’l(Z)
-		unsigned short	NO291;						// WHITE‚µ‚«‚¢’l(Z)
-		unsigned short	NO292;						// ×²İ¾İ»Áª¯¸ãŒÀ(Z)
-		unsigned short	NO293;						// ×²İ¾İ»Áª¯¸‰ºŒÀ(Z)
-		unsigned short	NO294;						// ’²ŒõÚÍŞÙ(Z)
+		unsigned short	NO290;						// BLACKã—ãã„å€¤(Z)
+		unsigned short	NO291;						// WHITEã—ãã„å€¤(Z)
+		unsigned short	NO292;						// ï¾—ï½²ï¾ï½¾ï¾ï½»ï¾ï½ªï½¯ï½¸ä¸Šé™(Z)
+		unsigned short	NO293;						// ï¾—ï½²ï¾ï½¾ï¾ï½»ï¾ï½ªï½¯ï½¸ä¸‹é™(Z)
+		unsigned short	NO294;						// èª¿å…‰ï¾šï¾ï¾ï¾™(Z)
 		
-// add 2014.08.07 K.Uemura start	‹N“®ˆ—Œ‹‰Ê•\¦
+// add 2014.08.07 K.Uemura start	èµ·å‹•å‡¦ç†çµæœè¡¨ç¤º
 		unsigned short	NO295;						// BLACK
 		unsigned short	NO296;						// WHITE
-		unsigned short	NO297;						// ãŒÀ
-		unsigned short	NO298;						// ‰ºŒÀ
+		unsigned short	NO297;						// ä¸Šé™
+		unsigned short	NO298;						// ä¸‹é™
 		*/
-		unsigned short	NO299;						// ’²ŒõƒŒƒxƒ‹
+		unsigned short	NO299;						// èª¿å…‰ãƒ¬ãƒ™ãƒ«
 // add 2014.08.07 K.Uemura end
 		
 		union{
 			unsigned short	WORD;
 			struct{
-				unsigned short	EXE			:1;		// Às
-				unsigned short	ROF			:1;		// READY OFFŒŸ’m
+				unsigned short	EXE			:1;		// å®Ÿè¡Œ
+				unsigned short	ROF			:1;		// READY OFFæ¤œçŸ¥
 				unsigned short				:1;		//
 				unsigned short	ACK			:1;		// ACK
 				unsigned short				:4;		//
-				unsigned short	RST			:1;		// ‹­§Ø¾¯Ä
+				unsigned short	RST			:1;		// å¼·åˆ¶ï¾˜ï½¾ï½¯ï¾„
 				unsigned short				:2;		//
-				unsigned short	ECD			:1;		// I—¹ğŒ–³Œø
+				unsigned short	ECD			:1;		// çµ‚äº†æ¡ä»¶ç„¡åŠ¹
 // chg 2016.12.06 K.Uemura start	GC0602
 				unsigned short				:1;		//
-				unsigned short	RSN			:1;		// ‘e‘ª’è
+				unsigned short	RSN			:1;		// ç²—æ¸¬å®š
 //				unsigned short				:2;		//
 // chg 2016.12.06 K.Uemura end
-				unsigned short	COM			:1;		// TPD’ÊM–³Œø
-				unsigned short	DIS			:1;		// TPD–³Œø
+				unsigned short	COM			:1;		// TPDé€šä¿¡ç„¡åŠ¹
+				unsigned short	DIS			:1;		// TPDç„¡åŠ¹
 				}	BIT;
-			}	NO300;								// w—ß
+			}	NO300;								// æŒ‡ä»¤
 		
-		unsigned short	NO301;						// w—ßˆø”
-		unsigned short	NO302;						// —\”õ
-		unsigned short	NO303;						// ‰ñ“]”[ãˆÊ]
-		unsigned short	NO304;						// ‰ñ“]”[‰ºˆÊ]
-		unsigned short	NO305;						// n”
-		unsigned short	NO306;						// H‹ïŒa
-		unsigned short	NO307;						// ˆø”
+		unsigned short	NO301;						// æŒ‡ä»¤å¼•æ•°
+		unsigned short	NO302;						// äºˆå‚™
+		unsigned short	NO303;						// å›è»¢æ•°[ä¸Šä½]
+		unsigned short	NO304;						// å›è»¢æ•°[ä¸‹ä½]
+		unsigned short	NO305;						// åˆƒæ•°
+		unsigned short	NO306;						// å·¥å…·å¾„
+		unsigned short	NO307;						// å¼•æ•°
 		unsigned short	NO308;						// 
 		unsigned short	NO309;						// 
 			
@@ -823,78 +823,78 @@ struct {
 			struct{
 				unsigned short	POW			:1;		// POWER
 				unsigned short	RDY			:1;		// READY
-				unsigned short	FIN			:1;		// Š®—¹
+				unsigned short	FIN			:1;		// å®Œäº†
 				unsigned short	STR			:1;		// STROBE
-				unsigned short				:3;		// ÀŞĞ°Ì×¸Ş
-				unsigned short	LED			:1;		// LEDÌ×¸Ş
-				unsigned short	DIR			:2;		// ‘–¸•ûŒü(0:–¢ŒŸo 1:‰E´¯¼Ş 2:¶´¯¼Ş 3:—¼´¯¼Ş)
-				unsigned short				:2;		// ÀŞĞ°Ì×¸Ş
-				unsigned short	CSO			:1;		// ‹ßÚ¾İ»1(¶ÊŞ°OPEN)
-				unsigned short	CSC			:1;		// ‹ßÚ¾İ»2(¶ÊŞ°CLOSE)
-				unsigned short	COV			:1;		// “d¥ÊŞÙÌŞ1(¶ÊŞ°ó‘Ô)
-				unsigned short	PUR			:1;		// “d¥ÊŞÙÌŞ2(´‘|´±ó‘Ô)
+				unsigned short				:3;		// ï¾€ï¾ï¾ï½°ï¾Œï¾—ï½¸ï¾
+				unsigned short	LED			:1;		// LEDï¾Œï¾—ï½¸ï¾
+				unsigned short	DIR			:2;		// èµ°æŸ»æ–¹å‘(0:æœªæ¤œå‡º 1:å³ï½´ï½¯ï½¼ï¾ 2:å·¦ï½´ï½¯ï½¼ï¾ 3:ä¸¡ï½´ï½¯ï½¼ï¾)
+				unsigned short				:2;		// ï¾€ï¾ï¾ï½°ï¾Œï¾—ï½¸ï¾
+				unsigned short	CSO			:1;		// è¿‘æ¥ï½¾ï¾ï½»1(ï½¶ï¾Šï¾ï½°OPEN)
+				unsigned short	CSC			:1;		// è¿‘æ¥ï½¾ï¾ï½»2(ï½¶ï¾Šï¾ï½°CLOSE)
+				unsigned short	COV			:1;		// é›»ç£ï¾Šï¾ï¾™ï¾Œï¾1(ï½¶ï¾Šï¾ï½°çŠ¶æ…‹)
+				unsigned short	PUR			:1;		// é›»ç£ï¾Šï¾ï¾™ï¾Œï¾2(æ¸…æƒï½´ï½±çŠ¶æ…‹)
 				}	BIT;
-			}	NO310;								// ó‘Ô
+			}	NO310;								// çŠ¶æ…‹
 			
-		unsigned short	NO311;						// ó‘Ô”Ô†
-		unsigned short	NO312;						// ´×°”Ô†
+		unsigned short	NO311;						// çŠ¶æ…‹ç•ªå·
+		unsigned short	NO312;						// ï½´ï¾—ï½°ç•ªå·
 		
-		unsigned short	NO313;						// Œv‘ªŒ‹‰Ê Œ»İ’l(REAL)	ãˆÊ
-		unsigned short	NO314;						// Œv‘ªŒ‹‰Ê Œ»İ’l(REAL)	‰ºˆÊ
-		unsigned short	NO315;						// Œv‘ªŒ‹‰Ê ÅI’l(d)		ãˆÊ
-		unsigned short	NO316;						// Œv‘ªŒ‹‰Ê ÅI’l(d)		‰ºˆÊ
-		unsigned short	NO317;						// Œv‘ªŒ‹‰Ê ÅI’l(D)		ãˆÊ
-		unsigned short	NO318;						// Œv‘ªŒ‹‰Ê ÅI’l(D)		‰ºˆÊ
-		unsigned short	NO319;						// Œv‘ªŒ‹‰Ê ÅI’l(ƒ¢X)		ãˆÊ
-		unsigned short	NO320;						// Œv‘ªŒ‹‰Ê ÅI’l(ƒ¢X)		‰ºˆÊ
-		unsigned short	NO321;						// Œv‘ªŒ‹‰Ê ÅI’l(U‚ê)	ãˆÊ
-		unsigned short	NO322;						// Œv‘ªŒ‹‰Ê ÅI’l(U‚ê)	‰ºˆÊ
+		unsigned short	NO313;						// è¨ˆæ¸¬çµæœ ç¾åœ¨å€¤(REAL)	ä¸Šä½
+		unsigned short	NO314;						// è¨ˆæ¸¬çµæœ ç¾åœ¨å€¤(REAL)	ä¸‹ä½
+		unsigned short	NO315;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(d)		ä¸Šä½
+		unsigned short	NO316;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(d)		ä¸‹ä½
+		unsigned short	NO317;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(D)		ä¸Šä½
+		unsigned short	NO318;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(D)		ä¸‹ä½
+		unsigned short	NO319;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(Î”X)		ä¸Šä½
+		unsigned short	NO320;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(Î”X)		ä¸‹ä½
+		unsigned short	NO321;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(æŒ¯ã‚Œ)	ä¸Šä½
+		unsigned short	NO322;						// è¨ˆæ¸¬çµæœ æœ€çµ‚å€¤(æŒ¯ã‚Œ)	ä¸‹ä½
 		
-		unsigned short	NO323;						// ‹ó‚«
-		unsigned short	NO324;						// ‹ó‚«
-		unsigned short	NO325;						// ‹ó‚«
-		unsigned short	NO326;						// ‹ó‚«
+		unsigned short	NO323;						// ç©ºã
+		unsigned short	NO324;						// ç©ºã
+		unsigned short	NO325;						// ç©ºã
+		unsigned short	NO326;						// ç©ºã
 		
-		//unsigned short	NO327;						// Œv‘ª‘”(ãˆÊ)
-		//unsigned short	NO328;						// Œv‘ª‘”(‰ºˆÊ)
-		//unsigned short	NO329;						// OK”(ãˆÊ)
-		//unsigned short	NO330;						// OK”(‰ºˆÊ)
+		//unsigned short	NO327;						// è¨ˆæ¸¬ç·æ•°(ä¸Šä½)
+		//unsigned short	NO328;						// è¨ˆæ¸¬ç·æ•°(ä¸‹ä½)
+		//unsigned short	NO329;						// OKæ•°(ä¸Šä½)
+		//unsigned short	NO330;						// OKæ•°(ä¸‹ä½)
 		
-		unsigned short	NO331;						// HDI(SKIP 6“_)
-		unsigned short	NO332;						// LED11“”
-		//unsigned short	NO333;						// Ú‘±ó‘Ô
+		unsigned short	NO331;						// HDI(SKIP 6ç‚¹)
+		unsigned short	NO332;						// LED11ç¯
+		//unsigned short	NO333;						// æ¥ç¶šçŠ¶æ…‹
 		
 		union{
 			unsigned short	WORD;
 			struct{
 				unsigned short	LINK		:1;		// LINK UP
 				unsigned short	POW			:1;		// POWER
-				unsigned short				:14;	// ÀŞĞ°Ì×¸Ş
+				unsigned short				:14;	// ï¾€ï¾ï¾ï½°ï¾Œï¾—ï½¸ï¾
 				}	BIT;
-			}	NO333;								// Ú‘±ó‘Ô
+			}	NO333;								// æ¥ç¶šçŠ¶æ…‹
 		
 // add 2015.08.06 K.Uemura start	
-		unsigned short	NO2981[10];					// U‚êFŠen‚ÌÅ‘å
-		unsigned short	NO2998;						// U‚êFÅ¬
-		unsigned short	NO2999;						// U‚êFÅ‘å
+		unsigned short	NO2981[10];					// æŒ¯ã‚Œï¼šå„åˆƒã®æœ€å¤§
+		unsigned short	NO2998;						// æŒ¯ã‚Œï¼šæœ€å°
+		unsigned short	NO2999;						// æŒ¯ã‚Œï¼šæœ€å¤§
 // add 2015.08.06 K.Uemura end
 		unsigned short	NO3000[640];				// 
 		
 		/**/
 		/*
-		unsigned short	NO9001;						// ¶´¯¼ŞÅ¬ˆÊ’u
-		unsigned short	NO9002;						// ‰E´¯¼ŞÅ‘åˆÊ’u
-		unsigned short	NO9003;						// ¶´¯¼ŞŒXÎ
-		unsigned short	NO9004;						// ‰E´¯¼ŞŒXÎ
-		unsigned short	NO9005;						// ´¯¼ŞŠÔ‚Ì·
+		unsigned short	NO9001;						// å·¦ï½´ï½¯ï½¼ï¾æœ€å°ä½ç½®
+		unsigned short	NO9002;						// å³ï½´ï½¯ï½¼ï¾æœ€å¤§ä½ç½®
+		unsigned short	NO9003;						// å·¦ï½´ï½¯ï½¼ï¾å‚¾æ–œ
+		unsigned short	NO9004;						// å³ï½´ï½¯ï½¼ï¾å‚¾æ–œ
+		unsigned short	NO9005;						// ï½´ï½¯ï½¼ï¾é–“ã®å·®
 		
 #if	1
-		unsigned short	NO9006;						// 3005FÅ‘å
-		unsigned short	NO9007;						// 3005FÅ¬
-		unsigned short	NO9008;						// 3003FÅ¬
-		unsigned short	NO9009;						// 3003FÅ‘å
-		unsigned short	NO9010;						// 3004FÅ¬
-		unsigned short	NO9011;						// 3004FÅ‘å
+		unsigned short	NO9006;						// 3005ï¼šæœ€å¤§
+		unsigned short	NO9007;						// 3005ï¼šæœ€å°
+		unsigned short	NO9008;						// 3003ï¼šæœ€å°
+		unsigned short	NO9009;						// 3003ï¼šæœ€å¤§
+		unsigned short	NO9010;						// 3004ï¼šæœ€å°
+		unsigned short	NO9011;						// 3004ï¼šæœ€å¤§
 		unsigned short	NO9012;						// 
 		unsigned short	NO9013;						// 
 		unsigned short	NO9014;						// 
@@ -905,8 +905,8 @@ struct {
 		unsigned short	NO9019;						// 
 		unsigned short	NO9020;						// d
 		unsigned short	NO9021;						// D
-		unsigned short	NO9022;						// ƒ¢X
-		unsigned short	NO9023;						// U‚ê(TIR)
+		unsigned short	NO9022;						// Î”X
+		unsigned short	NO9023;						// æŒ¯ã‚Œ(TIR)
 		unsigned short	NO9024;						// 
 		unsigned short	NO9025;						// 
 		unsigned short	NO9026;						// 
@@ -919,25 +919,25 @@ struct {
 		unsigned short	NO9033;						// 
 		unsigned short	NO9034;						// D
 		unsigned short	NO9035;						// 
-		unsigned short	NO9036;						// ƒ¢X
+		unsigned short	NO9036;						// Î”X
 		unsigned short	NO9037;						// 
-		unsigned short	NO9038;						// U‚ê
+		unsigned short	NO9038;						// æŒ¯ã‚Œ
 		unsigned short	NO9039;						// 
 #endif
 
 */
 		
-		unsigned short	NO101;						// ¶´¯¼ŞÅ¬ˆÊ’u
-		unsigned short	NO102;						// ‰E´¯¼ŞÅ‘åˆÊ’u
-		unsigned short	NO103;						// ¶´¯¼ŞŒXÎ
-		unsigned short	NO104;						// ‰E´¯¼ŞŒXÎ
-		unsigned short	NO105;						// ´¯¼ŞŠÔ‚Ì·
-		unsigned short	NO106;						// 3005FÅ‘å
-		unsigned short	NO107;						// 3005FÅ¬
-		unsigned short	NO108;						// 3003FÅ¬
-		unsigned short	NO109;						// 3003FÅ‘å
-		unsigned short	NO110;						// 3004FÅ¬
-		unsigned short	NO111;						// 3004FÅ‘å
+		unsigned short	NO101;						// å·¦ï½´ï½¯ï½¼ï¾æœ€å°ä½ç½®
+		unsigned short	NO102;						// å³ï½´ï½¯ï½¼ï¾æœ€å¤§ä½ç½®
+		unsigned short	NO103;						// å·¦ï½´ï½¯ï½¼ï¾å‚¾æ–œ
+		unsigned short	NO104;						// å³ï½´ï½¯ï½¼ï¾å‚¾æ–œ
+		unsigned short	NO105;						// ï½´ï½¯ï½¼ï¾é–“ã®å·®
+		unsigned short	NO106;						// 3005ï¼šæœ€å¤§
+		unsigned short	NO107;						// 3005ï¼šæœ€å°
+		unsigned short	NO108;						// 3003ï¼šæœ€å°
+		unsigned short	NO109;						// 3003ï¼šæœ€å¤§
+		unsigned short	NO110;						// 3004ï¼šæœ€å°
+		unsigned short	NO111;						// 3004ï¼šæœ€å¤§
 		unsigned short	NO112;						// 
 		unsigned short	NO113;						// 
 		unsigned short	NO114;						// 
@@ -948,8 +948,8 @@ struct {
 		unsigned short	NO119;						// 
 		unsigned short	NO120;						// d
 		unsigned short	NO121;						// D
-		unsigned short	NO122;						// ƒ¢X
-		unsigned short	NO123;						// U‚ê(TIR)
+		unsigned short	NO122;						// Î”X
+		unsigned short	NO123;						// æŒ¯ã‚Œ(TIR)
 		unsigned short	NO124;						// 
 		unsigned short	NO125;						// 
 		unsigned short	NO126;						// 
@@ -962,9 +962,9 @@ struct {
 		unsigned short	NO133;						// 
 		unsigned short	NO134;						// D
 		unsigned short	NO135;						// 
-		unsigned short	NO136;						// ƒ¢X
+		unsigned short	NO136;						// Î”X
 		unsigned short	NO137;						// 
-		unsigned short	NO138;						// U‚ê
+		unsigned short	NO138;						// æŒ¯ã‚Œ
 		unsigned short	NO139;						// 
 		unsigned short	NO140;						// 
 		unsigned short	NO141;						// 
@@ -977,76 +977,76 @@ struct {
 		unsigned short	NO148;						// 
 		unsigned short	NO149;						// 
 // add 2016.09.05 K.Uemura start	G90501
-		unsigned short	Dummy;						// ÀŞĞ°
+		unsigned short	Dummy;						// ï¾€ï¾ï¾ï½°
 // add 2016.09.05 K.Uemura end
 
-		unsigned short	MEM_BUF[3001];				// ÒÓØÊŞ¯Ì§
+		unsigned short	MEM_BUF[3001];				// ï¾’ï¾“ï¾˜ï¾Šï¾ï½¯ï¾Œï½§
 		
 }	COM0;
 
 // RS232C
 struct {
-		unsigned char	MASTER_STATUS;				// §Œä½Ã°À½
-		unsigned char	SUB_STATUS;					// §Œä½Ã°À½
-		unsigned char	RE_BUF[10];					// óMÊŞ¯Ì§
+		unsigned char	MASTER_STATUS;				// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	SUB_STATUS;					// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	RE_BUF[10];					// å—ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
 		
-		unsigned short	WR_CONT;					// ‘‚«‚İ¶³İÀ
-		unsigned short	RE_CONT;					// “Ç‚İo‚µ‰ñ”¶³İÀ
+		unsigned short	WR_CONT;					// æ›¸ãè¾¼ã¿ï½¶ï½³ï¾ï¾€
+		unsigned short	RE_CONT;					// èª­ã¿å‡ºã—å›æ•°ï½¶ï½³ï¾ï¾€
 }	COM2;
 
 // CFG
 struct {
-		unsigned char	MASTER_STATUS;				// §Œä½Ã°À½
-		unsigned char	SUB_STATUS;					// §Œä½Ã°À½
-		unsigned char	WR_BUF[500];				// ‘—MÊŞ¯Ì§
-		unsigned char	RE_BUF[100];				// óMÊŞ¯Ì§
+		unsigned char	MASTER_STATUS;				// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	SUB_STATUS;					// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	WR_BUF[500];				// é€ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
+		unsigned char	RE_BUF[100];				// å—ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
 		
-		unsigned short	STARTUP_COUNT;				// ‹N“®ˆ—¶³İÄ
-		unsigned short	WR_CONT;					// ‘‚«‚İ¶³İÀ
-		unsigned short	RE_CONT;					// “Ç‚İo‚µ‰ñ”¶³İÀ
-		unsigned short	SEND_COUNT;					// ‘—M•¶š”
+		unsigned short	STARTUP_COUNT;				// èµ·å‹•å‡¦ç†ï½¶ï½³ï¾ï¾„
+		unsigned short	WR_CONT;					// æ›¸ãè¾¼ã¿ï½¶ï½³ï¾ï¾€
+		unsigned short	RE_CONT;					// èª­ã¿å‡ºã—å›æ•°ï½¶ï½³ï¾ï¾€
+		unsigned short	SEND_COUNT;					// é€ä¿¡æ–‡å­—æ•°
 }	COM3;
 
 // M25
 struct {
-		unsigned char	MASTER_STATUS;				// §Œä½Ã°À½
-		unsigned char	SUB_STATUS;					// §Œä½Ã°À½
-		unsigned char	DATA_SELECT;				// ÃŞ°À‘I‘ğ
-		unsigned char	WR_BUF[300];				// ‘—MÊŞ¯Ì§
-		unsigned char	RE_BUF[520];				// óMÊŞ¯Ì§
+		unsigned char	MASTER_STATUS;				// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	SUB_STATUS;					// åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	DATA_SELECT;				// ï¾ƒï¾ï½°ï¾€é¸æŠ
+		unsigned char	WR_BUF[300];				// é€ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
+		unsigned char	RE_BUF[520];				// å—ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
 		
-		unsigned short	STARTUP_COUNT;				// ‹N“®ˆ—¶³İÄ
-		unsigned short	WR_CONT;					// ‘‚«‚İ¶³İÀ
-		unsigned short	RE_CONT;					// “Ç‚İo‚µ‰ñ”¶³İÀ
-		unsigned short	SEND_COUNT;					// ‘—M•¶š”
+		unsigned short	STARTUP_COUNT;				// èµ·å‹•å‡¦ç†ï½¶ï½³ï¾ï¾„
+		unsigned short	WR_CONT;					// æ›¸ãè¾¼ã¿ï½¶ï½³ï¾ï¾€
+		unsigned short	RE_CONT;					// èª­ã¿å‡ºã—å›æ•°ï½¶ï½³ï¾ï¾€
+		unsigned short	SEND_COUNT;					// é€ä¿¡æ–‡å­—æ•°
 		
-		unsigned long	START_ADDRESS;				// ŠJn±ÄŞÚ½
+		unsigned long	START_ADDRESS;				// é–‹å§‹ï½±ï¾„ï¾ï¾šï½½
 }	COM6;
 
 // LED
 struct {
-		unsigned char   SEG_BUF[15]	;					// 7¾¸Ş•\¦—pÊŞ¯Ì§
-		unsigned char	ON_COUNT;						// ONŠÔ
+		unsigned char   SEG_BUF[15]	;					// 7ï½¾ï½¸ï¾è¡¨ç¤ºç”¨ï¾Šï¾ï½¯ï¾Œï½§
+		unsigned char	ON_COUNT;						// ONæ™‚é–“
 		
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char	L				:1;		// Å“_L
-				unsigned char	R				:1;		// Å“_R
-				unsigned char	Z				:1;		// Å“_Z
+				unsigned char	L				:1;		// ç„¦ç‚¹L
+				unsigned char	R				:1;		// ç„¦ç‚¹R
+				unsigned char	Z				:1;		// ç„¦ç‚¹Z
 				unsigned char					:5;		// 
 				}	BIT;
 			}	FOCUS;
 			
-		unsigned char	Z_FOCUSING;						// Z²4“”LED
-		unsigned short	FOCUSING;						// X²11“”LED
+		unsigned char	Z_FOCUSING;						// Zè»¸4ç¯LED
+		unsigned short	FOCUSING;						// Xè»¸11ç¯LED
 		
 		union{
 			unsigned short	WORD;
 			struct{
 				// Measure
-				unsigned short	LESS			:1;		// u…v¬‚È‚è²º°Ù	(less than or equal)
-				unsigned short	GREATER			:1;		// u„v‘å‚È‚è		(greater than)
+				unsigned short	LESS			:1;		// ã€Œâ‰¦ã€å°ãªã‚Šï½²ï½ºï½°ï¾™	(less than or equal)
+				unsigned short	GREATER			:1;		// ã€Œï¼ã€å¤§ãªã‚Š		(greater than)
 				unsigned short	RUN_OUT			:1;		// Run Out
 				// Setting
 				unsigned short	FOCUS			:1;		// Focus
@@ -1059,61 +1059,61 @@ struct {
 				
 				unsigned short	POWER			:1;		// POWER
 				unsigned short	ECO				:1;		// ECO
-				unsigned short	SPARE			:1;		// —\”õ
+				unsigned short	SPARE			:1;		// äºˆå‚™
 				// Logo
 				unsigned short					:4;		// 
 				}	BIT;
 			}	MSP;
 }	LED;
 
-/*	I2C’ÊMˆ——p\‘¢‘Ì	*/
+/*	I2Cé€šä¿¡å‡¦ç†ç”¨æ§‹é€ ä½“	*/
 struct {
 		union{
 			unsigned char	BYTE;
 			struct{
 				unsigned char					:7;
-				unsigned char	ADDRESS_CHANGE	:1;		// ±ÄŞÚ½•ÏXÌ×¸Ş
+				unsigned char	ADDRESS_CHANGE	:1;		// ï½±ï¾„ï¾ï¾šï½½å¤‰æ›´ï¾Œï¾—ï½¸ï¾
 				}	BIT;
 			}	FLAG;
 			
-		// ÒÓØ²Æ¼¬Ù[1] + Êß×Ò°À[4000] + X¶´¯¼Ş(‹ô”)EX‰E´¯¼Ş(Šï”)[4000] + Z‰E´¯¼Ş(Šï”)[2000]
-		unsigned char   WR_BUF[10100];			// ‘—MÊŞ¯Ì§
-		unsigned char   RE_BUF[10100];			// óMÊŞ¯Ì§
-		unsigned char   DUMMY		;			//óMÀŞĞ°
-		unsigned char	MASTER_STATUS	;		//§Œä½Ã°À½
-		unsigned char	SUB_STATUS	;			//§Œä½Ã°À½
-		unsigned char   WR_COMP		;			//‘‚«‚İ”äŠr¶³İÀ
-		unsigned char   SLAVE_ADD	;			//½Ú²ÌŞ±ÄŞÚ½
-		unsigned char   ADD_HI		;			//ÒÓØ±ÄŞÚ½ãˆÊ
-		unsigned char   ADD_LOW		;			//ÒÓØ±ÄŞÚ½‰ºˆÊ
-		unsigned char   ADD_NO_HI		;		//ÒÓØ±ÄŞÚ½ÅİÊŞ°ãˆÊ
-		unsigned char   ADD_NO_LOW		;		//ÒÓØ±ÄŞÚ½ÅİÊŞ°‰ºˆÊ
-		unsigned char   RESET_COUNT		;		// ¿ÌÄ³ª±Ø¾¯Ä¶³İÄ
+		// ï¾’ï¾“ï¾˜ï½²ï¾†ï½¼ï½¬ï¾™[1] + ï¾Šï¾Ÿï¾—ï¾’ï½°ï¾€[4000] + Xå·¦ï½´ï½¯ï½¼ï¾(å¶æ•°)ãƒ»Xå³ï½´ï½¯ï½¼ï¾(å¥‡æ•°)[4000] + Zå³ï½´ï½¯ï½¼ï¾(å¥‡æ•°)[2000]
+		unsigned char   WR_BUF[10100];			// é€ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
+		unsigned char   RE_BUF[10100];			// å—ä¿¡ï¾Šï¾ï½¯ï¾Œï½§
+		unsigned char   DUMMY		;			//å—ä¿¡ï¾€ï¾ï¾ï½°
+		unsigned char	MASTER_STATUS	;		//åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char	SUB_STATUS	;			//åˆ¶å¾¡ï½½ï¾ƒï½°ï¾€ï½½
+		unsigned char   WR_COMP		;			//æ›¸ãè¾¼ã¿æ¯”è¼ƒï½¶ï½³ï¾ï¾€
+		unsigned char   SLAVE_ADD	;			//ï½½ï¾šï½²ï¾Œï¾ï½±ï¾„ï¾ï¾šï½½
+		unsigned char   ADD_HI		;			//ï¾’ï¾“ï¾˜ï½±ï¾„ï¾ï¾šï½½ä¸Šä½
+		unsigned char   ADD_LOW		;			//ï¾’ï¾“ï¾˜ï½±ï¾„ï¾ï¾šï½½ä¸‹ä½
+		unsigned char   ADD_NO_HI		;		//ï¾’ï¾“ï¾˜ï½±ï¾„ï¾ï¾šï½½ï¾…ï¾ï¾Šï¾ï½°ä¸Šä½
+		unsigned char   ADD_NO_LOW		;		//ï¾’ï¾“ï¾˜ï½±ï¾„ï¾ï¾šï½½ï¾…ï¾ï¾Šï¾ï½°ä¸‹ä½
+		unsigned char   RESET_COUNT		;		// ï½¿ï¾Œï¾„ï½³ï½ªï½±ï¾˜ï½¾ï½¯ï¾„ï½¶ï½³ï¾ï¾„
 		
-		unsigned short  WR_CONT		;			//‘‚«‚İ¶³İÀ
-		unsigned short	RE_CONT		;			//“Ç‚İo‚µ‰ñ”¶³İÀ
-		unsigned short  LAST_ADDRESS;			// ÅIÃŞ°À
-		unsigned short  STATUS		;			//½Ã°À½
+		unsigned short  WR_CONT		;			//æ›¸ãè¾¼ã¿ï½¶ï½³ï¾ï¾€
+		unsigned short	RE_CONT		;			//èª­ã¿å‡ºã—å›æ•°ï½¶ï½³ï¾ï¾€
+		unsigned short  LAST_ADDRESS;			// æœ€çµ‚ï¾ƒï¾ï½°ï¾€
+		unsigned short  STATUS		;			//ï½½ï¾ƒï½°ï¾€ï½½
 }	I2C;
 
-/*	AD“ü—Íˆ—§Œä—p\‘¢‘Ì	*/
+/*	ADå…¥åŠ›å‡¦ç†åˆ¶å¾¡ç”¨æ§‹é€ ä½“	*/
 struct {
 		union{
 			unsigned char	BYTE;
 			struct{
-				unsigned char			:6;		//ÀŞĞ°ËŞ¯Ä
-				unsigned char	ST		:1;		//AD“ü—Íˆ—½À°ÄÌ×¸Ş
-				unsigned char	FIN		:1;		//AD“ü—Íˆ—½À°ÄÌ×¸Ş
+				unsigned char			:6;		//ï¾€ï¾ï¾ï½°ï¾‹ï¾ï½¯ï¾„
+				unsigned char	ST		:1;		//ADå…¥åŠ›å‡¦ç†ï½½ï¾€ï½°ï¾„ï¾Œï¾—ï½¸ï¾
+				unsigned char	FIN		:1;		//ADå…¥åŠ›å‡¦ç†ï½½ï¾€ï½°ï¾„ï¾Œï¾—ï½¸ï¾
 				}	BIT;
 			}	FLAG;
 			
-		unsigned char	COUNT		;			//“ü—Íˆ—ÏZ¶³İÀ
-		unsigned char	STATUS		;			//“ü—Íˆ—ÏZ¶³İÀ
+		unsigned char	COUNT		;			//å…¥åŠ›å‡¦ç†ç©ç®—ï½¶ï½³ï¾ï¾€
+		unsigned char	STATUS		;			//å…¥åŠ›å‡¦ç†ç©ç®—ï½¶ï½³ï¾ï¾€
 		
-		unsigned short	ADIN0[21]	;			//“ü—ÍÃŞ°ÀŠi”[•Ï”
-		unsigned short	ADIN0MAX	;			//“ü—ÍÃŞ°ÀŠi”[•Ï”(Å‘å’l)
-		unsigned short	ADIN0MIN	;			//“ü—ÍÃŞ°ÀŠi”[•Ï”(Å¬’l)
-		unsigned short	V_BATT	;				// “dŒ¹“dˆ³
-		unsigned short	INTERVAL	;			//“ü—Íˆ—²İÀ°ÊŞÙ¶³İÀ
-		unsigned short	INPUT		;			//“ü—ÍÕÆ¯Ä
+		unsigned short	ADIN0[21]	;			//å…¥åŠ›ï¾ƒï¾ï½°ï¾€æ ¼ç´å¤‰æ•°
+		unsigned short	ADIN0MAX	;			//å…¥åŠ›ï¾ƒï¾ï½°ï¾€æ ¼ç´å¤‰æ•°(æœ€å¤§å€¤)
+		unsigned short	ADIN0MIN	;			//å…¥åŠ›ï¾ƒï¾ï½°ï¾€æ ¼ç´å¤‰æ•°(æœ€å°å€¤)
+		unsigned short	V_BATT	;				// é›»æºé›»åœ§
+		unsigned short	INTERVAL	;			//å…¥åŠ›å‡¦ç†ï½²ï¾ï¾€ï½°ï¾Šï¾ï¾™ï½¶ï½³ï¾ï¾€
+		unsigned short	INPUT		;			//å…¥åŠ›ï¾•ï¾†ï½¯ï¾„
 }	ADCOV;
