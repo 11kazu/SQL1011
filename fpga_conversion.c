@@ -164,25 +164,25 @@ void send_to_fpga_conversion(void)
 
 			switch(SEQ.CBUS_NUMBER){
 				case 211:		// 左ｴｯｼﾞ座標
-					COM0.NO101 = SEQ.INPUT_DBUS * 10;
-					COM0.NO103 = 99999;
+					COM0.NO101 = (unsigned short)(SEQ.INPUT_DBUS * 10);
+					COM0.NO103 = 65535;
 					break;
 
 				case 212:		// 右ｴｯｼﾞ座標
-					COM0.NO102 = SEQ.INPUT_DBUS * 10;
-					COM0.NO104 = 99999;
+					COM0.NO102 = (unsigned short)(SEQ.INPUT_DBUS * 10);
+					COM0.NO104 = 65535;
 					break;
 
 				case 213:		// 左ｴｯｼﾞ傾斜
 					RESULT.FOCUS_LEFT[0] = SEQ.INPUT_DBUS;
 					SEQ.INPUT_DBUS_LONG = SEQ.INPUT_DBUS * 1000;
-					COM0.NO103 = SEQ.INPUT_DBUS_LONG;
+					COM0.NO103 = (unsigned short)SEQ.INPUT_DBUS_LONG;
 					break;
 
 				case 214:		// 右ｴｯｼﾞ傾斜
 					RESULT.FOCUS_RIGHT[0] = SEQ.INPUT_DBUS;
 					SEQ.INPUT_DBUS_LONG = SEQ.INPUT_DBUS * 1000;
-					COM0.NO104 = SEQ.INPUT_DBUS_LONG;
+					COM0.NO104 = (unsigned short)SEQ.INPUT_DBUS_LONG;
 					break;
 
 				case 216:		// 平均値・最小値・最大値
@@ -266,8 +266,8 @@ void send_to_fpga_conversion(void)
 				//
 				
 				if(SEQ.MEASUREMENT_DIRECTION == X_DIRECTION)	ave_number = X_AVERAGE_NUMBER;		// 計測方向がX方向のとき
-				else											ave_number = Z_AVERAGE_NUMBER;		// 計測方向がZ方向のとき
-				
+								case 211:		// 左ｴｯｼﾞ座標
+									COM0.NO101 = (unsigned short)(SEQ.INPUT_DBUS * 10);
 				if(SEQ.TABLE_TEMP_COUNT >= ave_number){		// ｶｳﾝﾄが平均数のとき
 				
 					OUT.SUB_STATUS = 5;						// START実行中表示の停止
@@ -338,8 +338,8 @@ void send_to_fpga_conversion(void)
 					//
 				}
 			}
-			break;
-			
+									case 212:		// 右ｴｯｼﾞ座標
+										COM0.NO102 = (unsigned short)(SEQ.INPUT_DBUS * 10);
 		// C_ACKを「H」にする
 		case 17:
 			SEQ.FPGA_SEND_STATUS = 13;
