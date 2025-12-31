@@ -28,11 +28,11 @@ void clk5_pulse(void)
 void hdi_output(void)
 {
 	_UBYTE buf, skip_flag;
-	_UBYTE hdi0_l_flag, hdi1_l_flag, hdi2_l_flag, hdi3_l_flag, hdi4_l_flag, hdi5_l_flag;
-	_UBYTE hdi0_r_flag, hdi1_r_flag, hdi2_r_flag, hdi3_r_flag, hdi4_r_flag, hdi5_r_flag;
+	_UBYTE hdi0_l_flag, hdi1_l_flag, hdi2_l_flag;
+	_UBYTE hdi0_r_flag, hdi1_r_flag, hdi2_r_flag;
 // add 2016.03.11 K.Uemura start	G31101
 	long focus_L, focus_R;
-	_UBYTE hdi0_flag, hdi1_flag, hdi2_flag, hdi3_flag, hdi4_flag, hdi5_flag;
+	_UBYTE hdi0_flag, hdi1_flag, hdi2_flag;
 // add 2016.03.11 K.Uemura end
 	//_UWORD hdi;
 	_UDWORD hdi;
@@ -183,8 +183,8 @@ void hdi_output(void)
 				if(SKIP_SIGNAL_REVERSE == 1)		hdi = ~hdi & 0x07;
 				
 			}else if(skip_flag == 2){		// ｽｷｯﾌﾟ出力ﾌﾗｸﾞ「3:焦点」
-				hdi0_l_flag = hdi1_l_flag = hdi2_l_flag = hdi3_l_flag = hdi4_l_flag = hdi5_l_flag = 0;
-				hdi0_r_flag = hdi1_r_flag = hdi2_r_flag = hdi3_r_flag = hdi4_r_flag = hdi5_r_flag = 0;
+				hdi0_l_flag = hdi1_l_flag = hdi2_l_flag = 0;
+				hdi0_r_flag = hdi1_r_flag = hdi2_r_flag = 0;
 
 				focus_L = (long)(RESULT.FOCUS_LEFT[2] * 10);
 				focus_R = (long)(RESULT.FOCUS_RIGHT[2] * 10);

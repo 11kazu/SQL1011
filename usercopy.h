@@ -464,7 +464,7 @@ struct {
 // add 2017.01.19 K.Uemura start	H11901	
 		unsigned short	ERROR_BEFORE;					// ｴﾗｰ番号(前回)
 // add 2017.01.19 K.Uemura end
-}	extern SEQ;
+	}	extern volatile SEQ;
 
 /*	RESULT制御用構造体	*/
 struct {
@@ -982,7 +982,7 @@ struct {
 
 		unsigned short	MEM_BUF[3001];				// ﾒﾓﾘﾊﾞｯﾌｧ
 		
-}	extern COM0;
+}	extern volatile COM0;
 
 // RS232C
 struct {

@@ -12,7 +12,7 @@
 #include "user_define.h"
 
 void send_to_fpga_debug_level(void);				// FPGAへのﾃﾞｰﾀ送信関数(ﾃﾞﾊﾞｯｸﾞ出力)
-void convert_data_4096_to_256( long *, unsigned char, unsigned short * );
+void convert_data_4096_to_256( long *, unsigned char, volatile unsigned short * );
 
 //************************************************************/
 //				FPGAへのﾃﾞｰﾀ送信関数(ﾃﾞﾊﾞｯｸﾞ出力)
@@ -150,7 +150,7 @@ void send_to_fpga_debug_level(void)
 	[File Name]		fpga_debug_level.c
 	[History]		2016/10/20	K.Uemura	新規作成
 ****** HEADER END *************************************************************/
-void convert_data_4096_to_256( long *sensor_level, unsigned char mode, unsigned short *sensor_level_out )
+void convert_data_4096_to_256( long *sensor_level, unsigned char mode, volatile unsigned short *sensor_level_out )
 {
 	unsigned short idx, idx2, array;
 	unsigned short min_level, max_level;

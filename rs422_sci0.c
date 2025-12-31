@@ -1419,7 +1419,7 @@ void rs422_drive(void)
 				COM0.SUB_STATUS++;
 // add 2016.10.18 K.Uemura start	GA1801
 				// DLPM確認
-				if(verify_DLPM(&COM0.MEM_BUF[0], &i)){
+				if(verify_DLPM((unsigned short *)&COM0.MEM_BUF[0], &i)){
 					COM0.NO312 = (4000 + i);
 					COM0.SUB_STATUS = 201;
 

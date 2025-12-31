@@ -287,14 +287,14 @@ void rs232c_txi(void)
 				// 電圧
 				case 1:
 					// 出力文字列の生成
-					memset(&SEQ.SIO_BUF[0],0,sizeof(SEQ.SIO_BUF));
+					memset((void*)&SEQ.SIO_BUF[0],0,sizeof(SEQ.SIO_BUF));
 
 					// 電圧
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%03d,",ADCOV.V_BATT);
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",get_voltage(ADCOV.V_BATT));
+					sprintf((char*)&SEQ.SIO_BUF[strlen((char*)SEQ.SIO_BUF)],"%03d,",ADCOV.V_BATT);
+					sprintf((char*)&SEQ.SIO_BUF[strlen((char*)SEQ.SIO_BUF)],"%04d,",get_voltage(ADCOV.V_BATT));
 
 					// 輝度
-					sprintf(&SEQ.SIO_BUF[strlen(SEQ.SIO_BUF)],"%04d,",DA.DADR0);
+					sprintf((char*)&SEQ.SIO_BUF[strlen((char*)SEQ.SIO_BUF)],"%04d,",DA.DADR0);
 
 #ifdef	___LOGGING_VOLTAGE_RESULT
 					// 工具径

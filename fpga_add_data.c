@@ -11,13 +11,18 @@
 #include "usercopy.h"
 #include "user_define.h"
 
+/* Command numbers and end-of-cycle IDs: define for readability */
+#define CBUS_CMD_ADD_DATA      387
+#define CBUS_LAST_WITH_ADD     218
+#define CBUS_LAST_NORMAL       215
+
 void send_to_fpga_add_data(void);		// FPGAへのﾃﾞｰﾀ送信関数(平均値・最小値・最大値のﾃﾞｰﾀ出力設定)
 
 //********************************************************************************/
 //				FPGAへのﾃﾞｰﾀ送信関数(平均値・最小値・最大値のﾃﾞｰﾀ出力設定)
 //********************************************************************************/
 // 予備(302)の値「0」のときﾃﾞｰﾀ出力しない	(通常)
-// 				「1」のときﾃﾞｰﾀ出力する		(通常の計測に平均値・最小値・最大値のﾃﾞｰﾀを付加)
+// 					「1」のときﾃﾞｰﾀ出力する		(通常の計測に平均値・最小値・最大値のﾃﾞｰﾀを付加)
 void send_to_fpga_add_data(void)
 {
 	switch(SEQ.FPGA_SEND_STATUS){
@@ -39,12 +44,12 @@ void send_to_fpga_add_data(void)
 			
 		// ｺﾏﾝﾄﾞﾊﾞｽ・ﾃﾞｰﾀﾊﾞｽを設定する
 		case 3:
-			SEQ.CBUS_NUMBER = 387;						// ﾃﾞｰﾀ出力設定
-			send_to_cbus(SEQ.CBUS_NUMBER);				// ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力
-			send_to_dbus(COM0.NO302);					// ﾃﾞｰﾀ出力関数
-			// 予備(302)の値	0:ﾃﾞｰﾀ出力しない	1:ﾃﾞｰﾀ出力する
-			if(COM0.NO302 == 1)		SEQ.LAST_CBUS_NUMBER = 218;		// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)	(平均値・最小値・最大値のﾃﾞｰﾀを付加)
-			else					SEQ.LAST_CBUS_NUMBER = 215;		// CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)	(通常)
+			SEQ.CBUS_NUMBER = CBUS_CMD_ADD_DATA;        // ﾃﾞｰﾀ出力設定
+			send_to_cbus(SEQ.CBUS_NUMBER);               // ｺﾏﾝﾄﾞﾅﾝﾊﾞｰ出力
+			send_to_dbus(COM0.NO302);                    // ﾃﾞｰﾀ出力関数
+			// 予備(302)の値    0:ﾃﾞｰﾀ出力しない    1:ﾃﾞｰﾀ出力する
+			if (COM0.NO302 == 1)        SEQ.LAST_CBUS_NUMBER = CBUS_LAST_WITH_ADD;    // CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)    (平均値・最小値・最大値のﾃﾞｰﾀを付加)
+			else                        SEQ.LAST_CBUS_NUMBER = CBUS_LAST_NORMAL;      // CBUSﾅﾝﾊﾞｰ(1ｻｲｸﾙ最終)    (通常)
 			SEQ.FPGA_SEND_STATUS++;						// 次へ
 			break;
 			
@@ -81,6 +86,13 @@ void send_to_fpga_add_data(void)
 			
 			SEQ.TP_CONTROL_STATUS++;
 			COM0.NO310.BIT.RDY = 1;						// READYのﾋﾞｯﾄON
+			break;
+
+		default:
+			/* 安全フェール: 想定外の状態が来たら初期状態に戻す */
+			C_PRIO_OUT = 0;
+			C_ACK_OUT = 0;
+			SEQ.FPGA_SEND_STATUS = 1;
 			break;
 	}
 }
