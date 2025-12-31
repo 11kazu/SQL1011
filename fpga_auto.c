@@ -107,7 +107,7 @@ void send_to_fpga_auto(void)
 					RESULT.EDGE_LEFT_PIXEL[0] = RESULT.EDGE_LEFT_PIXEL[SEQ.BUFFER_COUNT];
 				}
 // add 2015.05.15 K.Uemura end
-				COM0.NO101 = SEQ.INPUT_DBUS * 10;
+				COM0.NO101 = (unsigned short)(SEQ.INPUT_DBUS * 10);
 				
 			}else if(SEQ.CBUS_NUMBER == 212){				// 右ｴｯｼﾞ位置
 				// 浮動小数点のﾃﾞｰﾀに変換し値を表示する
@@ -120,7 +120,7 @@ void send_to_fpga_auto(void)
 					RESULT.EDGE_RIGHT_PIXEL[0] = RESULT.EDGE_RIGHT_PIXEL[SEQ.BUFFER_COUNT];
 				}
 // add 2015.05.15 K.Uemura end
-				COM0.NO102 = SEQ.INPUT_DBUS * 10;
+				COM0.NO102 = (unsigned short)(SEQ.INPUT_DBUS * 10);
 				
 			}else if(SEQ.CBUS_NUMBER == 223){				// ｽｷｯﾌﾟ出力
 				set_result_skip();
