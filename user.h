@@ -6,6 +6,16 @@
 /*		グローバル変数定義	*/
 /****************************/
 
+#ifndef USER_H
+#define USER_H
+
+#ifdef DEFINE_USER_GLOBALS
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+
+
 /*	ﾒｲﾝｼｰｹﾝｽ制御用構造体	*/
 struct {
 		union{
@@ -464,7 +474,7 @@ struct {
 // add 2017.01.19 K.Uemura start	H11901	
 		unsigned short	ERROR_BEFORE;					// ｴﾗｰ番号(前回)
 // add 2017.01.19 K.Uemura end
-}	volatile SEQ;
+} EXTERN volatile SEQ;
 
 /*	RESULT制御用構造体	*/
 struct {
@@ -538,7 +548,7 @@ struct {
 		short			SENSOR_LEVEL_X;					// ｾﾝｻﾚﾍﾞﾙ X
 		short			SENSOR_LEVEL_Z;					// ｾﾝｻﾚﾍﾞﾙ Z
 // add 2016.06.22 K.Uemura end
-}	RESULT;
+} EXTERN RESULT;
 
 /*	debug用構造体	*/
 struct {
@@ -560,7 +570,7 @@ struct {
 		unsigned char	DEBUG_NO_COUNT;					// エッジ要素カウント数
 // deb 2015.07.29 K.Uemura end
 #endif
-}	DEBUG_STR;
+} EXTERN DEBUG_STR;
 
 /*	ﾀｲﾏｰ制御用構造体	*/
 struct {
@@ -606,7 +616,7 @@ struct {
 		unsigned char	MASTER_COUNT_10US;				// 10usﾏｽﾀｰｼｰｹﾝｽｽﾚｯﾄﾞｶｳﾝﾀ
 		unsigned char	MASTER_COUNT_100US;				// 100usﾏｽﾀｰｼｰｹﾝｽｽﾚｯﾄﾞｶｳﾝﾀ
 		
-}	TIM1;
+} EXTERN TIM1;
 
 /*	入力処理用構造体	*/
 struct {
@@ -733,7 +743,7 @@ struct {
 				unsigned char	OFF		:4;				// 入力なし
 				}	BIT;
 			}	COVER_CLOSE;
-}	IN;
+} EXTERN IN;
 
 /*	出力処理用構造体	*/
 struct {
@@ -745,7 +755,7 @@ struct {
 		unsigned char	BOOT_LED_BLINK;					// BOOTLED点滅回数
 		
 		unsigned short	BOOT_LED_COUNT;					// BOOTLED1msｶｳﾝﾄ
-}	OUT;
+} EXTERN OUT;
 
 /*	通信処理用構造体	*/
 // RS422
@@ -982,7 +992,7 @@ struct {
 
 		unsigned short	MEM_BUF[3001];				// ﾒﾓﾘﾊﾞｯﾌｧ
 		
-}	volatile COM0;
+} EXTERN volatile COM0;
 
 // RS232C
 struct {
@@ -992,7 +1002,7 @@ struct {
 		
 		unsigned short	WR_CONT;					// 書き込みｶｳﾝﾀ
 		unsigned short	RE_CONT;					// 読み出し回数ｶｳﾝﾀ
-}	COM2;
+} EXTERN COM2;
 
 // CFG
 struct {
@@ -1005,7 +1015,7 @@ struct {
 		unsigned short	WR_CONT;					// 書き込みｶｳﾝﾀ
 		unsigned short	RE_CONT;					// 読み出し回数ｶｳﾝﾀ
 		unsigned short	SEND_COUNT;					// 送信文字数
-}	COM3;
+} EXTERN COM3;
 
 // M25
 struct {
@@ -1021,7 +1031,7 @@ struct {
 		unsigned short	SEND_COUNT;					// 送信文字数
 		
 		unsigned long	START_ADDRESS;				// 開始ｱﾄﾞﾚｽ
-}	COM6;
+} EXTERN COM6;
 
 // LED
 struct {
@@ -1064,7 +1074,7 @@ struct {
 				unsigned short					:4;		// 
 				}	BIT;
 			}	MSP;
-}	LED;
+} EXTERN LED;
 
 /*	I2C通信処理用構造体	*/
 struct {
@@ -1094,7 +1104,7 @@ struct {
 		unsigned short	RE_CONT		;			//読み出し回数ｶｳﾝﾀ
 		unsigned short  LAST_ADDRESS;			// 最終ﾃﾞｰﾀ
 		unsigned short  STATUS		;			//ｽﾃｰﾀｽ
-}	I2C;
+} EXTERN I2C;
 
 /*	AD入力処理制御用構造体	*/
 struct {
@@ -1116,4 +1126,7 @@ struct {
 		unsigned short	V_BATT	;				// 電源電圧
 		unsigned short	INTERVAL	;			//入力処理ｲﾝﾀｰﾊﾞﾙｶｳﾝﾀ
 		unsigned short	INPUT		;			//入力ﾕﾆｯﾄ
-}	ADCOV;
+} EXTERN ADCOV;
+
+#undef EXTERN
+#endif /* USER_H */

@@ -11,6 +11,7 @@
 #include "iodefine.h"
 #include "user_define.h"
 #include "typedefine.h"
+#define DEFINE_USER_GLOBALS
 #include "user.h"
 
 void main(void);
