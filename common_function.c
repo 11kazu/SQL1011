@@ -8,7 +8,7 @@
 #include <mathf.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 unsigned short get_reset_cycle(void);		// リセット周期の取得(回転数/刃数)

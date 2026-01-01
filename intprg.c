@@ -19,7 +19,7 @@
 #include <machine.h>
 #include "vect.h"
 #include "iodefine.h"
-#include "usercopy.h"
+#include "user.h"
 #pragma section IntPRG
 
 // Exception(Supervisor Instruction)

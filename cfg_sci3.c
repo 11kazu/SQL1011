@@ -6,7 +6,7 @@
 #include <math.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 void sci3_init(void);					// M25初期設定

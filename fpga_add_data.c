@@ -8,7 +8,7 @@
 #include <mathf.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 /* Command numbers and end-of-cycle IDs: define for readability */

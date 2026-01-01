@@ -9,7 +9,7 @@
 #include <limits.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 void send_to_fpga_profile(void);				// FPGAへのﾃﾞｰﾀ送信関数(ﾌﾟﾛﾌｧｲﾙ処理)

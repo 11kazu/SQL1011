@@ -5,7 +5,7 @@
 #include "iodefine.h"
 #include "user_define.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 
 void adc_init(void);				// AD初期設定
 void ctl_ad_func(void);

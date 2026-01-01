@@ -10,7 +10,7 @@
 #include "iodefine.h"
 #include "user_define.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 
 // deb 2015.07.29 K.Uemura start	
 #define	__GET_SCANMODE	0			// 走査方向(0:右エッジ 1:左エッジ)

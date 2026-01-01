@@ -6,7 +6,7 @@
 #include <math.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 #include "ASC2.h"
 // add 2016.10.18 K.Uemura start	GA1801

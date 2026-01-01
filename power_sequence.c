@@ -8,7 +8,7 @@
 #include <mathf.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 void set_7seg_led_error_no(_UWORD temp);		// 7セグLEDのｴﾗｰﾅﾝﾊﾞｰ設定

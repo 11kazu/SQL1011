@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 void state_number_set(void);					// 状態番号ｾｯﾄ(No.311)

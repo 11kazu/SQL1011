@@ -5,7 +5,7 @@
 #include "iodefine.h"
 #include "user_define.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 
 //************************************************************/
 //				内部関数プロトタイプ宣言					

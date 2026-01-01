@@ -3,7 +3,7 @@
 ******************************************************************************/
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 #include "parameter.h"
 

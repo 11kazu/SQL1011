@@ -8,7 +8,7 @@
 #include <mathf.h>
 #include "iodefine.h"
 #include "typedefine.h"
-#include "usercopy.h"
+#include "user.h"
 #include "user_define.h"
 
 void send_to_fpga1(void);				// FPGAへのﾃﾞｰﾀ送信関数
